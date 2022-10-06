@@ -4,14 +4,14 @@ import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
-import "./index.css";
-import App from "./App";
+import "./index.less";
+import Image from "./Image";
 
 const router = createBrowserRouter([
     {
-        path: `/`,
-        element: <App />,
-    },
+        path: "/image",
+        element: <Image />,
+    }
 ], {
     basename: "/view/v2",
 });
