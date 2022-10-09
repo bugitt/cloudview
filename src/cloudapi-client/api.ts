@@ -1022,13 +1022,13 @@ export interface Image {
      * @type {string}
      * @memberof Image
      */
-    'owner': string;
+    'repo': string;
     /**
      * 
      * @type {string}
      * @memberof Image
      */
-    'repo': string;
+    'digest': string;
     /**
      * 
      * @type {Array<string>}
@@ -1040,7 +1040,25 @@ export interface Image {
      * @type {number}
      * @memberof Image
      */
-    'pushTime': number;
+    'imageSize': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Image
+     */
+    'pushTime'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Image
+     */
+    'pullTime'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Image
+     */
+    'pullCommand': string;
 }
 /**
  * 
@@ -1090,6 +1108,43 @@ export interface ImageBuildTask {
      * @memberof ImageBuildTask
      */
     'endTime': number;
+}
+/**
+ * 
+ * @export
+ * @interface ImageRepo
+ */
+export interface ImageRepo {
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageRepo
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ImageRepo
+     */
+    'artifactsCount': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ImageRepo
+     */
+    'downloadCount': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ImageRepo
+     */
+    'updateTime'?: number;
+    /**
+     * 
+     * @type {Array<Image>}
+     * @memberof ImageRepo
+     */
+    'images'?: Array<Image>;
 }
 /**
  * 
@@ -3081,10 +3136,47 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectProjectIdImageTasks: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjectProjectIdImageBuildTasks: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'projectId' is not null or undefined
-            assertParamExists('getProjectProjectIdImageTasks', 'projectId', projectId)
+            assertParamExists('getProjectProjectIdImageBuildTasks', 'projectId', projectId)
             const localVarPath = `/project/{projectId}/imageBuildTasks`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取当前项目下的所有Harbor镜像仓库
+         * @summary 获取Harbor镜像仓库
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdImageRepos: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('getProjectProjectIdImageRepos', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/imageRepos`
                 .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4736,8 +4828,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjectProjectIdImageTasks(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ImageBuildTask>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdImageTasks(projectId, options);
+        async getProjectProjectIdImageBuildTasks(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ImageBuildTask>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdImageBuildTasks(projectId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取当前项目下的所有Harbor镜像仓库
+         * @summary 获取Harbor镜像仓库
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProjectProjectIdImageRepos(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ImageRepo>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdImageRepos(projectId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5395,8 +5498,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectProjectIdImageTasks(projectId: string, options?: any): AxiosPromise<Array<ImageBuildTask>> {
-            return localVarFp.getProjectProjectIdImageTasks(projectId, options).then((request) => request(axios, basePath));
+        getProjectProjectIdImageBuildTasks(projectId: string, options?: any): AxiosPromise<Array<ImageBuildTask>> {
+            return localVarFp.getProjectProjectIdImageBuildTasks(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取当前项目下的所有Harbor镜像仓库
+         * @summary 获取Harbor镜像仓库
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdImageRepos(projectId: string, options?: any): AxiosPromise<Array<ImageRepo>> {
+            return localVarFp.getProjectProjectIdImageRepos(projectId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取当前项目中的所有可用镜像
@@ -6068,8 +6181,20 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getProjectProjectIdImageTasks(projectId: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getProjectProjectIdImageTasks(projectId, options).then((request) => request(this.axios, this.basePath));
+    public getProjectProjectIdImageBuildTasks(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdImageBuildTasks(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取当前项目下的所有Harbor镜像仓库
+     * @summary 获取Harbor镜像仓库
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getProjectProjectIdImageRepos(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdImageRepos(projectId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
