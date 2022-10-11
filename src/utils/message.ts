@@ -11,3 +11,7 @@ export function messageError(error: string | Error | undefined) {
 export function messageInfo(msg: string) {
     message.info(msg).then()
 }
+
+export function messageSuccess(msg: string) {
+    message.success(msg).then()
+}

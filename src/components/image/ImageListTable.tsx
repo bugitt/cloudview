@@ -1,4 +1,4 @@
-import {Button, Table, Tag} from "antd";
+import {Table, Tag} from "antd";
 import {ProjectIdProps} from "../../assets/types";
 import {useRequest} from "ahooks";
 import {cloudapiClient, copyToClipboard, formatTimeStamp, messageError, randomColor} from "../../utils";
@@ -8,6 +8,7 @@ import {Image, ImageRepo} from "../../cloudapi-client";
 import {filesize} from "filesize";
 import {CopyOutlined} from "@ant-design/icons";
 import {ProColumns, ProTable} from "@ant-design/pro-table";
+import {CreateImageForm} from "./CreateImageForm";
 
 interface ImageRepoTableType {
     key: React.Key;
@@ -31,7 +32,7 @@ interface ImageArtifactTableType {
 export const ImageListTable = (props: ProjectIdProps) => {
     const {projectId} = props
     const {data, loading, error} = useRequest(() => cloudapiClient.getProjectProjectIdImageRepos(projectId), {
-        pollingInterval: 3000,
+        pollingInterval: 5000,
     })
     messageError(error)
 
@@ -134,21 +135,21 @@ export const ImageListTable = (props: ProjectIdProps) => {
     }
 
     return (
-        <ProTable<ImageRepoTableType>
-            headerTitle="镜像列表"
-            loading={!data && loading}
-            dataSource={imageRepos}
-            columns={columns}
-            search={false}
-            expandable={{
-                expandedRowRender: expandedRowRender,
-                rowExpandable: record => record.artifactCount > 0,
-            }}
-            toolBarRender={() => [
-                <Button type="primary" key="primary">
-                    创建镜像
-                </Button>,
-            ]}
-        />
+        <>
+            <ProTable<ImageRepoTableType>
+                headerTitle="镜像列表"
+                loading={!data && loading}
+                dataSource={imageRepos}
+                columns={columns}
+                search={false}
+                expandable={{
+                    expandedRowRender: expandedRowRender,
+                    rowExpandable: record => record.artifactCount > 0,
+                }}
+                toolBarRender={() => [
+                    <CreateImageForm projectId={projectId}/>
+                ]}
+            />
+        </>
     )
 }

@@ -1300,12 +1300,6 @@ export interface PostProjectProjectIdImagesRequest {
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
-    'dockerfilePath'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PostProjectProjectIdImagesRequest
-     */
     'gitUrl'?: string;
     /**
      * 
@@ -1326,11 +1320,35 @@ export interface PostProjectProjectIdImagesRequest {
      */
     'gitRef'?: string;
     /**
+     * 构建上下文压缩包在云平台数据库中对应的文件ID
+     * @type {number}
+     * @memberof PostProjectProjectIdImagesRequest
+     */
+    'contextFileId'?: number;
+    /**
+     * 构建上下文压缩包的网络路径
+     * @type {string}
+     * @memberof PostProjectProjectIdImagesRequest
+     */
+    'contextFileLink'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdImagesRequest
+     */
+    'dockerfilePath'?: string;
+    /**
      * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
     'dockerfileContent'?: string;
+    /**
+     * 构建镜像时，workspace相对于上下文的相对路径。默认为.
+     * @type {string}
+     * @memberof PostProjectProjectIdImagesRequest
+     */
+    'workspacePath'?: string;
 }
 /**
  * 
@@ -4098,20 +4116,30 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
          * @summary 创建或修改文件
          * @param {string} owner 
-         * @param {string} fileType 枚举值，可以取值 Assignment
+         * @param {string} fileType 
          * @param {number} involvedId 
+         * @param {string} owner2 
+         * @param {string} fileType2 枚举值，可以取值 Assignment
+         * @param {number} involvedId2 
+         * @param {string} [fileId] 
          * @param {any} [file] 
-         * @param {number} [fileId] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
+         * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postFile: async (owner: string, fileType: string, involvedId: number, file?: any, fileId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        postFile: async (owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'owner' is not null or undefined
             assertParamExists('postFile', 'owner', owner)
             // verify required parameter 'fileType' is not null or undefined
             assertParamExists('postFile', 'fileType', fileType)
             // verify required parameter 'involvedId' is not null or undefined
             assertParamExists('postFile', 'involvedId', involvedId)
+            // verify required parameter 'owner2' is not null or undefined
+            assertParamExists('postFile', 'owner2', owner2)
+            // verify required parameter 'fileType2' is not null or undefined
+            assertParamExists('postFile', 'fileType2', fileType2)
+            // verify required parameter 'involvedId2' is not null or undefined
+            assertParamExists('postFile', 'involvedId2', involvedId2)
             const localVarPath = `/file`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4128,25 +4156,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
+            if (owner !== undefined) {
+                localVarQueryParameter['owner'] = owner;
+            }
+
+            if (fileType !== undefined) {
+                localVarQueryParameter['fileType'] = fileType;
+            }
+
+            if (involvedId !== undefined) {
+                localVarQueryParameter['involvedId'] = involvedId;
+            }
+
+            if (fileId !== undefined) {
+                localVarQueryParameter['fileId'] = fileId;
+            }
+
 
             if (file !== undefined) { 
                 localVarFormParams.append('file', file as any);
             }
     
-            if (owner !== undefined) { 
-                localVarFormParams.append('owner', owner as any);
+            if (owner2 !== undefined) { 
+                localVarFormParams.append('owner', owner2 as any);
             }
     
-            if (fileType !== undefined) { 
-                localVarFormParams.append('fileType', fileType as any);
+            if (fileType2 !== undefined) { 
+                localVarFormParams.append('fileType', fileType2 as any);
             }
     
-            if (involvedId !== undefined) { 
-                localVarFormParams.append('involvedId', involvedId as any);
+            if (involvedId2 !== undefined) { 
+                localVarFormParams.append('involvedId', involvedId2 as any);
             }
     
-            if (fileId !== undefined) { 
-                localVarFormParams.append('fileId', fileId as any);
+            if (fileId2 !== undefined) { 
+                localVarFormParams.append('fileId', fileId2 as any);
             }
     
     
@@ -5108,15 +5152,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
          * @summary 创建或修改文件
          * @param {string} owner 
-         * @param {string} fileType 枚举值，可以取值 Assignment
+         * @param {string} fileType 
          * @param {number} involvedId 
+         * @param {string} owner2 
+         * @param {string} fileType2 枚举值，可以取值 Assignment
+         * @param {number} involvedId2 
+         * @param {string} [fileId] 
          * @param {any} [file] 
-         * @param {number} [fileId] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
+         * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postFile(owner: string, fileType: string, involvedId: number, file?: any, fileId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadFileResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.postFile(owner, fileType, involvedId, file, fileId, options);
+        async postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadFileResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postFile(owner, fileType, involvedId, owner2, fileType2, involvedId2, fileId, file, fileId2, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5753,15 +5801,19 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
          * @summary 创建或修改文件
          * @param {string} owner 
-         * @param {string} fileType 枚举值，可以取值 Assignment
+         * @param {string} fileType 
          * @param {number} involvedId 
+         * @param {string} owner2 
+         * @param {string} fileType2 枚举值，可以取值 Assignment
+         * @param {number} involvedId2 
+         * @param {string} [fileId] 
          * @param {any} [file] 
-         * @param {number} [fileId] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
+         * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postFile(owner: string, fileType: string, involvedId: number, file?: any, fileId?: number, options?: any): AxiosPromise<UploadFileResponse> {
-            return localVarFp.postFile(owner, fileType, involvedId, file, fileId, options).then((request) => request(axios, basePath));
+        postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options?: any): AxiosPromise<UploadFileResponse> {
+            return localVarFp.postFile(owner, fileType, involvedId, owner2, fileType2, involvedId2, fileId, file, fileId2, options).then((request) => request(axios, basePath));
         },
         /**
          * 触发打包动作
@@ -6485,16 +6537,20 @@ export class DefaultApi extends BaseAPI {
      * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
      * @summary 创建或修改文件
      * @param {string} owner 
-     * @param {string} fileType 枚举值，可以取值 Assignment
+     * @param {string} fileType 
      * @param {number} involvedId 
+     * @param {string} owner2 
+     * @param {string} fileType2 枚举值，可以取值 Assignment
+     * @param {number} involvedId2 
+     * @param {string} [fileId] 
      * @param {any} [file] 
-     * @param {number} [fileId] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
+     * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public postFile(owner: string, fileType: string, involvedId: number, file?: any, fileId?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).postFile(owner, fileType, involvedId, file, fileId, options).then((request) => request(this.axios, this.basePath));
+    public postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postFile(owner, fileType, involvedId, owner2, fileType2, involvedId2, fileId, file, fileId2, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
