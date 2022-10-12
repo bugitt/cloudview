@@ -1,7 +1,14 @@
 import {Table, Tag} from "antd";
 import {ProjectIdProps} from "../../assets/types";
 import {useRequest} from "ahooks";
-import {cloudapiClient, copyToClipboard, formatTimeStamp, messageError, randomColor} from "../../utils";
+import {
+    cloudapiClient,
+    copyToClipboard,
+    formatTimeStamp,
+    getColumnSearchProps,
+    messageError,
+    randomColor
+} from "../../utils";
 import React from "react";
 import type {ColumnType} from "antd/es/table";
 import {Image, ImageRepo} from "../../cloudapi-client";
@@ -41,10 +48,20 @@ export const ImageListTable = (props: ProjectIdProps) => {
     })
 
     const columns: ProColumns<ImageRepoTableType>[] = [
-        {title: '名称', dataIndex: 'name', key: 'name',},
+        {
+            title: '名称',
+            dataIndex: 'name',
+            key: 'name',
+            ...getColumnSearchProps<ImageRepoTableType>('name')
+        },
         {title: '镜像数量', dataIndex: 'artifactCount', key: 'artifactCount'},
         {title: '下载次数', dataIndex: 'downloadCount', key: 'downloadCount'},
-        {title: '更新时间', dataIndex: 'updateTime', key: 'updateTime'},
+        {
+            title: '更新时间',
+            dataIndex: 'updateTime',
+            key: 'updateTime',
+            sorter: (a, b) => a.updateTime.localeCompare(b.updateTime),
+        },
     ]
 
     const subColumns: ColumnType<ImageArtifactTableType>[] = [
@@ -92,8 +109,18 @@ export const ImageListTable = (props: ProjectIdProps) => {
             ),
         },
         {title: '大小', dataIndex: 'size', key: 'size'},
-        {title: '推送时间', dataIndex: 'pushTime', key: 'pushTime'},
-        {title: '拉取时间', dataIndex: 'pullTime', key: 'pullTime'},
+        {
+            title: '推送时间',
+            dataIndex: 'pushTime',
+            key: 'pushTime',
+            sorter: (a, b) => a.pushTime.localeCompare(b.pushTime)
+        },
+        {
+            title: '拉取时间',
+            dataIndex: 'pullTime',
+            key: 'pullTime',
+            sorter: (a, b) => a.pullTime.localeCompare(b.pullTime)
+        },
     ]
 
     const imageRepos: ImageRepoTableType[] = data?.data?.map((item, i) => {
@@ -149,6 +176,9 @@ export const ImageListTable = (props: ProjectIdProps) => {
                 toolBarRender={() => [
                     <CreateImageForm projectId={projectId}/>
                 ]}
+                pagination={{
+                    pageSize: 10
+                }}
             />
         </>
     )
