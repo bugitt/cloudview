@@ -4,7 +4,6 @@ specifiers:
   '@ant-design/icons': ^4.7.0
   '@ant-design/pro-form': ^2.2.5
   '@ant-design/pro-table': ^3.0.11
-  '@types/is-valid-path': ^0.1.0
   '@types/js-cookie': ^3.0.2
   '@types/lodash.merge': ^4.6.7
   '@types/md5': ^2.3.2
@@ -705,10 +704,6 @@ packages:
   /@remix-run/router/1.0.2:
     resolution: {integrity: sha512-GRSOFhJzjGN+d4sKHTMSvNeUPoZiDHWmRnXfzaxrqe7dE/Nzlc8BiMSJdLDESZlndM7jIUrZ/F4yWqVYlI0rwQ==}
     engines: {node: '>=14'}
-    dev: false
-
-  /@types/is-valid-path/0.1.0:
-    resolution: {integrity: sha512-2ontWtpN8O2nf5S7EjDDJ0DwrRa2t7wmS3Wmo322yWYG6yFBYC1QCaLhz4Iz+mzJy8Kf4zP5yVyEd1ANPDmOFQ==}
     dev: false
 
   /@types/js-cookie/2.2.7:

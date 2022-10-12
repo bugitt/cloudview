@@ -12,7 +12,6 @@
     "@ant-design/icons": "^4.7.0",
     "@ant-design/pro-form": "^2.2.5",
     "@ant-design/pro-table": "^3.0.11",
-    "@types/is-valid-path": "^0.1.0",
     "@types/lodash.merge": "^4.6.7",
     "@types/md5": "^2.3.2",
     "ahooks": "^3.7.1",

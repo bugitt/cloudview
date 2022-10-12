@@ -211,6 +211,19 @@ export const CreateImageForm = (props: ProjectIdProps) => {
                 <Form.Item label='上下文路径' name='workspacePath'
                            initialValue='.'
                            extra='构建镜像时，所使用的上下文目录相对于压缩包或Git仓库的根目录的相对路径。默认为"."'
+                           rules={[
+                               {
+                                   validator: (_, value) => {
+                                       if (value.startsWith('/') || value.startsWith('\\')) {
+                                           return Promise.reject(new Error('上下文路径应为相对路径，不能以/或\\开头'));
+                                       }
+                                       if (value.contains(' ')) {
+                                           return Promise.reject(new Error('上下文路径不能包含空格'));
+                                       }
+                                       return Promise.resolve();
+                                   }
+                               },
+                           ]}
                 >
                     <Input/>
                 </Form.Item>
