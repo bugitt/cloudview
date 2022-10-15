@@ -1,4 +1,4 @@
-import md5 from "md5";
+import md5 from 'md5'
 
 const colors: string[] = [
     'red',
@@ -11,7 +11,7 @@ const colors: string[] = [
     'blue',
     'geekblue',
     'purple',
-    'magenta',
+    'magenta'
 ]
 
 export function randomColor(text: string): string {

@@ -1,7 +1,7 @@
-import {Tag} from "antd";
+import { Tag } from 'antd'
 
 interface TaskStatusTagProps {
-    status: string;
+    status: string
 }
 
 export const TaskStatusTag = (props: TaskStatusTagProps) => {
@@ -25,9 +25,5 @@ export const TaskStatusTag = (props: TaskStatusTagProps) => {
             color = 'red'
             break
     }
-    return (
-        <Tag color={color}>
-            {content}
-        </Tag>
-    )
+    return <Tag color={color}>{content}</Tag>
 }

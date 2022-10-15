@@ -13,9 +13,9 @@
  */
 
 
-import { Configuration } from "./configuration";
-import { RequiredError, RequestArgs } from "./base";
-import { AxiosInstance, AxiosResponse } from 'axios';
+import {Configuration} from "./configuration";
+import {RequestArgs, RequiredError} from "./base";
+import {AxiosInstance, AxiosResponse} from 'axios';
 
 /**
  *
@@ -53,7 +53,7 @@ export const setApiKeyToObject = async function (object: any, keyParamName: stri
  */
 export const setBasicAuthToObject = function (object: any, configuration?: Configuration) {
     if (configuration && (configuration.username || configuration.password)) {
-        object["auth"] = { username: configuration.username, password: configuration.password };
+        object["auth"] = {username: configuration.username, password: configuration.password};
     }
 }
 

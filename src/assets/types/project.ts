@@ -1,3 +1,3 @@
 export interface ProjectIdProps {
-    projectId: string;
+    projectId: string
 }

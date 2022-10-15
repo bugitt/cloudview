@@ -13,10 +13,10 @@
  */
 
 
-import { Configuration } from "./configuration";
+import {Configuration} from "./configuration";
 // Some imports not used depending on template conditions
 // @ts-ignore
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import globalAxios, {AxiosInstance, AxiosPromise, AxiosRequestConfig} from 'axios';
 
 export const BASE_PATH = "https://scs.buaa.edu.cn/api/v2".replace(/\/+$/, "");
 
@@ -55,7 +55,7 @@ export class BaseAPI {
             this.basePath = configuration.basePath || this.basePath;
         }
     }
-};
+}
 
 /**
  *
@@ -65,6 +65,7 @@ export class BaseAPI {
  */
 export class RequiredError extends Error {
     name: "RequiredError" = "RequiredError";
+
     constructor(public field: string, msg?: string) {
         super(msg);
     }
