@@ -11,8 +11,9 @@ import {
     ContainerResponse,
     ContainerServiceResponse
 } from '../../cloudapi-client'
-import { Modal, Popconfirm, Space, Tag } from 'antd'
+import { Button, Modal, Popconfirm, Space, Tag } from 'antd'
 import { ContainerServiceDetail } from './ContainerServiceDetail'
+import { CreateContainerServiceForm } from './CreateContainerServiceForm'
 
 export interface ContainerServiceTableType {
     key: React.Key
@@ -29,7 +30,7 @@ export const ContainerServiceListTable = () => {
     const projectId = useParams().projectId ?? '0'
     const { data, loading } = useRequest(
         () => cloudapiClient.getProjectProjectIdContainers(projectId),
-        { pollingInterval: 5000 }
+        { pollingInterval: 1000 }
     )
 
     const convertServiceType = (srcText: string): string => {
@@ -188,6 +189,9 @@ export const ContainerServiceListTable = () => {
                 loading={!data && loading}
                 columns={columns}
                 dataSource={serviceList}
+                toolBarRender={() => [
+                    <CreateContainerServiceForm projectId={projectId} />
+                ]}
             />
         </>
     )

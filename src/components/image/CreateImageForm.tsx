@@ -8,9 +8,11 @@ import { ProjectIdProps } from '../../assets/types'
 import { FileUpload } from '../base/UploadFile'
 import {
     cloudapiClient,
+    formItemProjectNameValidator,
     getUserId,
     messageError,
-    messageSuccess
+    messageSuccess,
+    projectNameExtraInfo
 } from '../../utils'
 import MonacoEditor from 'react-monaco-editor'
 import { editor } from 'monaco-editor'
@@ -152,7 +154,15 @@ export const CreateImageForm = (props: ProjectIdProps) => {
             <Form.Item
                 name="name"
                 label="镜像名称"
-                rules={[{ required: true, message: '请输入镜像名称' }]}
+                extra={[projectNameExtraInfo]}
+                rules={[
+                    { required: true, message: '请输入镜像名称' },
+                    {
+                        type: 'string',
+                        validator: (_, value) =>
+                            formItemProjectNameValidator(value)
+                    }
+                ]}
             >
                 <Input />
             </Form.Item>
