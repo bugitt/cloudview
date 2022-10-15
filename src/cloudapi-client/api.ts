@@ -13,24 +13,13 @@
  */
 
 
-import {Configuration} from './configuration';
-import globalAxios, {AxiosInstance, AxiosPromise, AxiosRequestConfig} from 'axios';
+import { Configuration } from './configuration';
+import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import {
-    assertParamExists,
-    createRequestFunction,
-    DUMMY_BASE_URL,
-    serializeDataIfNeeded,
-    setApiKeyToObject,
-    setBasicAuthToObject,
-    setBearerAuthToObject,
-    setOAuthToObject,
-    setSearchParams,
-    toPathString
-} from './common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
 // @ts-ignore
-import {BASE_PATH, BaseAPI, COLLECTION_FORMATS, RequestArgs, RequiredError} from './base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from './base';
 
 /**
  * 当学生读取该Model时，assessor为空，表示学生不允许读取是谁评阅了自己的作业
@@ -39,19 +28,19 @@ import {BASE_PATH, BaseAPI, COLLECTION_FORMATS, RequestArgs, RequiredError} from
  */
 export interface AssessmentInfoResponse {
     /**
-     *
+     * 
      * @type {SimpleUser}
      * @memberof AssessmentInfoResponse
      */
     'assessor'?: SimpleUser;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssessmentInfoResponse
      */
     'assignmentId'?: number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssessmentInfoResponse
      */
@@ -63,7 +52,7 @@ export interface AssessmentInfoResponse {
      */
     'adjustedScore'?: number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssessmentInfoResponse
      */
@@ -75,29 +64,27 @@ export interface AssessmentInfoResponse {
      */
     'reason'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface AssignmentListResponse
  */
 export interface AssignmentListResponse {
     /**
-     *
+     * 
      * @type {Array<AssignmentResponse>}
      * @memberof AssignmentListResponse
      */
     'assignments': Array<AssignmentResponse>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface AssignmentPeerAssessmentResultResponse
  */
 export interface AssignmentPeerAssessmentResultResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentPeerAssessmentResultResponse
      */
@@ -115,59 +102,57 @@ export interface AssignmentPeerAssessmentResultResponse {
      */
     'finalScore'?: number;
     /**
-     *
+     * 
      * @type {Array<AssessmentInfoResponse>}
      * @memberof AssignmentPeerAssessmentResultResponse
      */
     'peerInfoList': Array<AssessmentInfoResponse>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface AssignmentRequest
  */
 export interface AssignmentRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof AssignmentRequest
      */
     'studentId': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface AssignmentResponse
  */
 export interface AssignmentResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof AssignmentResponse
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentResponse
      */
     'expId': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentResponse
      */
     'courseId': number;
     /**
-     *
+     * 
      * @type {FileResponse}
      * @memberof AssignmentResponse
      */
@@ -185,89 +170,86 @@ export interface AssignmentResponse {
      */
     'updatedAt': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentResponse
      */
     'peerScore'?: number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentResponse
      */
     'finalScore'?: number;
     /**
-     *
+     * 
      * @type {AssignmentReviewResponse}
      * @memberof AssignmentResponse
      */
     'assignmentReview'?: AssignmentReviewResponse;
 }
-
 /**
- *
+ * 
  * @export
  * @interface AssignmentReviewRequest
  */
 export interface AssignmentReviewRequest {
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentReviewRequest
      */
     'assignmentId': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentReviewRequest
      */
     'fileId': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface AssignmentReviewResponse
  */
 export interface AssignmentReviewResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentReviewResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentReviewResponse
      */
     'assignmentId': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentReviewResponse
      */
     'fileId': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentReviewResponse
      */
     'reviewedAt': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof AssignmentReviewResponse
      */
     'reviewerId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof AssignmentReviewResponse
      */
     'reviewerName': string;
 }
-
 /**
  * 附带“标准成绩”的Assignment Response
  * @export
@@ -275,31 +257,31 @@ export interface AssignmentReviewResponse {
  */
 export interface AssignmentWithStandardScoreResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentWithStandardScoreResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof AssignmentWithStandardScoreResponse
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentWithStandardScoreResponse
      */
     'expId': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof AssignmentWithStandardScoreResponse
      */
     'courseId': number;
     /**
-     *
+     * 
      * @type {FileResponse}
      * @memberof AssignmentWithStandardScoreResponse
      */
@@ -317,15 +299,14 @@ export interface AssignmentWithStandardScoreResponse {
      */
     'updatedAt': number;
     /**
-     *
+     * 
      * @type {AssessmentInfoResponse}
      * @memberof AssignmentWithStandardScoreResponse
      */
     'peerInfo'?: AssessmentInfoResponse;
 }
-
 /**
- *
+ * 
  * @export
  * @interface Authentication
  */
@@ -337,33 +318,260 @@ export interface Authentication {
      */
     'id': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Authentication
      */
     'token': string;
 }
-
 /**
- *
+ * 
+ * @export
+ * @interface ContainerRequest
+ */
+export interface ContainerRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequest
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequest
+     */
+    'image': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequest
+     */
+    'command'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequest
+     */
+    'workingDir'?: string;
+    /**
+     * 
+     * @type {Array<ContainerRequestEnvsInner>}
+     * @memberof ContainerRequest
+     */
+    'envs'?: Array<ContainerRequestEnvsInner>;
+    /**
+     * 
+     * @type {Array<ContainerServicePort>}
+     * @memberof ContainerRequest
+     */
+    'ports'?: Array<ContainerServicePort>;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerRequestEnvsInner
+ */
+export interface ContainerRequestEnvsInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequestEnvsInner
+     */
+    'key': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequestEnvsInner
+     */
+    'value': string;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerResponse
+ */
+export interface ContainerResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof ContainerResponse
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerResponse
+     */
+    'image': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerResponse
+     */
+    'command'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerResponse
+     */
+    'workingDir'?: string;
+    /**
+     * 
+     * @type {Array<ContainerRequestEnvsInner>}
+     * @memberof ContainerResponse
+     */
+    'envs'?: Array<ContainerRequestEnvsInner>;
+    /**
+     * 
+     * @type {Array<ContainerServicePort>}
+     * @memberof ContainerResponse
+     */
+    'ports'?: Array<ContainerServicePort>;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerServicePort
+ */
+export interface ContainerServicePort {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServicePort
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContainerServicePort
+     */
+    'port': number;
+    /**
+     * TCP, UDP, SCTP
+     * @type {string}
+     * @memberof ContainerServicePort
+     */
+    'protocol': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServicePort
+     */
+    'exportIP'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContainerServicePort
+     */
+    'exportPort'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerServiceRequest
+ */
+export interface ContainerServiceRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceRequest
+     */
+    'name': string;
+    /**
+     * SERVICE, JOB
+     * @type {string}
+     * @memberof ContainerServiceRequest
+     */
+    'serviceType': string;
+    /**
+     * 
+     * @type {Array<ContainerRequest>}
+     * @memberof ContainerServiceRequest
+     */
+    'containers': Array<ContainerRequest>;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerServiceResponse
+ */
+export interface ContainerServiceResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof ContainerServiceResponse
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceResponse
+     */
+    'creator': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContainerServiceResponse
+     */
+    'projectId': number;
+    /**
+     * SERVICE, JOB
+     * @type {string}
+     * @memberof ContainerServiceResponse
+     */
+    'serviceType': string;
+    /**
+     * UNDO, NOT_READY, RUNNING, SUCCESS, FAIL
+     * @type {string}
+     * @memberof ContainerServiceResponse
+     */
+    'status': string;
+    /**
+     * 
+     * @type {Array<ContainerResponse>}
+     * @memberof ContainerServiceResponse
+     */
+    'containers': Array<ContainerResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContainerServiceResponse
+     */
+    'createdTime': number;
+}
+/**
+ * 
  * @export
  * @interface CourseResourceResponse
  */
 export interface CourseResourceResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof CourseResourceResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof CourseResourceResponse
      */
     'courseId': number;
     /**
-     *
+     * 
      * @type {FileResponse}
      * @memberof CourseResourceResponse
      */
@@ -375,21 +583,20 @@ export interface CourseResourceResponse {
      */
     'experimentId': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface CourseResponse
  */
 export interface CourseResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof CourseResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CourseResponse
      */
@@ -401,19 +608,19 @@ export interface CourseResponse {
      */
     'teacher': string;
     /**
-     *
+     * 
      * @type {TermModel}
      * @memberof CourseResponse
      */
     'term': TermModel;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CourseResponse
      */
     'createTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CourseResponse
      */
@@ -425,21 +632,20 @@ export interface CourseResponse {
      */
     'studentCnt': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface CreateExperimentRequest
  */
 export interface CreateExperimentRequest {
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreateExperimentRequest
      */
     'courseId': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
@@ -451,103 +657,100 @@ export interface CreateExperimentRequest {
      */
     'type': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'startTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'endTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'deadline': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'description'?: string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof CreateExperimentRequest
      */
     'enablePeer': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'peerDescription'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'peerEndTime'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateExperimentRequest
      */
     'peerAppealDeadline'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface CreatePeerAppealRequest
  */
 export interface CreatePeerAppealRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreatePeerAppealRequest
      */
     'content': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreatePeerAppealRequest
      */
     'expId': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface CreatePeerAssessmentRequest
  */
 export interface CreatePeerAssessmentRequest {
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreatePeerAssessmentRequest
      */
     'assignmentId': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreatePeerAssessmentRequest
      */
     'score': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreatePeerAssessmentRequest
      */
     'reason'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface CreateVmApplyRequest
  */
@@ -577,7 +780,7 @@ export interface CreateVmApplyRequest {
      */
     'studentIdList'?: Array<string>;
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreateVmApplyRequest
      */
@@ -613,45 +816,44 @@ export interface CreateVmApplyRequest {
      */
     'namePrefix': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface CreateVmApplyResponse
  */
 export interface CreateVmApplyResponse {
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateVmApplyResponse
      */
     'id': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateVmApplyResponse
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof CreateVmApplyResponse
      */
     'teacherId': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreateVmApplyResponse
      */
     'experimentId': number;
     /**
-     *
+     * 
      * @type {Array<string>}
      * @memberof CreateVmApplyResponse
      */
     'studentIdList': Array<string>;
     /**
-     *
+     * 
      * @type {number}
      * @memberof CreateVmApplyResponse
      */
@@ -717,37 +919,34 @@ export interface CreateVmApplyResponse {
      */
     'namePrefix': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface DeleteCourseResourcesRequest
  */
 export interface DeleteCourseResourcesRequest {
     /**
-     *
+     * 
      * @type {Array<number>}
      * @memberof DeleteCourseResourcesRequest
      */
     'idList': Array<number>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface DeleteProjectProjectIdMembersRequest
  */
 export interface DeleteProjectProjectIdMembersRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof DeleteProjectProjectIdMembersRequest
      */
     'userId': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface DeleteVmApplyVms
  */
@@ -771,7 +970,6 @@ export interface DeleteVmApplyVms {
      */
     'studentIdList'?: Array<string>;
 }
-
 /**
  * 某次实验所分配的虚拟机情况
  * @export
@@ -779,141 +977,139 @@ export interface DeleteVmApplyVms {
  */
 export interface ExpVmInfo {
     /**
-     *
+     * 
      * @type {number}
      * @memberof ExpVmInfo
      */
     'status': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ExpVmInfo
      */
     'applyId': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExpVmInfo
      */
     'name': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExpVmInfo
      */
     'password': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ExpVmInfo
      */
     'cnt': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface ExperimentResponse
  */
 export interface ExperimentResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof ExperimentResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'name': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof ExperimentResponse
      */
     'type': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'detail': string;
     /**
-     *
+     * 
      * @type {FileResponse}
      * @memberof ExperimentResponse
      */
     'resourceFile'?: FileResponse;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'createTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'startTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'endTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'deadline': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof ExperimentResponse
      */
     'isPeerAssessment': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'peerAssessmentDeadline': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'appealDeadline': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ExperimentResponse
      */
     'peerAssessmentRules': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof ExperimentResponse
      */
     'peerAssessmentStart': boolean;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof ExperimentResponse
      */
     'sentEmail': boolean;
     /**
-     *
+     * 
      * @type {CourseResponse}
      * @memberof ExperimentResponse
      */
     'course': CourseResponse;
 }
-
 /**
  * fileIdList指定只打包哪些文件。当fileIdList不为空时，仅打包list中指定的文件（但此时list中的fileId必须合法，即必须确定是与对应的实体相关联的）；当其为空时，则打包所有相关文件。
  * @export
@@ -921,7 +1117,7 @@ export interface ExperimentResponse {
  */
 export interface FilePackageRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof FilePackageRequest
      */
@@ -933,53 +1129,51 @@ export interface FilePackageRequest {
      */
     'involvedId': number;
     /**
-     *
+     * 
      * @type {Array<number>}
      * @memberof FilePackageRequest
      */
     'fileIdList'?: Array<number>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface FilePackageResponse
  */
 export interface FilePackageResponse {
     /**
-     *
+     * 
      * @type {string}
      * @memberof FilePackageResponse
      */
     'packageId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof FilePackageResponse
      */
     'packageName': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface FileResponse
  */
 export interface FileResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof FileResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof FileResponse
      */
     'name': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof FileResponse
      */
@@ -997,31 +1191,31 @@ export interface FileResponse {
      */
     'fileSize': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof FileResponse
      */
     'uploader': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof FileResponse
      */
     'owner': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof FileResponse
      */
     'downloadLink': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof FileResponse
      */
     'createdAt': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof FileResponse
      */
@@ -1033,95 +1227,93 @@ export interface FileResponse {
      */
     'contentType': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof FileResponse
      */
     'involveId': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface Image
  */
 export interface Image {
     /**
-     *
+     * 
      * @type {string}
      * @memberof Image
      */
     'hostPrefix': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Image
      */
     'repo': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Image
      */
     'digest': string;
     /**
-     *
+     * 
      * @type {Array<string>}
      * @memberof Image
      */
     'tags': Array<string>;
     /**
-     *
+     * 
      * @type {number}
      * @memberof Image
      */
     'imageSize': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof Image
      */
     'pushTime'?: number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof Image
      */
     'pullTime'?: number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Image
      */
     'pullCommand': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface ImageBuildTask
  */
 export interface ImageBuildTask {
     /**
-     *
+     * 
      * @type {string}
      * @memberof ImageBuildTask
      */
     'hostPrefix': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ImageBuildTask
      */
     'owner': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ImageBuildTask
      */
     'repo': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ImageBuildTask
      */
@@ -1133,105 +1325,101 @@ export interface ImageBuildTask {
      */
     'status': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ImageBuildTask
      */
     'createdTime': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ImageBuildTask
      */
     'endTime': number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface ImageRepo
  */
 export interface ImageRepo {
     /**
-     *
+     * 
      * @type {string}
      * @memberof ImageRepo
      */
     'name': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ImageRepo
      */
     'artifactsCount': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ImageRepo
      */
     'downloadCount': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ImageRepo
      */
     'updateTime'?: number;
     /**
-     *
+     * 
      * @type {Array<Image>}
      * @memberof ImageRepo
      */
     'images'?: Array<Image>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PatchAssignmentRequest
  */
 export interface PatchAssignmentRequest {
     /**
-     *
+     * 
      * @type {number}
      * @memberof PatchAssignmentRequest
      */
     'fileId'?: number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PatchAssignmentRequest
      */
     'finalScore'?: number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PatchPeerAppealRequest
  */
 export interface PatchPeerAppealRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof PatchPeerAppealRequest
      */
     'content'?: string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PatchPeerAppealRequest
      */
     'processStatus'?: number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PatchPeerAppealRequest
      */
     'processContent'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PatchVmApplyVms
  */
@@ -1243,51 +1431,50 @@ export interface PatchVmApplyVms {
      */
     'studentIdList'?: Array<string>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PeerAppealResponse
  */
 export interface PeerAppealResponse {
     /**
-     *
+     * 
      * @type {number}
      * @memberof PeerAppealResponse
      */
     'id': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PeerAppealResponse
      */
     'expId': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PeerAppealResponse
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PeerAppealResponse
      */
     'content': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PeerAppealResponse
      */
     'appealedAt': number;
     /**
-     *
+     * 
      * @type {SimpleUser}
      * @memberof PeerAppealResponse
      */
     'processor'?: SimpleUser;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PeerAppealResponse
      */
@@ -1299,15 +1486,14 @@ export interface PeerAppealResponse {
      */
     'processStatus': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PeerAppealResponse
      */
     'processedAt'?: number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PostPaasUserRequest
  */
@@ -1319,15 +1505,14 @@ export interface PostPaasUserRequest {
      */
     'userId': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PostProjectProjectIdImagesRequest
  */
 export interface PostProjectProjectIdImagesRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
@@ -1339,25 +1524,25 @@ export interface PostProjectProjectIdImagesRequest {
      */
     'tag'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
     'gitUrl'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
     'gitUsername'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
     'gitPassword'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
@@ -1375,13 +1560,13 @@ export interface PostProjectProjectIdImagesRequest {
      */
     'contextFileLink'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
     'dockerfilePath'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
@@ -1393,15 +1578,14 @@ export interface PostProjectProjectIdImagesRequest {
      */
     'workspacePath'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PostProjectProjectIdMembersRequest
  */
 export interface PostProjectProjectIdMembersRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectProjectIdMembersRequest
      */
@@ -1413,9 +1597,8 @@ export interface PostProjectProjectIdMembersRequest {
      */
     'role': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PostProjectsRequest
  */
@@ -1427,19 +1610,19 @@ export interface PostProjectsRequest {
      */
     'name': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PostProjectsRequest
      */
     'expId'?: number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectsRequest
      */
     'displayName'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PostProjectsRequest
      */
@@ -1451,9 +1634,8 @@ export interface PostProjectsRequest {
      */
     'isPersonal'?: boolean;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PostProjectsRequest1
  */
@@ -1465,7 +1647,7 @@ export interface PostProjectsRequest1 {
      */
     'name': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof PostProjectsRequest1
      */
@@ -1477,9 +1659,8 @@ export interface PostProjectsRequest1 {
      */
     'isPersonal'?: boolean;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PostVmTemplateRequest
  */
@@ -1497,27 +1678,26 @@ export interface PostVmTemplateRequest {
      */
     'name': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface Project
  */
 export interface Project {
     /**
-     *
+     * 
      * @type {number}
      * @memberof Project
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Project
      */
     'name': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Project
      */
@@ -1529,13 +1709,13 @@ export interface Project {
      */
     'token': string;
     /**
-     *
+     * 
      * @type {Array<Repository>}
      * @memberof Project
      */
     'repositories': Array<Repository>;
     /**
-     *
+     * 
      * @type {Array<ProjectMember>}
      * @memberof Project
      */
@@ -1547,39 +1727,38 @@ export interface Project {
      */
     'displayName'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof Project
      */
     'description'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface ProjectMember
  */
 export interface ProjectMember {
     /**
-     *
+     * 
      * @type {number}
      * @memberof ProjectMember
      */
     'id': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof ProjectMember
      */
     'projectId': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ProjectMember
      */
     'userId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ProjectMember
      */
@@ -1591,15 +1770,14 @@ export interface ProjectMember {
      */
     'role': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface PutExperimentRequest
  */
 export interface PutExperimentRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
@@ -1611,49 +1789,49 @@ export interface PutExperimentRequest {
      */
     'type': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
     'startTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
     'endTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
     'deadline': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
     'description'?: string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof PutExperimentRequest
      */
     'enablePeer': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
     'peerDescription'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
     'peerEndTime'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof PutExperimentRequest
      */
@@ -1665,15 +1843,14 @@ export interface PutExperimentRequest {
      */
     'courseId'?: number;
 }
-
 /**
- *
+ * 
  * @export
  * @interface Repository
  */
 export interface Repository {
     /**
-     *
+     * 
      * @type {string}
      * @memberof Repository
      */
@@ -1685,27 +1862,26 @@ export interface Repository {
      */
     'url': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface SimpleProject
  */
 export interface SimpleProject {
     /**
-     *
+     * 
      * @type {number}
      * @memberof SimpleProject
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof SimpleProject
      */
     'name': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof SimpleProject
      */
@@ -1723,47 +1899,45 @@ export interface SimpleProject {
      */
     'displayName'?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof SimpleProject
      */
     'description'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface SimpleUser
  */
 export interface SimpleUser {
     /**
-     *
+     * 
      * @type {string}
      * @memberof SimpleUser
      */
     'id': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof SimpleUser
      */
     'name': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface StatCourseExp
  */
 export interface StatCourseExp {
     /**
-     *
+     * 
      * @type {number}
      * @memberof StatCourseExp
      */
     'id': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
@@ -1775,73 +1949,73 @@ export interface StatCourseExp {
      */
     'type': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'detail': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'createTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'startTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'endTime': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'deadline': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof StatCourseExp
      */
     'isPeerAssessment': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'peerAssessmentDeadline': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'appealDeadline': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatCourseExp
      */
     'peerAssessmentRules': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof StatCourseExp
      */
     'peerAssessmentStart': boolean;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof StatCourseExp
      */
     'sentEmail': boolean;
     /**
-     *
+     * 
      * @type {ExpVmInfo}
      * @memberof StatCourseExp
      */
@@ -1853,7 +2027,6 @@ export interface StatCourseExp {
      */
     'submittedAssignmentsCnt': number;
 }
-
 /**
  * 某门课程中所有实验的详细统计信息
  * @export
@@ -1861,31 +2034,30 @@ export interface StatCourseExp {
  */
 export interface StatCourseExpsResponse {
     /**
-     *
+     * 
      * @type {CourseResponse}
      * @memberof StatCourseExpsResponse
      */
     'course': CourseResponse;
     /**
-     *
+     * 
      * @type {UserModel}
      * @memberof StatCourseExpsResponse
      */
     'teacher': UserModel;
     /**
-     *
+     * 
      * @type {Array<StatCourseExp>}
      * @memberof StatCourseExpsResponse
      */
     'exps': Array<StatCourseExp>;
     /**
-     *
+     * 
      * @type {number}
      * @memberof StatCourseExpsResponse
      */
     'studentCnt': number;
 }
-
 /**
  * 统计某门实验的提交作业的情况
  * @export
@@ -1893,41 +2065,39 @@ export interface StatCourseExpsResponse {
  */
 export interface StatExpAssignmentResponse {
     /**
-     *
+     * 
      * @type {Array<StatExpAssignmentResponseAssignments>}
      * @memberof StatExpAssignmentResponse
      */
     'assignments'?: Array<StatExpAssignmentResponseAssignments>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface StatExpAssignmentResponseAssignments
  */
 export interface StatExpAssignmentResponseAssignments {
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatExpAssignmentResponseAssignments
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof StatExpAssignmentResponseAssignments
      */
     'studentName': string;
     /**
-     *
+     * 
      * @type {AssignmentResponse}
      * @memberof StatExpAssignmentResponseAssignments
      */
     'assignment'?: AssignmentResponse;
 }
-
 /**
- *
+ * 
  * @export
  * @interface StudentPeerTaskResponse
  */
@@ -1939,159 +2109,155 @@ export interface StudentPeerTaskResponse {
      */
     'id': number;
     /**
-     *
+     * 
      * @type {FileResponse}
      * @memberof StudentPeerTaskResponse
      */
     'file': FileResponse;
     /**
-     *
+     * 
      * @type {AssessmentInfoResponse}
      * @memberof StudentPeerTaskResponse
      */
     'peerInfo'?: AssessmentInfoResponse;
 }
-
 /**
- *
+ * 
  * @export
  * @interface TermModel
  */
 export interface TermModel {
     /**
-     *
+     * 
      * @type {number}
      * @memberof TermModel
      */
     'id'?: number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof TermModel
      */
     'name'?: string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface UploadFileResponse
  */
 export interface UploadFileResponse {
     /**
-     *
+     * 
      * @type {Array<FileResponse>}
      * @memberof UploadFileResponse
      */
     'files'?: Array<FileResponse>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface UserModel
  */
 export interface UserModel {
     /**
-     *
+     * 
      * @type {string}
      * @memberof UserModel
      */
     'id': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof UserModel
      */
     'name': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof UserModel
      */
     'department': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof UserModel
      */
     'email': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof UserModel
      */
     'role': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface VirtualMachine
  */
 export interface VirtualMachine {
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'uuid': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'platform': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'name': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof VirtualMachine
      */
     'isTemplate': boolean;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'host': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'adminId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'teacherId': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof VirtualMachine
      */
     'isExperimental': boolean;
     /**
-     *
+     * 
      * @type {number}
      * @memberof VirtualMachine
      */
     'experimentId': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
@@ -2103,19 +2269,19 @@ export interface VirtualMachine {
      */
     'memory': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof VirtualMachine
      */
     'cpu': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachine
      */
     'osFullName': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof VirtualMachine
      */
@@ -2139,69 +2305,68 @@ export interface VirtualMachine {
      */
     'overallStatus': string;
     /**
-     *
+     * 
      * @type {Array<VmNetInfo>}
      * @memberof VirtualMachine
      */
     'netInfos': Array<VmNetInfo>;
 }
-
 /**
- *
+ * 
  * @export
  * @interface VirtualMachineTemplate
  */
 export interface VirtualMachineTemplate {
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'uuid': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'platform': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'name': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'host': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'adminId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'studentId': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'teacherId': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof VirtualMachineTemplate
      */
     'isExperimental': boolean;
     /**
-     *
+     * 
      * @type {number}
      * @memberof VirtualMachineTemplate
      */
@@ -2213,19 +2378,19 @@ export interface VirtualMachineTemplate {
      */
     'memory': number;
     /**
-     *
+     * 
      * @type {number}
      * @memberof VirtualMachineTemplate
      */
     'cpu': number;
     /**
-     *
+     * 
      * @type {string}
      * @memberof VirtualMachineTemplate
      */
     'osFullName': string;
     /**
-     *
+     * 
      * @type {number}
      * @memberof VirtualMachineTemplate
      */
@@ -2243,21 +2408,20 @@ export interface VirtualMachineTemplate {
      */
     'overallStatus': string;
 }
-
 /**
- *
+ * 
  * @export
  * @interface VmNetInfo
  */
 export interface VmNetInfo {
     /**
-     *
+     * 
      * @type {string}
      * @memberof VmNetInfo
      */
     'macAddress': string;
     /**
-     *
+     * 
      * @type {Array<string>}
      * @memberof VmNetInfo
      */
@@ -2273,7 +2437,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
-         * @param {number} [assignmentId]
+         * @param {number} [assignmentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2286,7 +2450,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2298,6 +2462,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2310,8 +2475,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 删除课程资源
          * @summary 删除课程资源
-         * @param {number} courseId
-         * @param {number} resourceId
+         * @param {number} courseId 
+         * @param {number} resourceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2330,7 +2495,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2338,6 +2503,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2350,8 +2516,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 批量删除课程资源
          * @summary 批量删除课程资源
-         * @param {number} courseId
-         * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest]
+         * @param {number} courseId 
+         * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2367,11 +2533,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2387,7 +2554,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 删除一项互评申诉（学生主动撤销）
          * @summary 删除一项互评申诉
-         * @param {number} peerAppealId
+         * @param {number} peerAppealId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2403,7 +2570,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2411,6 +2578,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2423,8 +2591,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 从项目中移除成员
          * @summary 从项目中移除成员
-         * @param {number} projectId
-         * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest]
+         * @param {number} projectId 
+         * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2440,7 +2608,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2448,6 +2616,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2463,8 +2632,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 删除“虚拟机创建申请”中的虚拟机
          * @summary 删除“虚拟机创建申请”中的虚拟机
-         * @param {string} applyId
-         * @param {DeleteVmApplyVms} [deleteVmApplyVms]
+         * @param {string} applyId 
+         * @param {DeleteVmApplyVms} [deleteVmApplyVms] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2480,7 +2649,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2488,6 +2657,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2503,7 +2673,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取一项作业的评阅记录
          * @summary 获取一项作业的评阅记录
-         * @param {number} [assignmentId]
+         * @param {number} [assignmentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2516,7 +2686,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2528,6 +2698,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2552,7 +2723,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2560,6 +2731,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2572,7 +2744,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取课程信息
          * @summary 获取课程信息
-         * @param {string} courseId
+         * @param {string} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2588,7 +2760,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2596,6 +2768,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2608,7 +2781,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取课程所属的所有课程资源
          * @summary 获取课程所属的所有课程资源
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {string} [type] 表示获取的课程资源类型，如果该值为空，则表示两种资源都获取。CourseResource, ExperimentResource
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2625,7 +2798,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2637,6 +2810,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2649,7 +2823,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
          * @summary 获取实验（作业）下学生提交的作业信息
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2665,7 +2839,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2673,6 +2847,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2685,8 +2860,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 查看某次作业的详细信息
          * @summary 查看作业
-         * @param {number} experimentId
-         * @param {number} assignmentId
+         * @param {number} experimentId 
+         * @param {number} assignmentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2705,7 +2880,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2713,6 +2888,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2738,7 +2914,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2747,6 +2923,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2759,7 +2936,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取一项实验（作业）详情
          * @summary 获取一项实验（作业）
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2775,7 +2952,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2783,6 +2960,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2810,7 +2988,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2830,6 +3008,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2842,7 +3021,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取文件的元信息
          * @summary 获取文件元信息
-         * @param {number} fileId
+         * @param {number} fileId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2858,7 +3037,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2866,6 +3045,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2878,7 +3058,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 下载文件 文件的一些元信息（名称、format-type）等展示在相应的header中  该接口的response是一个二进制字节流，即为文件的内容
          * @summary 下载文件
-         * @param {number} fileId
+         * @param {number} fileId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2894,7 +3074,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2902,6 +3082,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2914,8 +3095,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 打包下载文件，如下载当前实验的全部作业，或下载当前课程的全部资源
          * @summary 下载打包好的zip
-         * @param {string} packageId
-         * @param {string} packageName
+         * @param {string} packageId 
+         * @param {string} packageName 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2932,7 +3113,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2948,6 +3129,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2960,7 +3142,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取文件打包的结果
          * @summary 查询文件打包的结果
-         * @param {string} packageId
+         * @param {string} packageId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2975,7 +3157,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2987,6 +3169,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -2999,7 +3182,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 查看一项互评申诉
          * @summary 查看一项互评申诉
-         * @param {number} peerAppealId
+         * @param {number} peerAppealId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3015,7 +3198,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3023,6 +3206,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3035,7 +3219,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取互评申诉列表
          * @summary 获取互评申诉列表
-         * @param {number} expId
+         * @param {number} expId 
          * @param {number} [studentId] 如果调用者为学生，那么即使设置了该字段，也会被忽略
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3051,7 +3235,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3067,6 +3251,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3079,7 +3264,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取某个作业的互评信息
          * @summary 获取某个作业的互评信息
-         * @param {number} assignmentId
+         * @param {number} assignmentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3094,7 +3279,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3103,6 +3288,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3115,7 +3301,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 学生获取属于自己的互评任务
          * @summary 获取属于自己的互评任务
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3130,7 +3316,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3142,6 +3328,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3154,7 +3341,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 查看某一项目详情
          * @summary 查看某一项目详情
-         * @param {number} projectId
+         * @param {number} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3170,7 +3357,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3178,6 +3365,44 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取当前项目中的所有容器服务
+         * @summary 获取项目中的容器服务列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdContainers: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('getProjectProjectIdContainers', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/containers`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3190,7 +3415,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取当前项目下的所有镜像构建任务
          * @summary 获取镜像构建任务
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3206,7 +3431,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3214,6 +3439,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3226,7 +3452,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取当前项目下的所有Harbor镜像仓库
          * @summary 获取Harbor镜像仓库
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3242,7 +3468,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3250,6 +3476,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3262,7 +3489,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取当前项目中的所有可用镜像
          * @summary 获取项目中的镜像列表
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3278,7 +3505,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3286,6 +3513,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3298,7 +3526,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取项目中的所有成员
          * @summary 获取项目中的所有成员
-         * @param {number} projectId
+         * @param {number} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3314,7 +3542,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3322,6 +3550,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3347,7 +3576,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3359,6 +3588,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3371,7 +3601,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
          * @summary 获取课程中所有实验的统计信息
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3387,7 +3617,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3395,6 +3625,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3407,7 +3638,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
          * @summary 获取课程中所有实验的统计信息
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3423,7 +3654,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3431,6 +3662,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3443,7 +3675,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
          * @summary 统计某门实验的提交作业的情况
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3459,7 +3691,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3467,6 +3699,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3479,7 +3712,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
          * @summary 统计某门实验的提交作业的情况
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3495,7 +3728,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3503,6 +3736,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3515,7 +3749,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 查看“创建虚拟机的申请”
          * @summary 查看“创建虚拟机的申请”
-         * @param {string} applyId
+         * @param {string} applyId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3531,7 +3765,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3539,6 +3773,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3564,7 +3799,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3572,6 +3807,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3596,7 +3832,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3604,6 +3840,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3632,7 +3869,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3640,6 +3877,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3652,9 +3890,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取符合条件的所有虚拟机
          * @summary get Virtual Machine list
-         * @param {string} [studentId]
-         * @param {string} [teacherId]
-         * @param {number} [experimentId]
+         * @param {string} [studentId] 
+         * @param {string} [teacherId] 
+         * @param {number} [experimentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3667,7 +3905,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3687,6 +3925,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3711,7 +3950,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3719,6 +3958,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3731,9 +3971,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 重复上传作业，直接覆盖之前的作业
          * @summary 修改作业
-         * @param {number} experimentId
-         * @param {number} assignmentId
-         * @param {PatchAssignmentRequest} [patchAssignmentRequest]
+         * @param {number} experimentId 
+         * @param {number} assignmentId 
+         * @param {PatchAssignmentRequest} [patchAssignmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3752,7 +3992,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3760,6 +4000,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3775,8 +4016,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 两种应用场景：学生修改申诉的内容；教师或助教处理申诉
          * @summary 修改互评申诉
-         * @param {number} peerAppealId
-         * @param {PatchPeerAppealRequest} [patchPeerAppealRequest]
+         * @param {number} peerAppealId 
+         * @param {PatchPeerAppealRequest} [patchPeerAppealRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3792,7 +4033,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3800,6 +4041,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3835,7 +4077,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3851,6 +4093,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3863,8 +4106,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 管理员处理“创建虚拟机的申请”
          * @summary 管理员处理“创建虚拟机的申请”
-         * @param {string} applyId
-         * @param {boolean} approve
+         * @param {string} applyId 
+         * @param {boolean} approve 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3882,7 +4125,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3894,6 +4137,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3906,8 +4150,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 修改“虚拟机创建申请”中的虚拟机个数 例如，可以使用此接口为已经审批通过的申请创建添加新的虚拟机，但不可删除
          * @summary 修改“虚拟机创建申请”中的虚拟机情况
-         * @param {string} applyId
-         * @param {PatchVmApplyVms} [patchVmApplyVms]
+         * @param {string} applyId 
+         * @param {PatchVmApplyVms} [patchVmApplyVms] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3923,7 +4167,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3931,6 +4175,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3946,7 +4191,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 保存评阅记录记录
          * @summary 保存评阅作业记录
-         * @param {AssignmentReviewRequest} [assignmentReviewRequest]
+         * @param {AssignmentReviewRequest} [assignmentReviewRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3959,7 +4204,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3967,6 +4212,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3982,7 +4228,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 创建实验/作业
          * @summary 创建实验/作业
-         * @param {CreateExperimentRequest} [createExperimentRequest]
+         * @param {CreateExperimentRequest} [createExperimentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3995,7 +4241,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4003,6 +4249,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4018,7 +4265,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 为一项实验正式开启互评
          * @summary 为一项实验正式开启互评
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4034,7 +4281,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4042,6 +4289,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -4054,8 +4302,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 第一次上传作业
          * @summary 创建作业
-         * @param {number} experimentId
-         * @param {AssignmentRequest} [assignmentRequest]
+         * @param {number} experimentId 
+         * @param {AssignmentRequest} [assignmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4071,7 +4319,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4079,6 +4327,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4094,7 +4343,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取需要作为互评标准作业的8份作业，如果没有就创建（助教或教师调用）
          * @summary 获取需要作为互评标准作业的作业
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4110,7 +4359,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4118,6 +4367,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -4130,14 +4380,14 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
          * @summary 创建或修改文件
-         * @param {string} owner
-         * @param {string} fileType
-         * @param {number} involvedId
-         * @param {string} owner2
+         * @param {string} owner 
+         * @param {string} fileType 
+         * @param {number} involvedId 
+         * @param {string} owner2 
          * @param {string} fileType2 枚举值，可以取值 Assignment
-         * @param {number} involvedId2
-         * @param {string} [fileId]
-         * @param {any} [file]
+         * @param {number} involvedId2 
+         * @param {string} [fileId] 
+         * @param {any} [file] 
          * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4163,7 +4413,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -4188,29 +4438,29 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-            if (file !== undefined) {
+            if (file !== undefined) { 
                 localVarFormParams.append('file', file as any);
             }
-
-            if (owner2 !== undefined) {
+    
+            if (owner2 !== undefined) { 
                 localVarFormParams.append('owner', owner2 as any);
             }
-
-            if (fileType2 !== undefined) {
+    
+            if (fileType2 !== undefined) { 
                 localVarFormParams.append('fileType', fileType2 as any);
             }
-
-            if (involvedId2 !== undefined) {
+    
+            if (involvedId2 !== undefined) { 
                 localVarFormParams.append('involvedId', involvedId2 as any);
             }
-
-            if (fileId2 !== undefined) {
+    
+            if (fileId2 !== undefined) { 
                 localVarFormParams.append('fileId', fileId2 as any);
             }
-
-
+    
+    
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -4224,7 +4474,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 触发打包动作
          * @summary 触发打包动作
-         * @param {FilePackageRequest} [filePackageRequest]
+         * @param {FilePackageRequest} [filePackageRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4237,7 +4487,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4245,6 +4495,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4260,7 +4511,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
          * @summary 在各个PaaS相关后端中创建用户
-         * @param {PostPaasUserRequest} [postPaasUserRequest]
+         * @param {PostPaasUserRequest} [postPaasUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4273,7 +4524,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4281,6 +4532,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4296,7 +4548,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 学生提起申诉
          * @summary 提起申诉
-         * @param {CreatePeerAppealRequest} [createPeerAppealRequest]
+         * @param {CreatePeerAppealRequest} [createPeerAppealRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4309,7 +4561,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4317,6 +4569,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4332,7 +4585,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 为一项作业评分
          * @summary 为一个作业评分
-         * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest]
+         * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4345,7 +4598,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4353,6 +4606,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4366,10 +4620,92 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 异步创建。不返回任何内容。
+         * @summary 创建容器服务
+         * @param {string} projectId 
+         * @param {ContainerServiceRequest} [containerServiceRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdContainers: async (projectId: string, containerServiceRequest?: ContainerServiceRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('postProjectProjectIdContainers', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/containers`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(containerServiceRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 异步创建。不返回任何内容。
+         * @summary 重新部署容器服务
+         * @param {string} projectId 
+         * @param {string} containerServiceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdContainersRerun: async (projectId: string, containerServiceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('postProjectProjectIdContainersRerun', 'projectId', projectId)
+            // verify required parameter 'containerServiceId' is not null or undefined
+            assertParamExists('postProjectProjectIdContainersRerun', 'containerServiceId', containerServiceId)
+            const localVarPath = `/project/{projectId}/containers/{containerServiceId}/rerun`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"containerServiceId"}}`, encodeURIComponent(String(containerServiceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 构建镜像。该接口异步返回。
          * @summary 构建镜像
-         * @param {string} projectId
-         * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest]
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4385,7 +4721,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4393,6 +4729,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4408,8 +4745,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 添加项目成员 仅支持项目管理员操作
          * @summary 添加项目成员
-         * @param {number} projectId
-         * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest]
+         * @param {number} projectId 
+         * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4425,7 +4762,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4433,6 +4770,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4448,7 +4786,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 接口调用者为自己创建一个新项目
          * @summary 创建新项目
-         * @param {PostProjectsRequest} [postProjectsRequest]
+         * @param {PostProjectsRequest} [postProjectsRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4461,11 +4799,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4481,7 +4820,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
          * @summary 创建虚拟机模板
-         * @param {PostVmTemplateRequest} [postVmTemplateRequest]
+         * @param {PostVmTemplateRequest} [postVmTemplateRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4494,11 +4833,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4514,7 +4854,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 学生、教师为自己申请虚拟机 或教师或助教为实验课程申请虚拟机
          * @summary 创建虚拟机申请
-         * @param {CreateVmApplyRequest} [createVmApplyRequest]
+         * @param {CreateVmApplyRequest} [createVmApplyRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4527,7 +4867,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4535,6 +4875,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4550,8 +4891,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 教师或助教修改实验/作业信息
          * @summary 修改实验/作业信息
-         * @param {number} experimentId
-         * @param {PutExperimentRequest} [putExperimentRequest]
+         * @param {number} experimentId 
+         * @param {PutExperimentRequest} [putExperimentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4567,7 +4908,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = {method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -4575,6 +4916,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4594,13 +4936,13 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
  * DefaultApi - functional programming interface
  * @export
  */
-export const DefaultApiFp = function (configuration?: Configuration) {
+export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
-         * @param {number} [assignmentId]
+         * @param {number} [assignmentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4611,8 +4953,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 删除课程资源
          * @summary 删除课程资源
-         * @param {number} courseId
-         * @param {number} resourceId
+         * @param {number} courseId 
+         * @param {number} resourceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4623,8 +4965,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 批量删除课程资源
          * @summary 批量删除课程资源
-         * @param {number} courseId
-         * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest]
+         * @param {number} courseId 
+         * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4635,7 +4977,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 删除一项互评申诉（学生主动撤销）
          * @summary 删除一项互评申诉
-         * @param {number} peerAppealId
+         * @param {number} peerAppealId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4646,8 +4988,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 从项目中移除成员
          * @summary 从项目中移除成员
-         * @param {number} projectId
-         * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest]
+         * @param {number} projectId 
+         * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4658,8 +5000,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 删除“虚拟机创建申请”中的虚拟机
          * @summary 删除“虚拟机创建申请”中的虚拟机
-         * @param {string} applyId
-         * @param {DeleteVmApplyVms} [deleteVmApplyVms]
+         * @param {string} applyId 
+         * @param {DeleteVmApplyVms} [deleteVmApplyVms] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4670,7 +5012,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取一项作业的评阅记录
          * @summary 获取一项作业的评阅记录
-         * @param {number} [assignmentId]
+         * @param {number} [assignmentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4691,7 +5033,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取课程信息
          * @summary 获取课程信息
-         * @param {string} courseId
+         * @param {string} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4702,7 +5044,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取课程所属的所有课程资源
          * @summary 获取课程所属的所有课程资源
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {string} [type] 表示获取的课程资源类型，如果该值为空，则表示两种资源都获取。CourseResource, ExperimentResource
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4714,7 +5056,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
          * @summary 获取实验（作业）下学生提交的作业信息
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4725,8 +5067,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 查看某次作业的详细信息
          * @summary 查看作业
-         * @param {number} experimentId
-         * @param {number} assignmentId
+         * @param {number} experimentId 
+         * @param {number} assignmentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4748,7 +5090,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取一项实验（作业）详情
          * @summary 获取一项实验（作业）
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4772,7 +5114,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取文件的元信息
          * @summary 获取文件元信息
-         * @param {number} fileId
+         * @param {number} fileId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4783,7 +5125,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 下载文件 文件的一些元信息（名称、format-type）等展示在相应的header中  该接口的response是一个二进制字节流，即为文件的内容
          * @summary 下载文件
-         * @param {number} fileId
+         * @param {number} fileId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4794,8 +5136,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 打包下载文件，如下载当前实验的全部作业，或下载当前课程的全部资源
          * @summary 下载打包好的zip
-         * @param {string} packageId
-         * @param {string} packageName
+         * @param {string} packageId 
+         * @param {string} packageName 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4806,7 +5148,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取文件打包的结果
          * @summary 查询文件打包的结果
-         * @param {string} packageId
+         * @param {string} packageId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4817,7 +5159,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 查看一项互评申诉
          * @summary 查看一项互评申诉
-         * @param {number} peerAppealId
+         * @param {number} peerAppealId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4828,7 +5170,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取互评申诉列表
          * @summary 获取互评申诉列表
-         * @param {number} expId
+         * @param {number} expId 
          * @param {number} [studentId] 如果调用者为学生，那么即使设置了该字段，也会被忽略
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4840,7 +5182,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取某个作业的互评信息
          * @summary 获取某个作业的互评信息
-         * @param {number} assignmentId
+         * @param {number} assignmentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4851,7 +5193,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 学生获取属于自己的互评任务
          * @summary 获取属于自己的互评任务
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4862,7 +5204,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 查看某一项目详情
          * @summary 查看某一项目详情
-         * @param {number} projectId
+         * @param {number} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4871,9 +5213,20 @@ export const DefaultApiFp = function (configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取当前项目中的所有容器服务
+         * @summary 获取项目中的容器服务列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProjectProjectIdContainers(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ContainerServiceResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdContainers(projectId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取当前项目下的所有镜像构建任务
          * @summary 获取镜像构建任务
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4884,7 +5237,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取当前项目下的所有Harbor镜像仓库
          * @summary 获取Harbor镜像仓库
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4895,7 +5248,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取当前项目中的所有可用镜像
          * @summary 获取项目中的镜像列表
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4906,7 +5259,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取项目中的所有成员
          * @summary 获取项目中的所有成员
-         * @param {number} projectId
+         * @param {number} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4928,7 +5281,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
          * @summary 获取课程中所有实验的统计信息
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4939,7 +5292,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
          * @summary 获取课程中所有实验的统计信息
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4950,7 +5303,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
          * @summary 统计某门实验的提交作业的情况
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4961,7 +5314,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
          * @summary 统计某门实验的提交作业的情况
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4972,7 +5325,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 查看“创建虚拟机的申请”
          * @summary 查看“创建虚拟机的申请”
-         * @param {string} applyId
+         * @param {string} applyId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5015,9 +5368,9 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取符合条件的所有虚拟机
          * @summary get Virtual Machine list
-         * @param {string} [studentId]
-         * @param {string} [teacherId]
-         * @param {number} [experimentId]
+         * @param {string} [studentId] 
+         * @param {string} [teacherId] 
+         * @param {number} [experimentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5038,9 +5391,9 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 重复上传作业，直接覆盖之前的作业
          * @summary 修改作业
-         * @param {number} experimentId
-         * @param {number} assignmentId
-         * @param {PatchAssignmentRequest} [patchAssignmentRequest]
+         * @param {number} experimentId 
+         * @param {number} assignmentId 
+         * @param {PatchAssignmentRequest} [patchAssignmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5051,8 +5404,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 两种应用场景：学生修改申诉的内容；教师或助教处理申诉
          * @summary 修改互评申诉
-         * @param {number} peerAppealId
-         * @param {PatchPeerAppealRequest} [patchPeerAppealRequest]
+         * @param {number} peerAppealId 
+         * @param {PatchPeerAppealRequest} [patchPeerAppealRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5076,8 +5429,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 管理员处理“创建虚拟机的申请”
          * @summary 管理员处理“创建虚拟机的申请”
-         * @param {string} applyId
-         * @param {boolean} approve
+         * @param {string} applyId 
+         * @param {boolean} approve 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5088,8 +5441,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 修改“虚拟机创建申请”中的虚拟机个数 例如，可以使用此接口为已经审批通过的申请创建添加新的虚拟机，但不可删除
          * @summary 修改“虚拟机创建申请”中的虚拟机情况
-         * @param {string} applyId
-         * @param {PatchVmApplyVms} [patchVmApplyVms]
+         * @param {string} applyId 
+         * @param {PatchVmApplyVms} [patchVmApplyVms] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5100,7 +5453,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 保存评阅记录记录
          * @summary 保存评阅作业记录
-         * @param {AssignmentReviewRequest} [assignmentReviewRequest]
+         * @param {AssignmentReviewRequest} [assignmentReviewRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5111,7 +5464,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 创建实验/作业
          * @summary 创建实验/作业
-         * @param {CreateExperimentRequest} [createExperimentRequest]
+         * @param {CreateExperimentRequest} [createExperimentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5122,7 +5475,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 为一项实验正式开启互评
          * @summary 为一项实验正式开启互评
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5133,8 +5486,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 第一次上传作业
          * @summary 创建作业
-         * @param {number} experimentId
-         * @param {AssignmentRequest} [assignmentRequest]
+         * @param {number} experimentId 
+         * @param {AssignmentRequest} [assignmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5145,7 +5498,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 获取需要作为互评标准作业的8份作业，如果没有就创建（助教或教师调用）
          * @summary 获取需要作为互评标准作业的作业
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5156,14 +5509,14 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
          * @summary 创建或修改文件
-         * @param {string} owner
-         * @param {string} fileType
-         * @param {number} involvedId
-         * @param {string} owner2
+         * @param {string} owner 
+         * @param {string} fileType 
+         * @param {number} involvedId 
+         * @param {string} owner2 
          * @param {string} fileType2 枚举值，可以取值 Assignment
-         * @param {number} involvedId2
-         * @param {string} [fileId]
-         * @param {any} [file]
+         * @param {number} involvedId2 
+         * @param {string} [fileId] 
+         * @param {any} [file] 
          * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5175,7 +5528,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 触发打包动作
          * @summary 触发打包动作
-         * @param {FilePackageRequest} [filePackageRequest]
+         * @param {FilePackageRequest} [filePackageRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5186,7 +5539,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
          * @summary 在各个PaaS相关后端中创建用户
-         * @param {PostPaasUserRequest} [postPaasUserRequest]
+         * @param {PostPaasUserRequest} [postPaasUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5197,7 +5550,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 学生提起申诉
          * @summary 提起申诉
-         * @param {CreatePeerAppealRequest} [createPeerAppealRequest]
+         * @param {CreatePeerAppealRequest} [createPeerAppealRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5208,7 +5561,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 为一项作业评分
          * @summary 为一个作业评分
-         * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest]
+         * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5217,10 +5570,34 @@ export const DefaultApiFp = function (configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 异步创建。不返回任何内容。
+         * @summary 创建容器服务
+         * @param {string} projectId 
+         * @param {ContainerServiceRequest} [containerServiceRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postProjectProjectIdContainers(projectId: string, containerServiceRequest?: ContainerServiceRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postProjectProjectIdContainers(projectId, containerServiceRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 异步创建。不返回任何内容。
+         * @summary 重新部署容器服务
+         * @param {string} projectId 
+         * @param {string} containerServiceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postProjectProjectIdContainersRerun(projectId: string, containerServiceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postProjectProjectIdContainersRerun(projectId, containerServiceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 构建镜像。该接口异步返回。
          * @summary 构建镜像
-         * @param {string} projectId
-         * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest]
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5231,8 +5608,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 添加项目成员 仅支持项目管理员操作
          * @summary 添加项目成员
-         * @param {number} projectId
-         * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest]
+         * @param {number} projectId 
+         * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5243,7 +5620,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 接口调用者为自己创建一个新项目
          * @summary 创建新项目
-         * @param {PostProjectsRequest} [postProjectsRequest]
+         * @param {PostProjectsRequest} [postProjectsRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5254,7 +5631,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
          * @summary 创建虚拟机模板
-         * @param {PostVmTemplateRequest} [postVmTemplateRequest]
+         * @param {PostVmTemplateRequest} [postVmTemplateRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5265,7 +5642,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 学生、教师为自己申请虚拟机 或教师或助教为实验课程申请虚拟机
          * @summary 创建虚拟机申请
-         * @param {CreateVmApplyRequest} [createVmApplyRequest]
+         * @param {CreateVmApplyRequest} [createVmApplyRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5276,8 +5653,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         /**
          * 教师或助教修改实验/作业信息
          * @summary 修改实验/作业信息
-         * @param {number} experimentId
-         * @param {PutExperimentRequest} [putExperimentRequest]
+         * @param {number} experimentId 
+         * @param {PutExperimentRequest} [putExperimentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5298,7 +5675,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
-         * @param {number} [assignmentId]
+         * @param {number} [assignmentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5308,8 +5685,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 删除课程资源
          * @summary 删除课程资源
-         * @param {number} courseId
-         * @param {number} resourceId
+         * @param {number} courseId 
+         * @param {number} resourceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5319,8 +5696,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 批量删除课程资源
          * @summary 批量删除课程资源
-         * @param {number} courseId
-         * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest]
+         * @param {number} courseId 
+         * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5330,7 +5707,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 删除一项互评申诉（学生主动撤销）
          * @summary 删除一项互评申诉
-         * @param {number} peerAppealId
+         * @param {number} peerAppealId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5340,8 +5717,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 从项目中移除成员
          * @summary 从项目中移除成员
-         * @param {number} projectId
-         * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest]
+         * @param {number} projectId 
+         * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5351,8 +5728,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 删除“虚拟机创建申请”中的虚拟机
          * @summary 删除“虚拟机创建申请”中的虚拟机
-         * @param {string} applyId
-         * @param {DeleteVmApplyVms} [deleteVmApplyVms]
+         * @param {string} applyId 
+         * @param {DeleteVmApplyVms} [deleteVmApplyVms] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5362,7 +5739,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取一项作业的评阅记录
          * @summary 获取一项作业的评阅记录
-         * @param {number} [assignmentId]
+         * @param {number} [assignmentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5381,7 +5758,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取课程信息
          * @summary 获取课程信息
-         * @param {string} courseId
+         * @param {string} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5391,7 +5768,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取课程所属的所有课程资源
          * @summary 获取课程所属的所有课程资源
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {string} [type] 表示获取的课程资源类型，如果该值为空，则表示两种资源都获取。CourseResource, ExperimentResource
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5402,7 +5779,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
          * @summary 获取实验（作业）下学生提交的作业信息
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5412,8 +5789,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 查看某次作业的详细信息
          * @summary 查看作业
-         * @param {number} experimentId
-         * @param {number} assignmentId
+         * @param {number} experimentId 
+         * @param {number} assignmentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5433,7 +5810,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取一项实验（作业）详情
          * @summary 获取一项实验（作业）
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5455,7 +5832,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取文件的元信息
          * @summary 获取文件元信息
-         * @param {number} fileId
+         * @param {number} fileId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5465,7 +5842,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 下载文件 文件的一些元信息（名称、format-type）等展示在相应的header中  该接口的response是一个二进制字节流，即为文件的内容
          * @summary 下载文件
-         * @param {number} fileId
+         * @param {number} fileId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5475,8 +5852,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 打包下载文件，如下载当前实验的全部作业，或下载当前课程的全部资源
          * @summary 下载打包好的zip
-         * @param {string} packageId
-         * @param {string} packageName
+         * @param {string} packageId 
+         * @param {string} packageName 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5486,7 +5863,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取文件打包的结果
          * @summary 查询文件打包的结果
-         * @param {string} packageId
+         * @param {string} packageId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5496,7 +5873,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 查看一项互评申诉
          * @summary 查看一项互评申诉
-         * @param {number} peerAppealId
+         * @param {number} peerAppealId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5506,7 +5883,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取互评申诉列表
          * @summary 获取互评申诉列表
-         * @param {number} expId
+         * @param {number} expId 
          * @param {number} [studentId] 如果调用者为学生，那么即使设置了该字段，也会被忽略
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5517,7 +5894,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取某个作业的互评信息
          * @summary 获取某个作业的互评信息
-         * @param {number} assignmentId
+         * @param {number} assignmentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5527,7 +5904,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 学生获取属于自己的互评任务
          * @summary 获取属于自己的互评任务
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5537,7 +5914,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 查看某一项目详情
          * @summary 查看某一项目详情
-         * @param {number} projectId
+         * @param {number} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5545,9 +5922,19 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getProjectProjectId(projectId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取当前项目中的所有容器服务
+         * @summary 获取项目中的容器服务列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdContainers(projectId: string, options?: any): AxiosPromise<Array<ContainerServiceResponse>> {
+            return localVarFp.getProjectProjectIdContainers(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取当前项目下的所有镜像构建任务
          * @summary 获取镜像构建任务
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5557,7 +5944,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取当前项目下的所有Harbor镜像仓库
          * @summary 获取Harbor镜像仓库
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5567,7 +5954,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取当前项目中的所有可用镜像
          * @summary 获取项目中的镜像列表
-         * @param {string} projectId
+         * @param {string} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5577,7 +5964,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取项目中的所有成员
          * @summary 获取项目中的所有成员
-         * @param {number} projectId
+         * @param {number} projectId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5597,7 +5984,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
          * @summary 获取课程中所有实验的统计信息
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5607,7 +5994,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
          * @summary 获取课程中所有实验的统计信息
-         * @param {number} courseId
+         * @param {number} courseId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5617,7 +6004,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
          * @summary 统计某门实验的提交作业的情况
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5627,7 +6014,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
          * @summary 统计某门实验的提交作业的情况
-         * @param {number} expId
+         * @param {number} expId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5637,7 +6024,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 查看“创建虚拟机的申请”
          * @summary 查看“创建虚拟机的申请”
-         * @param {string} applyId
+         * @param {string} applyId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5676,9 +6063,9 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取符合条件的所有虚拟机
          * @summary get Virtual Machine list
-         * @param {string} [studentId]
-         * @param {string} [teacherId]
-         * @param {number} [experimentId]
+         * @param {string} [studentId] 
+         * @param {string} [teacherId] 
+         * @param {number} [experimentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5697,9 +6084,9 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 重复上传作业，直接覆盖之前的作业
          * @summary 修改作业
-         * @param {number} experimentId
-         * @param {number} assignmentId
-         * @param {PatchAssignmentRequest} [patchAssignmentRequest]
+         * @param {number} experimentId 
+         * @param {number} assignmentId 
+         * @param {PatchAssignmentRequest} [patchAssignmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5709,8 +6096,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 两种应用场景：学生修改申诉的内容；教师或助教处理申诉
          * @summary 修改互评申诉
-         * @param {number} peerAppealId
-         * @param {PatchPeerAppealRequest} [patchPeerAppealRequest]
+         * @param {number} peerAppealId 
+         * @param {PatchPeerAppealRequest} [patchPeerAppealRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5732,8 +6119,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 管理员处理“创建虚拟机的申请”
          * @summary 管理员处理“创建虚拟机的申请”
-         * @param {string} applyId
-         * @param {boolean} approve
+         * @param {string} applyId 
+         * @param {boolean} approve 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5743,8 +6130,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 修改“虚拟机创建申请”中的虚拟机个数 例如，可以使用此接口为已经审批通过的申请创建添加新的虚拟机，但不可删除
          * @summary 修改“虚拟机创建申请”中的虚拟机情况
-         * @param {string} applyId
-         * @param {PatchVmApplyVms} [patchVmApplyVms]
+         * @param {string} applyId 
+         * @param {PatchVmApplyVms} [patchVmApplyVms] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5754,7 +6141,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 保存评阅记录记录
          * @summary 保存评阅作业记录
-         * @param {AssignmentReviewRequest} [assignmentReviewRequest]
+         * @param {AssignmentReviewRequest} [assignmentReviewRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5764,7 +6151,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 创建实验/作业
          * @summary 创建实验/作业
-         * @param {CreateExperimentRequest} [createExperimentRequest]
+         * @param {CreateExperimentRequest} [createExperimentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5774,7 +6161,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 为一项实验正式开启互评
          * @summary 为一项实验正式开启互评
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5784,8 +6171,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 第一次上传作业
          * @summary 创建作业
-         * @param {number} experimentId
-         * @param {AssignmentRequest} [assignmentRequest]
+         * @param {number} experimentId 
+         * @param {AssignmentRequest} [assignmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5795,7 +6182,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取需要作为互评标准作业的8份作业，如果没有就创建（助教或教师调用）
          * @summary 获取需要作为互评标准作业的作业
-         * @param {number} experimentId
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5805,14 +6192,14 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
          * @summary 创建或修改文件
-         * @param {string} owner
-         * @param {string} fileType
-         * @param {number} involvedId
-         * @param {string} owner2
+         * @param {string} owner 
+         * @param {string} fileType 
+         * @param {number} involvedId 
+         * @param {string} owner2 
          * @param {string} fileType2 枚举值，可以取值 Assignment
-         * @param {number} involvedId2
-         * @param {string} [fileId]
-         * @param {any} [file]
+         * @param {number} involvedId2 
+         * @param {string} [fileId] 
+         * @param {any} [file] 
          * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5823,7 +6210,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 触发打包动作
          * @summary 触发打包动作
-         * @param {FilePackageRequest} [filePackageRequest]
+         * @param {FilePackageRequest} [filePackageRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5833,7 +6220,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
          * @summary 在各个PaaS相关后端中创建用户
-         * @param {PostPaasUserRequest} [postPaasUserRequest]
+         * @param {PostPaasUserRequest} [postPaasUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5843,7 +6230,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 学生提起申诉
          * @summary 提起申诉
-         * @param {CreatePeerAppealRequest} [createPeerAppealRequest]
+         * @param {CreatePeerAppealRequest} [createPeerAppealRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5853,7 +6240,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 为一项作业评分
          * @summary 为一个作业评分
-         * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest]
+         * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5861,10 +6248,32 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.postPeerAssessment(createPeerAssessmentRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 异步创建。不返回任何内容。
+         * @summary 创建容器服务
+         * @param {string} projectId 
+         * @param {ContainerServiceRequest} [containerServiceRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdContainers(projectId: string, containerServiceRequest?: ContainerServiceRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.postProjectProjectIdContainers(projectId, containerServiceRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 异步创建。不返回任何内容。
+         * @summary 重新部署容器服务
+         * @param {string} projectId 
+         * @param {string} containerServiceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdContainersRerun(projectId: string, containerServiceId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.postProjectProjectIdContainersRerun(projectId, containerServiceId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 构建镜像。该接口异步返回。
          * @summary 构建镜像
-         * @param {string} projectId
-         * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest]
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5874,8 +6283,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 添加项目成员 仅支持项目管理员操作
          * @summary 添加项目成员
-         * @param {number} projectId
-         * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest]
+         * @param {number} projectId 
+         * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5885,7 +6294,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 接口调用者为自己创建一个新项目
          * @summary 创建新项目
-         * @param {PostProjectsRequest} [postProjectsRequest]
+         * @param {PostProjectsRequest} [postProjectsRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5895,7 +6304,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
          * @summary 创建虚拟机模板
-         * @param {PostVmTemplateRequest} [postVmTemplateRequest]
+         * @param {PostVmTemplateRequest} [postVmTemplateRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5905,7 +6314,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 学生、教师为自己申请虚拟机 或教师或助教为实验课程申请虚拟机
          * @summary 创建虚拟机申请
-         * @param {CreateVmApplyRequest} [createVmApplyRequest]
+         * @param {CreateVmApplyRequest} [createVmApplyRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5915,8 +6324,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 教师或助教修改实验/作业信息
          * @summary 修改实验/作业信息
-         * @param {number} experimentId
-         * @param {PutExperimentRequest} [putExperimentRequest]
+         * @param {number} experimentId 
+         * @param {PutExperimentRequest} [putExperimentRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5936,7 +6345,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 删除某个作业的所有评阅记录
      * @summary 删除某个作业的所有评阅记录
-     * @param {number} [assignmentId]
+     * @param {number} [assignmentId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -5948,8 +6357,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 删除课程资源
      * @summary 删除课程资源
-     * @param {number} courseId
-     * @param {number} resourceId
+     * @param {number} courseId 
+     * @param {number} resourceId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -5961,8 +6370,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 批量删除课程资源
      * @summary 批量删除课程资源
-     * @param {number} courseId
-     * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest]
+     * @param {number} courseId 
+     * @param {DeleteCourseResourcesRequest} [deleteCourseResourcesRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -5974,7 +6383,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 删除一项互评申诉（学生主动撤销）
      * @summary 删除一项互评申诉
-     * @param {number} peerAppealId
+     * @param {number} peerAppealId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -5986,8 +6395,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 从项目中移除成员
      * @summary 从项目中移除成员
-     * @param {number} projectId
-     * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest]
+     * @param {number} projectId 
+     * @param {DeleteProjectProjectIdMembersRequest} [deleteProjectProjectIdMembersRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -5999,8 +6408,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 删除“虚拟机创建申请”中的虚拟机
      * @summary 删除“虚拟机创建申请”中的虚拟机
-     * @param {string} applyId
-     * @param {DeleteVmApplyVms} [deleteVmApplyVms]
+     * @param {string} applyId 
+     * @param {DeleteVmApplyVms} [deleteVmApplyVms] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6012,7 +6421,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取一项作业的评阅记录
      * @summary 获取一项作业的评阅记录
-     * @param {number} [assignmentId]
+     * @param {number} [assignmentId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6035,7 +6444,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取课程信息
      * @summary 获取课程信息
-     * @param {string} courseId
+     * @param {string} courseId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6047,7 +6456,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取课程所属的所有课程资源
      * @summary 获取课程所属的所有课程资源
-     * @param {number} courseId
+     * @param {number} courseId 
      * @param {string} [type] 表示获取的课程资源类型，如果该值为空，则表示两种资源都获取。CourseResource, ExperimentResource
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6060,7 +6469,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
      * @summary 获取实验（作业）下学生提交的作业信息
-     * @param {number} experimentId
+     * @param {number} experimentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6072,8 +6481,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 查看某次作业的详细信息
      * @summary 查看作业
-     * @param {number} experimentId
-     * @param {number} assignmentId
+     * @param {number} experimentId 
+     * @param {number} assignmentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6097,7 +6506,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取一项实验（作业）详情
      * @summary 获取一项实验（作业）
-     * @param {number} experimentId
+     * @param {number} experimentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6123,7 +6532,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取文件的元信息
      * @summary 获取文件元信息
-     * @param {number} fileId
+     * @param {number} fileId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6135,7 +6544,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 下载文件 文件的一些元信息（名称、format-type）等展示在相应的header中  该接口的response是一个二进制字节流，即为文件的内容
      * @summary 下载文件
-     * @param {number} fileId
+     * @param {number} fileId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6147,8 +6556,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 打包下载文件，如下载当前实验的全部作业，或下载当前课程的全部资源
      * @summary 下载打包好的zip
-     * @param {string} packageId
-     * @param {string} packageName
+     * @param {string} packageId 
+     * @param {string} packageName 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6160,7 +6569,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取文件打包的结果
      * @summary 查询文件打包的结果
-     * @param {string} packageId
+     * @param {string} packageId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6172,7 +6581,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 查看一项互评申诉
      * @summary 查看一项互评申诉
-     * @param {number} peerAppealId
+     * @param {number} peerAppealId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6184,7 +6593,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取互评申诉列表
      * @summary 获取互评申诉列表
-     * @param {number} expId
+     * @param {number} expId 
      * @param {number} [studentId] 如果调用者为学生，那么即使设置了该字段，也会被忽略
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6197,7 +6606,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取某个作业的互评信息
      * @summary 获取某个作业的互评信息
-     * @param {number} assignmentId
+     * @param {number} assignmentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6209,7 +6618,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 学生获取属于自己的互评任务
      * @summary 获取属于自己的互评任务
-     * @param {number} expId
+     * @param {number} expId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6221,7 +6630,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 查看某一项目详情
      * @summary 查看某一项目详情
-     * @param {number} projectId
+     * @param {number} projectId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6231,9 +6640,21 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 获取当前项目中的所有容器服务
+     * @summary 获取项目中的容器服务列表
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getProjectProjectIdContainers(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdContainers(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取当前项目下的所有镜像构建任务
      * @summary 获取镜像构建任务
-     * @param {string} projectId
+     * @param {string} projectId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6245,7 +6666,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取当前项目下的所有Harbor镜像仓库
      * @summary 获取Harbor镜像仓库
-     * @param {string} projectId
+     * @param {string} projectId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6257,7 +6678,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取当前项目中的所有可用镜像
      * @summary 获取项目中的镜像列表
-     * @param {string} projectId
+     * @param {string} projectId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6269,7 +6690,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取项目中的所有成员
      * @summary 获取项目中的所有成员
-     * @param {number} projectId
+     * @param {number} projectId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6293,7 +6714,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取课程中所有实验的统计信息，本课程的助教或教师调用
      * @summary 获取课程中所有实验的统计信息
-     * @param {number} courseId
+     * @param {number} courseId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6305,7 +6726,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取课程中所有实验的统计信息，本课程的助教或教师调用
      * @summary 获取课程中所有实验的统计信息
-     * @param {number} courseId
+     * @param {number} courseId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6317,7 +6738,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
      * @summary 统计某门实验的提交作业的情况
-     * @param {number} expId
+     * @param {number} expId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6329,7 +6750,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
      * @summary 统计某门实验的提交作业的情况
-     * @param {number} expId
+     * @param {number} expId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6341,7 +6762,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 查看“创建虚拟机的申请”
      * @summary 查看“创建虚拟机的申请”
-     * @param {string} applyId
+     * @param {string} applyId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6388,9 +6809,9 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取符合条件的所有虚拟机
      * @summary get Virtual Machine list
-     * @param {string} [studentId]
-     * @param {string} [teacherId]
-     * @param {number} [experimentId]
+     * @param {string} [studentId] 
+     * @param {string} [teacherId] 
+     * @param {number} [experimentId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6413,9 +6834,9 @@ export class DefaultApi extends BaseAPI {
     /**
      * 重复上传作业，直接覆盖之前的作业
      * @summary 修改作业
-     * @param {number} experimentId
-     * @param {number} assignmentId
-     * @param {PatchAssignmentRequest} [patchAssignmentRequest]
+     * @param {number} experimentId 
+     * @param {number} assignmentId 
+     * @param {PatchAssignmentRequest} [patchAssignmentRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6427,8 +6848,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 两种应用场景：学生修改申诉的内容；教师或助教处理申诉
      * @summary 修改互评申诉
-     * @param {number} peerAppealId
-     * @param {PatchPeerAppealRequest} [patchPeerAppealRequest]
+     * @param {number} peerAppealId 
+     * @param {PatchPeerAppealRequest} [patchPeerAppealRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6454,8 +6875,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 管理员处理“创建虚拟机的申请”
      * @summary 管理员处理“创建虚拟机的申请”
-     * @param {string} applyId
-     * @param {boolean} approve
+     * @param {string} applyId 
+     * @param {boolean} approve 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6467,8 +6888,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 修改“虚拟机创建申请”中的虚拟机个数 例如，可以使用此接口为已经审批通过的申请创建添加新的虚拟机，但不可删除
      * @summary 修改“虚拟机创建申请”中的虚拟机情况
-     * @param {string} applyId
-     * @param {PatchVmApplyVms} [patchVmApplyVms]
+     * @param {string} applyId 
+     * @param {PatchVmApplyVms} [patchVmApplyVms] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6480,7 +6901,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 保存评阅记录记录
      * @summary 保存评阅作业记录
-     * @param {AssignmentReviewRequest} [assignmentReviewRequest]
+     * @param {AssignmentReviewRequest} [assignmentReviewRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6492,7 +6913,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 创建实验/作业
      * @summary 创建实验/作业
-     * @param {CreateExperimentRequest} [createExperimentRequest]
+     * @param {CreateExperimentRequest} [createExperimentRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6504,7 +6925,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 为一项实验正式开启互评
      * @summary 为一项实验正式开启互评
-     * @param {number} experimentId
+     * @param {number} experimentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6516,8 +6937,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 第一次上传作业
      * @summary 创建作业
-     * @param {number} experimentId
-     * @param {AssignmentRequest} [assignmentRequest]
+     * @param {number} experimentId 
+     * @param {AssignmentRequest} [assignmentRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6529,7 +6950,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取需要作为互评标准作业的8份作业，如果没有就创建（助教或教师调用）
      * @summary 获取需要作为互评标准作业的作业
-     * @param {number} experimentId
+     * @param {number} experimentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6541,14 +6962,14 @@ export class DefaultApi extends BaseAPI {
     /**
      * 上传新文件，或修改旧文件。如果请求体中的fileId为空或为0，那么为创建新文件，或者为修改旧文件
      * @summary 创建或修改文件
-     * @param {string} owner
-     * @param {string} fileType
-     * @param {number} involvedId
-     * @param {string} owner2
+     * @param {string} owner 
+     * @param {string} fileType 
+     * @param {number} involvedId 
+     * @param {string} owner2 
      * @param {string} fileType2 枚举值，可以取值 Assignment
-     * @param {number} involvedId2
-     * @param {string} [fileId]
-     * @param {any} [file]
+     * @param {number} involvedId2 
+     * @param {string} [fileId] 
+     * @param {any} [file] 
      * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6561,7 +6982,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 触发打包动作
      * @summary 触发打包动作
-     * @param {FilePackageRequest} [filePackageRequest]
+     * @param {FilePackageRequest} [filePackageRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6573,7 +6994,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
      * @summary 在各个PaaS相关后端中创建用户
-     * @param {PostPaasUserRequest} [postPaasUserRequest]
+     * @param {PostPaasUserRequest} [postPaasUserRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6585,7 +7006,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 学生提起申诉
      * @summary 提起申诉
-     * @param {CreatePeerAppealRequest} [createPeerAppealRequest]
+     * @param {CreatePeerAppealRequest} [createPeerAppealRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6597,7 +7018,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 为一项作业评分
      * @summary 为一个作业评分
-     * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest]
+     * @param {CreatePeerAssessmentRequest} [createPeerAssessmentRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6607,10 +7028,36 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 异步创建。不返回任何内容。
+     * @summary 创建容器服务
+     * @param {string} projectId 
+     * @param {ContainerServiceRequest} [containerServiceRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postProjectProjectIdContainers(projectId: string, containerServiceRequest?: ContainerServiceRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postProjectProjectIdContainers(projectId, containerServiceRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 异步创建。不返回任何内容。
+     * @summary 重新部署容器服务
+     * @param {string} projectId 
+     * @param {string} containerServiceId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postProjectProjectIdContainersRerun(projectId: string, containerServiceId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postProjectProjectIdContainersRerun(projectId, containerServiceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 构建镜像。该接口异步返回。
      * @summary 构建镜像
-     * @param {string} projectId
-     * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest]
+     * @param {string} projectId 
+     * @param {PostProjectProjectIdImagesRequest} [postProjectProjectIdImagesRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6622,8 +7069,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 添加项目成员 仅支持项目管理员操作
      * @summary 添加项目成员
-     * @param {number} projectId
-     * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest]
+     * @param {number} projectId 
+     * @param {PostProjectProjectIdMembersRequest} [postProjectProjectIdMembersRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6635,7 +7082,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 接口调用者为自己创建一个新项目
      * @summary 创建新项目
-     * @param {PostProjectsRequest} [postProjectsRequest]
+     * @param {PostProjectsRequest} [postProjectsRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6647,7 +7094,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
      * @summary 创建虚拟机模板
-     * @param {PostVmTemplateRequest} [postVmTemplateRequest]
+     * @param {PostVmTemplateRequest} [postVmTemplateRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6659,7 +7106,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * 学生、教师为自己申请虚拟机 或教师或助教为实验课程申请虚拟机
      * @summary 创建虚拟机申请
-     * @param {CreateVmApplyRequest} [createVmApplyRequest]
+     * @param {CreateVmApplyRequest} [createVmApplyRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -6671,8 +7118,8 @@ export class DefaultApi extends BaseAPI {
     /**
      * 教师或助教修改实验/作业信息
      * @summary 修改实验/作业信息
-     * @param {number} experimentId
-     * @param {PutExperimentRequest} [putExperimentRequest]
+     * @param {number} experimentId 
+     * @param {PutExperimentRequest} [putExperimentRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

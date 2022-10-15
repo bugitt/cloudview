@@ -19,5 +19,5 @@ export const Images = () => {
             <ImageListTable projectId={projectId} />
             <ImageBuildTaskListTable projectId={projectId} />
         </Card>
-    )
+    );
 }
