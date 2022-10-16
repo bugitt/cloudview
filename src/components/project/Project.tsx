@@ -1,12 +1,11 @@
-import { Card, Space } from "antd";
-import { ContainerService } from "../container/ContainerService";
-import { Images } from "../image";
+import { ContainerService } from '../container/ContainerService'
+import { ImageService } from '../image/Images'
 
 export const Project = () => {
     return (
         <>
-            <Images />
+            <ImageService />
             <ContainerService />
         </>
-    );
-};
+    )
+}

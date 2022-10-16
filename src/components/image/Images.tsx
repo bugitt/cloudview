@@ -1,23 +1,15 @@
 import { ImageListTable } from './ImageListTable'
 import { useParams } from 'react-router-dom'
 import { ImageBuildTaskListTable } from './ImageBuildTaskListTable'
-import { Card } from 'antd'
 import dockerSvg from '../../assets/docker.svg'
+import { ProjectSubService } from '../project/ProjectSubService'
 
-export const Images = () => {
+export const ImageService = () => {
     const projectId = useParams().projectId ?? '0'
     return (
-        <Card
-            title={
-                <>
-                    <h3>
-                        <img src={dockerSvg} width={40} alt="" /> &nbsp;镜像服务
-                    </h3>
-                </>
-            }
-        >
+        <ProjectSubService title="镜像服务" iconImageSrc={dockerSvg}>
             <ImageListTable projectId={projectId} />
             <ImageBuildTaskListTable projectId={projectId} />
-        </Card>
-    );
+        </ProjectSubService>
+    )
 }

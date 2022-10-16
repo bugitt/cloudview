@@ -1,1 +1,1 @@
-export { Images } from './Images'
+export { ImageService as Images } from './Images'
