@@ -63,7 +63,7 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
 
     return (
         <ModalForm
-            name="dynamic_form_nest_item"
+            name="create_container_service"
             onFinish={onFinish}
             autoComplete="off"
             width="2000px"

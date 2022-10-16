@@ -11,3 +11,13 @@ export const getUserId = () =>
     cookie.get('scs-userId') ??
     new URLSearchParams(window.location.search).get('userId') ??
     ''
+
+export const setToken = (token?: string, userId?: string) => {
+    const options = {
+        expires: 2
+    }
+    const finalToken = token ? token : getToken()
+    const finalUserId = userId ? userId : getUserId()
+    cookie.set('scs-token', finalToken, options)
+    cookie.set('scs-userId', finalUserId, options)
+}

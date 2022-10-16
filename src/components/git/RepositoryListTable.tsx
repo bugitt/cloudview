@@ -5,7 +5,12 @@ import { Button } from 'antd'
 import React from 'react'
 import { ProjectIdProps } from '../../assets/types'
 import { Repository } from '../../cloudapi-client'
-import { cloudapiClient, copyToClipboard } from '../../utils'
+import {
+    cloudapiClient,
+    copyToClipboard,
+    getColumnSearchProps,
+    setToken
+} from '../../utils'
 
 interface RepositoryTableType extends Repository {
     key: React.Key
@@ -34,13 +39,13 @@ export const RepositoryListTable: React.FC<ProjectIdProps> = ({
             title: '名称',
             dataIndex: 'name',
             key: 'name',
-            render: (_, record) => {
+            ...getColumnSearchProps('name', undefined, (_, record) => {
                 return (
                     <a href={record.url} target="_blank">
                         {record.name}
                     </a>
                 )
-            }
+            })
         },
         {
             title: '克隆仓库',
@@ -72,6 +77,7 @@ export const RepositoryListTable: React.FC<ProjectIdProps> = ({
                 <Button
                     type="primary"
                     onClick={() => {
+                        setToken()
                         window
                             .open(
                                 `https://scs.buaa.edu.cn/git/repo/create?${

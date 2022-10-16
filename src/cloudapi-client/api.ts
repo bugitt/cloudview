@@ -1709,18 +1709,6 @@ export interface Project {
      */
     'token': string;
     /**
-     * 
-     * @type {Array<Repository>}
-     * @memberof Project
-     */
-    'repositories': Array<Repository>;
-    /**
-     * 
-     * @type {Array<ProjectMember>}
-     * @memberof Project
-     */
-    'members': Array<ProjectMember>;
-    /**
      * 区别于name之外的一个格式随便的，便于记忆和展示的名字
      * @type {string}
      * @memberof Project
@@ -1732,6 +1720,18 @@ export interface Project {
      * @memberof Project
      */
     'description'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Project
+     */
+    'expId'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Project
+     */
+    'createdTime': number;
 }
 /**
  * 
@@ -1850,7 +1850,7 @@ export interface PutExperimentRequest {
  */
 export interface Repository {
     /**
-     * 
+     * example: owner_name/repo_name
      * @type {string}
      * @memberof Repository
      */
@@ -1873,49 +1873,6 @@ export interface Repository {
      * @memberof Repository
      */
     'token': string;
-}
-/**
- * 
- * @export
- * @interface SimpleProject
- */
-export interface SimpleProject {
-    /**
-     * 
-     * @type {number}
-     * @memberof SimpleProject
-     */
-    'id': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof SimpleProject
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SimpleProject
-     */
-    'owner': string;
-    /**
-     * 当前该用户访问该Project中的资源，例如clone代码仓库、push和pull镜像等，所需要使用的token，即密码
-     * @type {string}
-     * @memberof SimpleProject
-     */
-    'token': string;
-    /**
-     * 区别于name之外的一个格式随便的，便于记忆和展示的名字
-     * @type {string}
-     * @memberof SimpleProject
-     */
-    'displayName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SimpleProject
-     */
-    'description'?: string;
 }
 /**
  * 
@@ -2911,6 +2868,54 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 学生获取属于自己的实验信息列表
+         * @summary 获取实验信息列表
+         * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
+         * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
+         * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getExperiments: async (termId?: number, submitted?: boolean, courseId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/experiments`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (termId !== undefined) {
+                localVarQueryParameter['termId'] = termId;
+            }
+
+            if (submitted !== undefined) {
+                localVarQueryParameter['submitted'] = submitted;
+            }
+
+            if (courseId !== undefined) {
+                localVarQueryParameter['courseId'] = courseId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取实验名称列表
          * @summary 获取实验名称列表
          * @param {number} [courseId] 指定课程
@@ -2970,54 +2975,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 学生获取属于自己的实验信息列表
-         * @summary 获取实验信息列表
-         * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
-         * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
-         * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getExpriments: async (termId?: number, submitted?: boolean, courseId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/expriments`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Authorization required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-            if (termId !== undefined) {
-                localVarQueryParameter['termId'] = termId;
-            }
-
-            if (submitted !== undefined) {
-                localVarQueryParameter['submitted'] = submitted;
-            }
-
-            if (courseId !== undefined) {
-                localVarQueryParameter['courseId'] = courseId;
-            }
 
 
     
@@ -4852,6 +4809,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -5126,6 +5086,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 学生获取属于自己的实验信息列表
+         * @summary 获取实验信息列表
+         * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
+         * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
+         * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getExperiments(termId?: number, submitted?: boolean, courseId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExperimentResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getExperiments(termId, submitted, courseId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取实验名称列表
          * @summary 获取实验名称列表
          * @param {number} [courseId] 指定课程
@@ -5145,19 +5118,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getExperimnetExperimentId(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimnetExperimentId(experimentId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 学生获取属于自己的实验信息列表
-         * @summary 获取实验信息列表
-         * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
-         * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
-         * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getExpriments(termId?: number, submitted?: boolean, courseId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExperimentResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getExpriments(termId, submitted, courseId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5334,7 +5294,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(expId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<SimpleProject>>> {
+        async getProjects(expId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Project>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(expId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5858,6 +5818,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getExperimentExperimentIdAssignmentAssignmentId(experimentId, assignmentId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 学生获取属于自己的实验信息列表
+         * @summary 获取实验信息列表
+         * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
+         * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
+         * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getExperiments(termId?: number, submitted?: boolean, courseId?: number, options?: any): AxiosPromise<Array<ExperimentResponse>> {
+            return localVarFp.getExperiments(termId, submitted, courseId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取实验名称列表
          * @summary 获取实验名称列表
          * @param {number} [courseId] 指定课程
@@ -5876,18 +5848,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getExperimnetExperimentId(experimentId: number, options?: any): AxiosPromise<ExperimentResponse> {
             return localVarFp.getExperimnetExperimentId(experimentId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 学生获取属于自己的实验信息列表
-         * @summary 获取实验信息列表
-         * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
-         * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
-         * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getExpriments(termId?: number, submitted?: boolean, courseId?: number, options?: any): AxiosPromise<Array<ExperimentResponse>> {
-            return localVarFp.getExpriments(termId, submitted, courseId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取文件的元信息
@@ -6048,7 +6008,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects(expId?: number, options?: any): AxiosPromise<Array<SimpleProject>> {
+        getProjects(expId?: number, options?: any): AxiosPromise<Array<Project>> {
             return localVarFp.getProjects(expId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6562,6 +6522,20 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 学生获取属于自己的实验信息列表
+     * @summary 获取实验信息列表
+     * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
+     * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
+     * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getExperiments(termId?: number, submitted?: boolean, courseId?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getExperiments(termId, submitted, courseId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取实验名称列表
      * @summary 获取实验名称列表
      * @param {number} [courseId] 指定课程
@@ -6583,20 +6557,6 @@ export class DefaultApi extends BaseAPI {
      */
     public getExperimnetExperimentId(experimentId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getExperimnetExperimentId(experimentId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 学生获取属于自己的实验信息列表
-     * @summary 获取实验信息列表
-     * @param {number} [termId] 学期序号。该值缺失，或小于等于0时，将默认获取最新学期的信息
-     * @param {boolean} [submitted] 当为true时，表示获取已完成的实验列表；为false时，表示获取未完成的实验列表；缺失时，表示同时获取已完成和未完成的实验列表。
-     * @param {number} [courseId] 当为空或不合法时，获取所有符合上述条件的课程的实验列表
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getExpriments(termId?: number, submitted?: boolean, courseId?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getExpriments(termId, submitted, courseId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
