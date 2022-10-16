@@ -16,10 +16,10 @@ export const ProjectSubService: React.FC<ProjectSubServiceProps> = ({
         <Card
             title={
                 <>
-                    <h3>
+                    <h4>
                         <img src={iconImageSrc} width={40} alt={title} />
                         &nbsp; {title}
-                    </h3>
+                    </h4>
                 </>
             }
         >

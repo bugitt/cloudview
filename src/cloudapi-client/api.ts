@@ -1861,6 +1861,18 @@ export interface Repository {
      * @memberof Repository
      */
     'url': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Repository
+     */
+    'username': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Repository
+     */
+    'token': string;
 }
 /**
  * 
@@ -3534,6 +3546,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'projectId' is not null or undefined
             assertParamExists('getProjectProjectIdMembers', 'projectId', projectId)
             const localVarPath = `/project/{projectId}/members`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取代码仓库列表
+         * @summary 获取项目下的代码仓库列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdRepos: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('getProjectProjectIdRepos', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/repos`
                 .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5268,6 +5317,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取代码仓库列表
+         * @summary 获取项目下的代码仓库列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProjectProjectIdRepos(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Repository>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdRepos(projectId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
@@ -5970,6 +6030,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getProjectProjectIdMembers(projectId: number, options?: any): AxiosPromise<Array<ProjectMember>> {
             return localVarFp.getProjectProjectIdMembers(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取代码仓库列表
+         * @summary 获取项目下的代码仓库列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdRepos(projectId: string, options?: any): AxiosPromise<Array<Repository>> {
+            return localVarFp.getProjectProjectIdRepos(projectId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取项目列表
@@ -6697,6 +6767,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getProjectProjectIdMembers(projectId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getProjectProjectIdMembers(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取代码仓库列表
+     * @summary 获取项目下的代码仓库列表
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getProjectProjectIdRepos(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdRepos(projectId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
