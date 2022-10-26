@@ -6,7 +6,7 @@ import {
     copyToClipboard,
     formatTimeStamp,
     getColumnSearchProps,
-    messageError,
+    notificationError,
     randomColor
 } from '../../utils'
 import React from 'react'
@@ -44,7 +44,7 @@ export const ImageListTable = (props: ProjectIdProps) => {
             pollingInterval: 5000
         }
     )
-    messageError(error)
+    notificationError(error)
 
     const originData = data?.data?.sort((a: ImageRepo, b: ImageRepo) => {
         return (b.updateTime ?? 0) - (a.updateTime ?? 0)

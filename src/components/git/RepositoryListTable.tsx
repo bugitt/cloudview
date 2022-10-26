@@ -9,6 +9,7 @@ import {
     cloudapiClient,
     copyToClipboard,
     getColumnSearchProps,
+    notificationError,
     setToken
 } from '../../utils'
 
@@ -23,10 +24,12 @@ export const RepositoryListTable: React.FC<ProjectIdProps> = ({
         cloudapiClient.getProjectProjectId(Number(projectId))
     )
     const project = projectRequest.data?.data
-    const { data, loading } = useRequest(
+    const { data, loading, error } = useRequest(
         () => cloudapiClient.getProjectProjectIdRepos(projectId),
         { pollingInterval: 1000 }
     )
+    notificationError(error)
+
     const repoList: RepositoryTableType[] =
         data?.data?.map((repo, i) => {
             return {

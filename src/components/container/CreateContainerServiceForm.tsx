@@ -20,7 +20,6 @@ import {
 
 export const CreateContainerServiceForm = (props: ProjectIdProps) => {
     const onFinish = async (values: any) => {
-        console.log('Received values of form: ', values)
         const req: ContainerServiceRequest = {
             name: values.name,
             serviceType: values.serviceType,

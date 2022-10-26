@@ -6,7 +6,7 @@ import {
     cloudapiClient,
     formatTimeStamp,
     getColumnSearchProps,
-    messageError,
+    notificationError,
     randomColor
 } from '../../utils'
 import { useRequest } from 'ahooks'
@@ -30,7 +30,7 @@ export const ImageBuildTaskListTable = (props: ProjectIdProps) => {
             pollingInterval: 5000
         }
     )
-    messageError(error)
+    notificationError(error)
 
     const imageBuildTaskList: ImageBuildTaskTableType[] = (data?.data ?? [])
         .sort((a: ImageBuildTask, b: ImageBuildTask) => {

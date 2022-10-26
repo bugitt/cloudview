@@ -5,13 +5,14 @@ import { useRequest } from 'ahooks'
 import {
     cloudapiClient,
     formatTimeStamp,
-    getColumnSearchProps
+    getColumnSearchProps,
+    notificationError
 } from '../../utils'
 import {
     ContainerResponse,
     ContainerServiceResponse
 } from '../../cloudapi-client'
-import { Button, Modal, Popconfirm, Space, Tag } from 'antd'
+import { Modal, Popconfirm, Space, Tag } from 'antd'
 import { ContainerServiceDetail } from './ContainerServiceDetail'
 import { CreateContainerServiceForm } from './CreateContainerServiceForm'
 
@@ -28,10 +29,11 @@ export interface ContainerServiceTableType {
 
 export const ContainerServiceListTable = () => {
     const projectId = useParams().projectId ?? '0'
-    const { data, loading } = useRequest(
+    const { data, loading, error } = useRequest(
         () => cloudapiClient.getProjectProjectIdContainers(projectId),
         { pollingInterval: 1000 }
     )
+    notificationError(error)
 
     const convertServiceType = (srcText: string): string => {
         if (srcText === 'service') {

@@ -18,6 +18,7 @@ import {
     getUserId,
     messageError,
     messageInfo,
+    notificationError,
     projectNameExtraInfo,
     randomColor
 } from '../../utils'
@@ -40,7 +41,7 @@ const createProjectForm = () => {
         const req: PostProjectsRequest = { name: values.name }
         req.expId = values.expId || undefined
         req.description = values.description || undefined
-        req.isPersonal = values.expId ? false : true
+        req.isPersonal = !values.expId
         try {
             await cloudapiClient.postProjects(req)
             messageInfo(`项目 ${values.name} 创建成功`)
@@ -98,9 +99,14 @@ const createProjectForm = () => {
 
 export const Projects = () => {
     const experimentsReq = useRequest(() => cloudapiClient.getExperiments())
-    const { data } = useRequest(() => cloudapiClient.getProjects(), {
-        pollingInterval: 1000
-    })
+    const { data, loading, error } = useRequest(
+        () => cloudapiClient.getProjects(),
+        {
+            pollingInterval: 1000
+        }
+    )
+    notificationError(experimentsReq.error)
+    notificationError(error)
 
     const experiments: ExperimentResponse[] = (
         experimentsReq.data?.data || ([] as ExperimentResponse[])
@@ -175,6 +181,7 @@ export const Projects = () => {
     return (
         <>
             <ProTable
+                loading={!data && loading}
                 dataSource={projects}
                 columns={columns}
                 search={false}
