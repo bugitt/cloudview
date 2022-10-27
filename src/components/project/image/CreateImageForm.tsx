@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import {
     FileResponse,
     PostProjectProjectIdImagesRequest
-} from '../../cloudapi-client'
-import { ProjectIdProps } from '../../assets/types'
-import { FileUpload } from '../base/UploadFile'
+} from '../../../cloudapi-client'
+import { ProjectIdProps } from '../../../assets/types'
+import { FileUpload } from '../../base/UploadFile'
 import {
     cloudapiClient,
     formItemProjectNameValidator,
@@ -13,7 +13,7 @@ import {
     messageError,
     messageSuccess,
     projectNameExtraInfo
-} from '../../utils'
+} from '../../../utils'
 import MonacoEditor from 'react-monaco-editor'
 import { editor } from 'monaco-editor'
 import { ModalForm } from '@ant-design/pro-form'

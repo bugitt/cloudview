@@ -1,4 +1,4 @@
-import { ProjectIdProps } from '../../assets/types'
+import { ProjectIdProps } from '../../../assets/types'
 import React from 'react'
 import { ProColumns, ProTable } from '@ant-design/pro-table'
 import { Tag } from 'antd'
@@ -8,9 +8,9 @@ import {
     getColumnSearchProps,
     notificationError,
     randomColor
-} from '../../utils'
+} from '../../../utils'
 import { useRequest } from 'ahooks'
-import { ImageBuildTask } from '../../cloudapi-client'
+import { ImageBuildTask } from '../../../cloudapi-client'
 
 interface ImageBuildTaskTableType {
     key: React.Key

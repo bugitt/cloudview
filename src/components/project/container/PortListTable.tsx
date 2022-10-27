@@ -1,8 +1,8 @@
-import { ContainerServicePort } from '../../cloudapi-client'
+import { ContainerServicePort } from '../../../cloudapi-client'
 import React from 'react'
 import { ColumnType } from 'antd/es/table'
 import { Table, Tag } from 'antd'
-import { randomColor } from '../../utils'
+import { randomColor } from '../../../utils'
 
 export interface ContainerServicePortWithContainerName
     extends ContainerServicePort {

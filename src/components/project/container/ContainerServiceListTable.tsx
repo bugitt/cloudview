@@ -7,11 +7,11 @@ import {
     formatTimeStamp,
     getColumnSearchProps,
     notificationError
-} from '../../utils'
+} from '../../../utils'
 import {
     ContainerResponse,
     ContainerServiceResponse
-} from '../../cloudapi-client'
+} from '../../../cloudapi-client'
 import { Modal, Popconfirm, Space, Tag } from 'antd'
 import { ContainerServiceDetail } from './ContainerServiceDetail'
 import { CreateContainerServiceForm } from './CreateContainerServiceForm'

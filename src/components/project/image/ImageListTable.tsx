@@ -1,5 +1,5 @@
 import { Table, Tag } from 'antd'
-import { ProjectIdProps } from '../../assets/types'
+import { ProjectIdProps } from '../../../assets/types'
 import { useRequest } from 'ahooks'
 import {
     cloudapiClient,
@@ -8,10 +8,10 @@ import {
     getColumnSearchProps,
     notificationError,
     randomColor
-} from '../../utils'
+} from '../../../utils'
 import React from 'react'
 import type { ColumnType } from 'antd/es/table'
-import { Image, ImageRepo } from '../../cloudapi-client'
+import { Image, ImageRepo } from '../../../cloudapi-client'
 import { filesize } from 'filesize'
 import { CopyOutlined } from '@ant-design/icons'
 import { ProColumns, ProTable } from '@ant-design/pro-table'

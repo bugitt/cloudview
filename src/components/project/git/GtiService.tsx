@@ -1,5 +1,5 @@
-import { ProjectSubService } from '../project/ProjectSubService'
-import gitSvg from '../../assets/git.svg'
+import { ProjectSubService } from '../ProjectSubService'
+import gitSvg from '../../../assets/git.svg'
 import { RepositoryListTable } from './RepositoryListTable'
 import { useParams } from 'react-router-dom'
 

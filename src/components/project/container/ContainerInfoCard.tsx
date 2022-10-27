@@ -1,4 +1,4 @@
-import { ContainerResponse } from '../../cloudapi-client'
+import { ContainerResponse } from '../../../cloudapi-client'
 import { Card, Descriptions, List } from 'antd'
 
 interface ContainerInfoCardProps {

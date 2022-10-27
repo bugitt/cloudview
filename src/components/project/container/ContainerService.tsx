@@ -1,6 +1,6 @@
 import { ContainerServiceListTable } from './ContainerServiceListTable'
-import containerSvg from '../../assets/container.svg'
-import { ProjectSubService } from '../project/ProjectSubService'
+import containerSvg from '../../../assets/container.svg'
+import { ProjectSubService } from '../ProjectSubService'
 
 export const ContainerService = () => {
     return (

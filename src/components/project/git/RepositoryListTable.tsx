@@ -3,15 +3,15 @@ import ProTable, { ProColumns } from '@ant-design/pro-table'
 import { useRequest } from 'ahooks'
 import { Button } from 'antd'
 import React from 'react'
-import { ProjectIdProps } from '../../assets/types'
-import { Repository } from '../../cloudapi-client'
+import { ProjectIdProps } from '../../../assets/types'
+import { Repository } from '../../../cloudapi-client'
 import {
     cloudapiClient,
     copyToClipboard,
     getColumnSearchProps,
     notificationError,
     setToken
-} from '../../utils'
+} from '../../../utils'
 
 interface RepositoryTableType extends Repository {
     key: React.Key
