@@ -1,16 +1,22 @@
 import cookie from 'js-cookie'
 
-export const getToken = () =>
-    cookie.get('token') ??
-    cookie.get('scs-token') ??
-    new URLSearchParams(window.location.search).get('token') ??
-    ''
+type CookieKey = 'token' | 'userId'
 
-export const getUserId = () =>
-    cookie.get('userId') ??
-    cookie.get('scs-userId') ??
-    new URLSearchParams(window.location.search).get('userId') ??
-    ''
+const getFromCookie = (key: CookieKey) =>
+    cookie.get(`scs-${key}`) ?? cookie.get(key) ?? undefined
+
+const getFromCookieOrParams = (key: CookieKey) => {
+    const value = getFromCookie(key)
+    return value ?? new URLSearchParams(window.location.search).get(key) ?? ''
+}
+
+export const getToken = () => getFromCookieOrParams('token')
+
+export const getTokenFromCookie = () => getFromCookie('token')
+
+export const getUserId = () => getFromCookieOrParams('userId')
+
+export const getUserIdFromCookie = () => getFromCookie('userId')
 
 export const setToken = (token?: string, userId?: string) => {
     const options = {

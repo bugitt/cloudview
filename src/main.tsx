@@ -1,25 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
 import './index.less'
-import { Project } from './components/project/Project'
-import { Projects } from './components/project/Projects'
-
-const router = createBrowserRouter(
-    [
-        {
-            path: '/project/:projectId/',
-            element: <Project />
-        },
-        {
-            path: '/projects',
-            element: <Projects />
-        }
-    ],
-    {
-        basename: '/view/v2'
-    }
-)
+import { router } from './view/router'
 
 const root = document.getElementById('root') as HTMLElement
 
