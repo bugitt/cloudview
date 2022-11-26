@@ -1,10 +1,11 @@
 import { useRequest } from 'ahooks'
-import { Descriptions, PageHeader, Space } from 'antd'
+import { Descriptions, Space } from 'antd'
 import { useParams } from 'react-router-dom'
 import { cloudapiClient, formatTimeStamp } from '../../utils'
 import { ContainerService } from './container/ContainerService'
 import { GitService } from './git/GtiService'
 import { ImageService } from './image/Images'
+import { PageHeader } from '@ant-design/pro-components'
 
 export const Project = () => {
     const projectId = useParams().projectId ?? '0'

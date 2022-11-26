@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import './index.less'
 import { Project } from './components/project/Project'
 import { Projects } from './components/project/Projects'
 
