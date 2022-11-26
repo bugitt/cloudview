@@ -1,14 +1,15 @@
 import {
     ModalForm,
+    ProFormDigit,
     ProFormGroup,
     ProFormInstance,
     ProFormList,
     ProFormSelect,
     ProFormText
 } from '@ant-design/pro-form'
-import { Button, Card } from 'antd'
+import { Button, Card, Progress } from 'antd'
 import { ProjectIdProps } from '../../../assets/types'
-import { ContainerServiceRequest } from '../../../cloudapi-client'
+import { ContainerServiceRequest, ResourcePool } from '../../../cloudapi-client'
 import {
     cloudapiClient,
     formItemProjectNameValidator,
@@ -18,16 +19,85 @@ import {
     projectNameExtraInfo,
     randomString
 } from '../../../utils'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useRequest } from 'ahooks'
+import { ProSchemaValueEnumObj } from '@ant-design/pro-components'
 
 export const CreateContainerServiceForm = (props: ProjectIdProps) => {
     const formRef = useRef<ProFormInstance>()
+    const [resourcePools, setResourcePools] = useState<ResourcePool[]>([])
+
+    const resourcePoolsReq = useRequest(
+        () => cloudapiClient.getProjectProjectIdResourcePools(props.projectId),
+        {
+            manual: true,
+            onSuccess: (result, params) => {
+                setResourcePools(result.data)
+            },
+            onError: error => {
+                notificationError(error)
+            }
+        }
+    )
+    useEffect(() => {
+        resourcePoolsReq.run()
+    }, [props.projectId])
+
+    const resourcePoolOptionsObj: ProSchemaValueEnumObj = {}
+    resourcePools.forEach(pool => {
+        const { used, capacity } = pool
+
+        resourcePoolOptionsObj[pool.id] = (
+            <>
+                <span>
+                    <b>{pool.name}</b>
+                </span>
+                <br />
+                <div style={{ width: 170 }}>
+                    <Progress
+                        size="small"
+                        percent={(used.cpu / capacity.cpu) * 100}
+                        format={() =>
+                            `CPU： ${used.cpu} / ${capacity.cpu} mCore`
+                        }
+                    />
+                    <br />
+                    <Progress
+                        size="small"
+                        percent={(used.memory / capacity.memory) * 100}
+                        format={() =>
+                            `内存： ${used.memory} / ${capacity.memory} MB`
+                        }
+                    />
+                </div>
+            </>
+        )
+    })
+
     const onFinish = async (values: any) => {
-        console.log(formRef.current)
         if (!values.containers || (values.containers as any[]).length === 0) {
             notificationError('请至少添加一个容器')
             return
         }
+        let resourceValid = true
+        ;(values.containers as any[]).forEach(container => {
+            const resourcePoolId = container.resourcePool as string
+            const reqCPU = container.cpu as number
+            const reqMemory = container.memory as number
+            const { used, capacity } = resourcePools.find(
+                it => it.id === resourcePoolId
+            )!!
+            if (
+                used.cpu + reqCPU > capacity.cpu ||
+                used.memory + reqMemory > capacity.memory
+            ) {
+                notificationError(
+                    `容器 ${container.name} 申请资源超出资源池限额，请重新调整`
+                )
+                resourceValid = false
+            }
+        })
+        if (!resourceValid) return
         const req: ContainerServiceRequest = {
             name: values.name,
             serviceType: values.serviceType,
@@ -51,7 +121,12 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
                                 port: port.port,
                                 protocol: port.protocol
                             }
-                        }) || []
+                        }) || [],
+                    resourcePoolId: container.resourcePool as string,
+                    limitedResource: {
+                        cpu: container.cpu as number,
+                        memory: container.memory as number
+                    }
                 }
             })
         }
@@ -62,6 +137,7 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
             )
             messageInfo(`容器服务 ${values.name} 已成功加入任务队列`)
             formRef?.current?.resetFields()
+            resourcePoolsReq.run()
             return true
         } catch (_) {
             messageError(`提交容器服务失败`)
@@ -158,6 +234,36 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
                     label="镜像地址"
                     rules={[{ required: true }]}
                 />
+                <ProFormGroup label="容器资源配额">
+                    <ProFormSelect
+                        name="resourcePool"
+                        label="资源池"
+                        valueEnum={resourcePoolOptionsObj}
+                        placeholder="请选择资源池"
+                        width={350}
+                        rules={[
+                            {
+                                required: true,
+                                message: '必须为每个容器指定资源池'
+                            }
+                        ]}
+                    />
+                    <ProFormDigit
+                        name="cpu"
+                        label="CPU限额"
+                        min={1}
+                        addonAfter="mCore"
+                        extra="1 核 = 1000 mCore"
+                        rules={[{ required: true }]}
+                    />
+                    <ProFormDigit
+                        name="memory"
+                        label="内存限额"
+                        min={1}
+                        addonAfter="MB"
+                        rules={[{ required: true }]}
+                    />
+                </ProFormGroup>
                 <ProFormText name="workingDir" label="工作路径" />
                 <ProFormText name="command" label="启动命令" />
                 <ProFormList

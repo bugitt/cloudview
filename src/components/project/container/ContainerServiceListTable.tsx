@@ -52,7 +52,7 @@ export const ContainerServiceListTable = () => {
                     id: service.id,
                     name: service.name,
                     serviceType: service.serviceType.toLowerCase(),
-                    status: service.status.toLowerCase(),
+                    status: service.status?.toLowerCase() ?? '',
                     creator: service.creator,
                     createdTime: formatTimeStamp(service.createdTime),
                     containers: service.containers

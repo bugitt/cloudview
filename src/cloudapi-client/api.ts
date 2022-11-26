@@ -366,6 +366,18 @@ export interface ContainerRequest {
      * @memberof ContainerRequest
      */
     'ports'?: Array<ContainerServicePort>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerRequest
+     */
+    'resourcePoolId': string;
+    /**
+     * 
+     * @type {Resource}
+     * @memberof ContainerRequest
+     */
+    'limitedResource': Resource;
 }
 /**
  * 
@@ -434,6 +446,12 @@ export interface ContainerResponse {
      * @memberof ContainerResponse
      */
     'ports'?: Array<ContainerServicePort>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerResponse
+     */
+    'resourcePoolId': string;
 }
 /**
  * 
@@ -538,7 +556,7 @@ export interface ContainerServiceResponse {
      * @type {string}
      * @memberof ContainerServiceResponse
      */
-    'status': string;
+    'status'?: string;
     /**
      * 
      * @type {Array<ContainerResponse>}
@@ -978,34 +996,28 @@ export interface DeleteVmApplyVms {
 export interface ExpVmInfo {
     /**
      * 
+     * @type {string}
+     * @memberof ExpVmInfo
+     */
+    'applyId': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ExpVmInfo
+     */
+    'expectedNum': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ExpVmInfo
+     */
+    'actualNum': number;
+    /**
+     * 虚拟机申请状态
      * @type {number}
      * @memberof ExpVmInfo
      */
     'status': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ExpVmInfo
-     */
-    'applyId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ExpVmInfo
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ExpVmInfo
-     */
-    'password': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ExpVmInfo
-     */
-    'cnt': number;
 }
 /**
  * 
@@ -1109,6 +1121,12 @@ export interface ExperimentResponse {
      * @memberof ExperimentResponse
      */
     'course': CourseResponse;
+    /**
+     * 
+     * @type {ExpVmInfo}
+     * @memberof ExperimentResponse
+     */
+    'vm'?: ExpVmInfo;
 }
 /**
  * fileIdList指定只打包哪些文件。当fileIdList不为空时，仅打包list中指定的文件（但此时list中的fileId必须合法，即必须确定是与对应的实体相关联的）；当其为空时，则打包所有相关文件。
@@ -1232,6 +1250,25 @@ export interface FileResponse {
      * @memberof FileResponse
      */
     'involveId': number;
+}
+/**
+ * 
+ * @export
+ * @interface GetCaptcha200Response
+ */
+export interface GetCaptcha200Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetCaptcha200Response
+     */
+    'token': string;
+    /**
+     * base64编码后的png图片
+     * @type {string}
+     * @memberof GetCaptcha200Response
+     */
+    'image': string;
 }
 /**
  * 
@@ -1377,6 +1414,49 @@ export interface ImageRepo {
 /**
  * 
  * @export
+ * @interface LoginUserResponse
+ */
+export interface LoginUserResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginUserResponse
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginUserResponse
+     */
+    'username': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginUserResponse
+     */
+    'role': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof LoginUserResponse
+     */
+    'isAssistant': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginUserResponse
+     */
+    'token': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginUserResponse
+     */
+    'paasToken': string;
+}
+/**
+ * 
+ * @export
  * @interface PatchAssignmentRequest
  */
 export interface PatchAssignmentRequest {
@@ -1491,6 +1571,37 @@ export interface PeerAppealResponse {
      * @memberof PeerAppealResponse
      */
     'processedAt'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface PostLoginRequest
+ */
+export interface PostLoginRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof PostLoginRequest
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostLoginRequest
+     */
+    'password': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostLoginRequest
+     */
+    'captchaToken': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostLoginRequest
+     */
+    'captchaText': string;
 }
 /**
  * 
@@ -1658,6 +1769,25 @@ export interface PostProjectsRequest1 {
      * @memberof PostProjectsRequest1
      */
     'isPersonal'?: boolean;
+}
+/**
+ * 
+ * @export
+ * @interface PostResourcePoolsRequest
+ */
+export interface PostResourcePoolsRequest {
+    /**
+     * 
+     * @type {Resource}
+     * @memberof PostResourcePoolsRequest
+     */
+    'resource': Resource;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostResourcePoolsRequest
+     */
+    'ownerId': string;
 }
 /**
  * 
@@ -1873,6 +2003,166 @@ export interface Repository {
      * @memberof Repository
      */
     'token': string;
+}
+/**
+ * 
+ * @export
+ * @interface Resource
+ */
+export interface Resource {
+    /**
+     * m, 1000m = 1core
+     * @type {number}
+     * @memberof Resource
+     */
+    'cpu': number;
+    /**
+     * MB
+     * @type {number}
+     * @memberof Resource
+     */
+    'memory': number;
+}
+/**
+ * 
+ * @export
+ * @interface ResourceExchangeRecord
+ */
+export interface ResourceExchangeRecord {
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourceExchangeRecord
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourceExchangeRecord
+     */
+    'sender': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourceExchangeRecord
+     */
+    'receiver': string;
+    /**
+     * 
+     * @type {Resource}
+     * @memberof ResourceExchangeRecord
+     */
+    'resource': Resource;
+    /**
+     * 
+     * @type {number}
+     * @memberof ResourceExchangeRecord
+     */
+    'time': number;
+}
+/**
+ * 
+ * @export
+ * @interface ResourcePool
+ */
+export interface ResourcePool {
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourcePool
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourcePool
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourcePool
+     */
+    'ownerId': string;
+    /**
+     * 
+     * @type {Resource}
+     * @memberof ResourcePool
+     */
+    'capacity': Resource;
+    /**
+     * 
+     * @type {Resource}
+     * @memberof ResourcePool
+     */
+    'used': Resource;
+    /**
+     * 
+     * @type {Array<ResourceUsedRecord>}
+     * @memberof ResourcePool
+     */
+    'usedRecordList': Array<ResourceUsedRecord>;
+    /**
+     * 
+     * @type {Array<ResourceExchangeRecord>}
+     * @memberof ResourcePool
+     */
+    'exchangeRecordList': Array<ResourceExchangeRecord>;
+    /**
+     * 创建资源池时的时间戳
+     * @type {number}
+     * @memberof ResourcePool
+     */
+    'time': number;
+}
+/**
+ * 
+ * @export
+ * @interface ResourceUsedRecord
+ */
+export interface ResourceUsedRecord {
+    /**
+     * 
+     * @type {string}
+     * @memberof ResourceUsedRecord
+     */
+    'id': string;
+    /**
+     * 
+     * @type {Resource}
+     * @memberof ResourceUsedRecord
+     */
+    'resource': Resource;
+    /**
+     * 
+     * @type {Project}
+     * @memberof ResourceUsedRecord
+     */
+    'project': Project;
+    /**
+     * 
+     * @type {ContainerServiceResponse}
+     * @memberof ResourceUsedRecord
+     */
+    'containerService': ContainerServiceResponse;
+    /**
+     * 
+     * @type {ContainerResponse}
+     * @memberof ResourceUsedRecord
+     */
+    'container': ContainerResponse;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ResourceUsedRecord
+     */
+    'released': boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof ResourceUsedRecord
+     */
+    'time': number;
 }
 /**
  * 
@@ -2698,6 +2988,36 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取验证码
+         * @summary 获取验证码
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCaptcha: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/captcha`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
 
 
     
@@ -3567,6 +3887,80 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+         * @summary 获取当前项目可用的资源池列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdResourcePools: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('getProjectProjectIdResourcePools', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/resourcePools`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+         * @summary 获取当前项目可用的资源池列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdResourcePools_1: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('getProjectProjectIdResourcePools_1', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/resourcePools`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
@@ -3592,6 +3986,39 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (expId !== undefined) {
                 localVarQueryParameter['expId'] = expId;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
+         * @summary 获取资源池列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getResourcePools: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/resourcePools`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -3648,9 +4075,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatCourseCourseIdExperiments_1: async (courseId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getStatCourseCourseIdExperiments_2: async (courseId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'courseId' is not null or undefined
-            assertParamExists('getStatCourseCourseIdExperiments_1', 'courseId', courseId)
+            assertParamExists('getStatCourseCourseIdExperiments_2', 'courseId', courseId)
             const localVarPath = `/stat/course/{courseId}/experiments`
                 .replace(`{${"courseId"}}`, encodeURIComponent(String(courseId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -3722,9 +4149,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatExpExpIdAssignment_2: async (expId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getStatExpExpIdAssignment_3: async (expId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'expId' is not null or undefined
-            assertParamExists('getStatExpExpIdAssignment_2', 'expId', expId)
+            assertParamExists('getStatExpExpIdAssignment_3', 'expId', expId)
             const localVarPath = `/stat/exp/{expId}/assignments`
                 .replace(`{${"expId"}}`, encodeURIComponent(String(expId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -3740,6 +4167,49 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+         * @summary 获取学生列表
+         * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+         * @param {number} [limit] -1表示无限制。默认为10
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStudents: async (search?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/students`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
 
 
     
@@ -3949,6 +4419,39 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          */
         getVmsApply: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/vms/apply`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * whoami，通过当前token，得知当前用户的基本信息
+         * @summary whoami
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWhoami: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/whoami`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4232,6 +4735,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 统一认证登录
+         * @summary 统一认证登录
+         * @param {string} ssoToken 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postBuaaSSOLogin: async (ssoToken: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ssoToken' is not null or undefined
+            assertParamExists('postBuaaSSOLogin', 'ssoToken', ssoToken)
+            const localVarPath = `/buaaSSOLogin`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (ssoToken !== undefined) {
+                localVarQueryParameter['ssoToken'] = ssoToken;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 创建实验/作业
          * @summary 创建实验/作业
          * @param {CreateExperimentRequest} [createExperimentRequest] 
@@ -4393,12 +4933,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} fileType2 枚举值，可以取值 Assignment
          * @param {number} involvedId2 
          * @param {string} [fileId] 
-         * @param {any} [file] 
+         * @param {File} [file] 
          * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postFile: async (owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        postFile: async (owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: File, fileId2?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'owner' is not null or undefined
             assertParamExists('postFile', 'owner', owner)
             // verify required parameter 'fileType' is not null or undefined
@@ -4515,10 +5055,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 浏览器登录
+         * @summary 浏览器登录
+         * @param {PostLoginRequest} [postLoginRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postLogin: async (postLoginRequest?: PostLoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(postLoginRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
          * @summary 在各个PaaS相关后端中创建用户
          * @param {PostPaasUserRequest} [postPaasUserRequest] 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         postPaasUser: async (postPaasUserRequest?: PostPaasUserRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -4827,6 +5402,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 为用户创建资源池。仅供管理员调用
+         * @summary 创建资源池
+         * @param {PostResourcePoolsRequest} [postResourcePoolsRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postResourcePools: async (postResourcePoolsRequest?: PostResourcePoolsRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/resourcePools`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(postResourcePoolsRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
          * @summary 创建虚拟机模板
          * @param {PostVmTemplateRequest} [postVmTemplateRequest] 
@@ -5037,6 +5649,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getAuthentications(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Authentication>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthentications(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取验证码
+         * @summary 获取验证码
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCaptcha(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetCaptcha200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCaptcha(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5288,6 +5910,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+         * @summary 获取当前项目可用的资源池列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProjectProjectIdResourcePools(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourcePool>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdResourcePools(projectId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+         * @summary 获取当前项目可用的资源池列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProjectProjectIdResourcePools_1(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourcePool>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdResourcePools_1(projectId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
@@ -5296,6 +5940,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getProjects(expId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Project>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(expId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
+         * @summary 获取资源池列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getResourcePools(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourcePool>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getResourcePools(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5316,8 +5970,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getStatCourseCourseIdExperiments_1(courseId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatCourseExpsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatCourseCourseIdExperiments_1(courseId, options);
+        async getStatCourseCourseIdExperiments_2(courseId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatCourseExpsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatCourseCourseIdExperiments_2(courseId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5338,8 +5992,20 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getStatExpExpIdAssignment_2(expId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatExpAssignmentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatExpExpIdAssignment_2(expId, options);
+        async getStatExpExpIdAssignment_3(expId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatExpAssignmentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatExpExpIdAssignment_3(expId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+         * @summary 获取学生列表
+         * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+         * @param {number} [limit] -1表示无限制。默认为10
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStudents(search?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserModel>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStudents(search, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5406,6 +6072,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getVmsApply(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CreateVmApplyResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getVmsApply(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * whoami，通过当前token，得知当前用户的基本信息
+         * @summary whoami
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getWhoami(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWhoami(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5482,6 +6158,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 统一认证登录
+         * @summary 统一认证登录
+         * @param {string} ssoToken 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postBuaaSSOLogin(ssoToken: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postBuaaSSOLogin(ssoToken, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 创建实验/作业
          * @summary 创建实验/作业
          * @param {CreateExperimentRequest} [createExperimentRequest] 
@@ -5536,12 +6223,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {string} fileType2 枚举值，可以取值 Assignment
          * @param {number} involvedId2 
          * @param {string} [fileId] 
-         * @param {any} [file] 
+         * @param {File} [file] 
          * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadFileResponse>> {
+        async postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: File, fileId2?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadFileResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postFile(owner, fileType, involvedId, owner2, fileType2, involvedId2, fileId, file, fileId2, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5557,10 +6244,22 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 浏览器登录
+         * @summary 浏览器登录
+         * @param {PostLoginRequest} [postLoginRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postLogin(postLoginRequest?: PostLoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postLogin(postLoginRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
          * @summary 在各个PaaS相关后端中创建用户
          * @param {PostPaasUserRequest} [postPaasUserRequest] 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async postPaasUser(postPaasUserRequest?: PostPaasUserRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
@@ -5646,6 +6345,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async postProjects(postProjectsRequest?: PostProjectsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Project>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postProjects(postProjectsRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 为用户创建资源池。仅供管理员调用
+         * @summary 创建资源池
+         * @param {PostResourcePoolsRequest} [postResourcePoolsRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postResourcePools(postResourcePoolsRequest?: PostResourcePoolsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourcePool>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postResourcePools(postResourcePoolsRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5774,6 +6484,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getAuthentications(options?: any): AxiosPromise<Array<Authentication>> {
             return localVarFp.getAuthentications(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取验证码
+         * @summary 获取验证码
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCaptcha(options?: any): AxiosPromise<GetCaptcha200Response> {
+            return localVarFp.getCaptcha(options).then((request) => request(axios, basePath));
         },
         /**
          * 获取课程信息
@@ -6002,6 +6721,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getProjectProjectIdRepos(projectId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+         * @summary 获取当前项目可用的资源池列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdResourcePools(projectId: string, options?: any): AxiosPromise<Array<ResourcePool>> {
+            return localVarFp.getProjectProjectIdResourcePools(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+         * @summary 获取当前项目可用的资源池列表
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdResourcePools_1(projectId: string, options?: any): AxiosPromise<Array<ResourcePool>> {
+            return localVarFp.getProjectProjectIdResourcePools_1(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
@@ -6010,6 +6749,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getProjects(expId?: number, options?: any): AxiosPromise<Array<Project>> {
             return localVarFp.getProjects(expId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
+         * @summary 获取资源池列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getResourcePools(options?: any): AxiosPromise<Array<ResourcePool>> {
+            return localVarFp.getResourcePools(options).then((request) => request(axios, basePath));
         },
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
@@ -6028,8 +6776,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatCourseCourseIdExperiments_1(courseId: number, options?: any): AxiosPromise<StatCourseExpsResponse> {
-            return localVarFp.getStatCourseCourseIdExperiments_1(courseId, options).then((request) => request(axios, basePath));
+        getStatCourseCourseIdExperiments_2(courseId: number, options?: any): AxiosPromise<StatCourseExpsResponse> {
+            return localVarFp.getStatCourseCourseIdExperiments_2(courseId, options).then((request) => request(axios, basePath));
         },
         /**
          * 统计某门实验的提交作业的情况（该课程的助教或教师调用）
@@ -6048,8 +6796,19 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatExpExpIdAssignment_2(expId: number, options?: any): AxiosPromise<StatExpAssignmentResponse> {
-            return localVarFp.getStatExpExpIdAssignment_2(expId, options).then((request) => request(axios, basePath));
+        getStatExpExpIdAssignment_3(expId: number, options?: any): AxiosPromise<StatExpAssignmentResponse> {
+            return localVarFp.getStatExpExpIdAssignment_3(expId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+         * @summary 获取学生列表
+         * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+         * @param {number} [limit] -1表示无限制。默认为10
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStudents(search?: string, limit?: number, options?: any): AxiosPromise<Array<UserModel>> {
+            return localVarFp.getStudents(search, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 查看“创建虚拟机的申请”
@@ -6110,6 +6869,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getVmsApply(options?: any): AxiosPromise<Array<CreateVmApplyResponse>> {
             return localVarFp.getVmsApply(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * whoami，通过当前token，得知当前用户的基本信息
+         * @summary whoami
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWhoami(options?: any): AxiosPromise<LoginUserResponse> {
+            return localVarFp.getWhoami(options).then((request) => request(axios, basePath));
         },
         /**
          * 重复上传作业，直接覆盖之前的作业
@@ -6179,6 +6947,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.postAssignmentReviews(assignmentReviewRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 统一认证登录
+         * @summary 统一认证登录
+         * @param {string} ssoToken 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postBuaaSSOLogin(ssoToken: string, options?: any): AxiosPromise<LoginUserResponse> {
+            return localVarFp.postBuaaSSOLogin(ssoToken, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 创建实验/作业
          * @summary 创建实验/作业
          * @param {CreateExperimentRequest} [createExperimentRequest] 
@@ -6229,12 +7007,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {string} fileType2 枚举值，可以取值 Assignment
          * @param {number} involvedId2 
          * @param {string} [fileId] 
-         * @param {any} [file] 
+         * @param {File} [file] 
          * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options?: any): AxiosPromise<UploadFileResponse> {
+        postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: File, fileId2?: number, options?: any): AxiosPromise<UploadFileResponse> {
             return localVarFp.postFile(owner, fileType, involvedId, owner2, fileType2, involvedId2, fileId, file, fileId2, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6248,10 +7026,21 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.postFilePackage(filePackageRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 浏览器登录
+         * @summary 浏览器登录
+         * @param {PostLoginRequest} [postLoginRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postLogin(postLoginRequest?: PostLoginRequest, options?: any): AxiosPromise<LoginUserResponse> {
+            return localVarFp.postLogin(postLoginRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
          * @summary 在各个PaaS相关后端中创建用户
          * @param {PostPaasUserRequest} [postPaasUserRequest] 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         postPaasUser(postPaasUserRequest?: PostPaasUserRequest, options?: any): AxiosPromise<void> {
@@ -6330,6 +7119,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         postProjects(postProjectsRequest?: PostProjectsRequest, options?: any): AxiosPromise<Project> {
             return localVarFp.postProjects(postProjectsRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 为用户创建资源池。仅供管理员调用
+         * @summary 创建资源池
+         * @param {PostResourcePoolsRequest} [postResourcePoolsRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postResourcePools(postResourcePoolsRequest?: PostResourcePoolsRequest, options?: any): AxiosPromise<ResourcePool> {
+            return localVarFp.postResourcePools(postResourcePoolsRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
@@ -6469,6 +7268,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getAuthentications(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getAuthentications(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取验证码
+     * @summary 获取验证码
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getCaptcha(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getCaptcha(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6742,6 +7552,30 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+     * @summary 获取当前项目可用的资源池列表
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getProjectProjectIdResourcePools(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdResourcePools(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取当前项目可用的资源池列表 即把当前项目中所有用户的所有资源池列表总和
+     * @summary 获取当前项目可用的资源池列表
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getProjectProjectIdResourcePools_1(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdResourcePools_1(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取项目列表
      * @summary 获取项目列表
      * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
@@ -6751,6 +7585,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getProjects(expId?: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getProjects(expId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
+     * @summary 获取资源池列表
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getResourcePools(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getResourcePools(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6773,8 +7618,8 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getStatCourseCourseIdExperiments_1(courseId: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getStatCourseCourseIdExperiments_1(courseId, options).then((request) => request(this.axios, this.basePath));
+    public getStatCourseCourseIdExperiments_2(courseId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStatCourseCourseIdExperiments_2(courseId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6797,8 +7642,21 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getStatExpExpIdAssignment_2(expId: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getStatExpExpIdAssignment_2(expId, options).then((request) => request(this.axios, this.basePath));
+    public getStatExpExpIdAssignment_3(expId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStatExpExpIdAssignment_3(expId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+     * @summary 获取学生列表
+     * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+     * @param {number} [limit] -1表示无限制。默认为10
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getStudents(search?: string, limit?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStudents(search, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6871,6 +7729,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getVmsApply(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getVmsApply(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * whoami，通过当前token，得知当前用户的基本信息
+     * @summary whoami
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getWhoami(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getWhoami(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6953,6 +7822,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 统一认证登录
+     * @summary 统一认证登录
+     * @param {string} ssoToken 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postBuaaSSOLogin(ssoToken: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postBuaaSSOLogin(ssoToken, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 创建实验/作业
      * @summary 创建实验/作业
      * @param {CreateExperimentRequest} [createExperimentRequest] 
@@ -7011,13 +7892,13 @@ export class DefaultApi extends BaseAPI {
      * @param {string} fileType2 枚举值，可以取值 Assignment
      * @param {number} involvedId2 
      * @param {string} [fileId] 
-     * @param {any} [file] 
+     * @param {File} [file] 
      * @param {number} [fileId2] 可选，如果为空，则表示创建新文件；如果不为空，表示修改旧文件
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: any, fileId2?: number, options?: AxiosRequestConfig) {
+    public postFile(owner: string, fileType: string, involvedId: number, owner2: string, fileType2: string, involvedId2: number, fileId?: string, file?: File, fileId2?: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).postFile(owner, fileType, involvedId, owner2, fileType2, involvedId2, fileId, file, fileId2, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7034,10 +7915,23 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 浏览器登录
+     * @summary 浏览器登录
+     * @param {PostLoginRequest} [postLoginRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postLogin(postLoginRequest?: PostLoginRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postLogin(postLoginRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 在各个PaaS相关后端中创建用户。 该接口是幂等的，可多次重复调用而没有副作用。
      * @summary 在各个PaaS相关后端中创建用户
      * @param {PostPaasUserRequest} [postPaasUserRequest] 
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
@@ -7134,6 +8028,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 为用户创建资源池。仅供管理员调用
+     * @summary 创建资源池
+     * @param {PostResourcePoolsRequest} [postResourcePoolsRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postResourcePools(postResourcePoolsRequest?: PostResourcePoolsRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postResourcePools(postResourcePoolsRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 创建虚拟机模板，本质上是将虚拟机转换为模板  前端应注意，在调用该接口前，应该提示用户先将虚拟机关机，并提示用户，该操作将删除当前虚拟机
      * @summary 创建虚拟机模板
      * @param {PostVmTemplateRequest} [postVmTemplateRequest] 
@@ -7168,6 +8074,114 @@ export class DefaultApi extends BaseAPI {
      */
     public putExperimnetExperimentId(experimentId: number, putExperimentRequest?: PutExperimentRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).putExperimnetExperimentId(experimentId, putExperimentRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * GeneralApi - axios parameter creator
+ * @export
+ */
+export const GeneralApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 仅限管理员调用的守护进程任务触发调用动作
+         * @summary 守护进程触发
+         * @param {string} action 需要触发的具体动作
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postDaemonTrigger: async (action: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'action' is not null or undefined
+            assertParamExists('postDaemonTrigger', 'action', action)
+            const localVarPath = `/daemon/trigger/{action}`
+                .replace(`{${"action"}}`, encodeURIComponent(String(action)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * GeneralApi - functional programming interface
+ * @export
+ */
+export const GeneralApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = GeneralApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 仅限管理员调用的守护进程任务触发调用动作
+         * @summary 守护进程触发
+         * @param {string} action 需要触发的具体动作
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postDaemonTrigger(action: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postDaemonTrigger(action, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * GeneralApi - factory interface
+ * @export
+ */
+export const GeneralApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = GeneralApiFp(configuration)
+    return {
+        /**
+         * 仅限管理员调用的守护进程任务触发调用动作
+         * @summary 守护进程触发
+         * @param {string} action 需要触发的具体动作
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postDaemonTrigger(action: string, options?: any): AxiosPromise<void> {
+            return localVarFp.postDaemonTrigger(action, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * GeneralApi - object-oriented interface
+ * @export
+ * @class GeneralApi
+ * @extends {BaseAPI}
+ */
+export class GeneralApi extends BaseAPI {
+    /**
+     * 仅限管理员调用的守护进程任务触发调用动作
+     * @summary 守护进程触发
+     * @param {string} action 需要触发的具体动作
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GeneralApi
+     */
+    public postDaemonTrigger(action: string, options?: AxiosRequestConfig) {
+        return GeneralApiFp(this.configuration).postDaemonTrigger(action, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
