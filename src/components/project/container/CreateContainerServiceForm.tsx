@@ -1,7 +1,7 @@
-import { DeleteTwoTone } from '@ant-design/icons'
 import {
     ModalForm,
     ProFormGroup,
+    ProFormInstance,
     ProFormList,
     ProFormSelect,
     ProFormText
@@ -14,12 +14,20 @@ import {
     formItemProjectNameValidator,
     messageError,
     messageInfo,
+    notificationError,
     projectNameExtraInfo,
     randomString
 } from '../../../utils'
+import { useRef } from 'react'
 
 export const CreateContainerServiceForm = (props: ProjectIdProps) => {
+    const formRef = useRef<ProFormInstance>()
     const onFinish = async (values: any) => {
+        console.log(formRef.current)
+        if (!values.containers || (values.containers as any[]).length === 0) {
+            notificationError('请至少添加一个容器')
+            return
+        }
         const req: ContainerServiceRequest = {
             name: values.name,
             serviceType: values.serviceType,
@@ -53,6 +61,7 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
                 req
             )
             messageInfo(`容器服务 ${values.name} 已成功加入任务队列`)
+            formRef?.current?.resetFields()
             return true
         } catch (_) {
             messageError(`提交容器服务失败`)
@@ -64,6 +73,7 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
         <ModalForm
             name="create_container_service"
             onFinish={onFinish}
+            formRef={formRef}
             autoComplete="off"
             width="2000px"
             trigger={<Button type="primary">创建容器服务</Button>}
@@ -95,18 +105,34 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
 
             <ProFormList
                 name="containers"
-                label="容器信息列表（一个容器服务中可以包含多个容器实例）"
-                creatorButtonProps={{ creatorButtonText: '添加一个新的容器' }}
+                label="容器信息列表（一个容器服务中可以包含多个容器实例）："
+                creatorButtonProps={{
+                    style: {
+                        backgroundColor: '#E8F3FE',
+                        color: 'rgb(9, 88, 217)'
+                    },
+                    creatorButtonText: '添加一个新容器'
+                }}
                 copyIconProps={false}
                 deleteIconProps={{
-                    Icon: () => <DeleteTwoTone twoToneColor="#f81d22" />,
                     tooltipText: '删除该容器'
                 }}
                 itemRender={({ listDom, action }, { index }) => {
                     return (
-                        <Card bordered extra={action} title={`容器-${index}`}>
-                            {listDom}
-                        </Card>
+                        <>
+                            <Card
+                                bordered
+                                extra={action}
+                                title={`容器-${index}`}
+                                headStyle={{
+                                    backgroundColor: 'rgb(230,244,255)',
+                                    color: 'rgb(9,88,217)'
+                                }}
+                                style={{ marginBottom: 25, marginTop: 25 }}
+                            >
+                                {listDom}
+                            </Card>
+                        </>
                     )
                 }}
             >
