@@ -178,6 +178,17 @@ export const ContainerServiceListTable = () => {
                                 : '重新部署'}
                         </a>
                     </Popconfirm>
+                    <Popconfirm
+                        title={`确定要删除容器服务 ${record.name} 吗？`}
+                        onConfirm={() =>
+                            cloudapiClient.deleteProjectProjectIdContainersContainerServiceId(
+                                projectId,
+                                record.id.toString()
+                            )
+                        }
+                    >
+                        <a style={{ color: 'red' }}>删除</a>
+                    </Popconfirm>
                 </Space>
             )
         }
