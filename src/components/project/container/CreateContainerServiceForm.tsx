@@ -22,6 +22,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { useRequest } from 'ahooks'
 import { ProSchemaValueEnumObj } from '@ant-design/pro-components'
+import { ResourcePoolProgress } from '../resource/ResourcePoolProgress'
 
 export const CreateContainerServiceForm = (props: ProjectIdProps) => {
     const formRef = useRef<ProFormInstance>()
@@ -45,32 +46,8 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
 
     const resourcePoolOptionsObj: ProSchemaValueEnumObj = {}
     resourcePools.forEach(pool => {
-        const { used, capacity } = pool
-
         resourcePoolOptionsObj[pool.id] = (
-            <>
-                <span>
-                    <b>{pool.name}</b>
-                </span>
-                <br />
-                <div style={{ width: 170 }}>
-                    <Progress
-                        size="small"
-                        percent={(used.cpu / capacity.cpu) * 100}
-                        format={() =>
-                            `CPU： ${used.cpu} / ${capacity.cpu} mCore`
-                        }
-                    />
-                    <br />
-                    <Progress
-                        size="small"
-                        percent={(used.memory / capacity.memory) * 100}
-                        format={() =>
-                            `内存： ${used.memory} / ${capacity.memory} MB`
-                        }
-                    />
-                </div>
-            </>
+            <ResourcePoolProgress resourcePool={pool} />
         )
     })
 
