@@ -452,6 +452,12 @@ export interface ContainerResponse {
      * @memberof ContainerResponse
      */
     'resourcePoolId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerResponse
+     */
+    'resourceUsedRecordId': string;
 }
 /**
  * 
@@ -2135,22 +2141,22 @@ export interface ResourceUsedRecord {
     'resource': Resource;
     /**
      * 
-     * @type {Project}
+     * @type {number}
      * @memberof ResourceUsedRecord
      */
-    'project': Project;
+    'projectId': number;
     /**
      * 
-     * @type {ContainerServiceResponse}
+     * @type {number}
      * @memberof ResourceUsedRecord
      */
-    'containerService': ContainerServiceResponse;
+    'containerServiceId': number;
     /**
      * 
-     * @type {ContainerResponse}
+     * @type {number}
      * @memberof ResourceUsedRecord
      */
-    'container': ContainerResponse;
+    'containerId': number;
     /**
      * 
      * @type {boolean}
@@ -4040,6 +4046,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 通过ID获取资源池信息
+         * @summary 获取指定的资源池
+         * @param {string} resourcePoolId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getResourcePoolResourcePoolId: async (resourcePoolId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'resourcePoolId' is not null or undefined
+            assertParamExists('getResourcePoolResourcePoolId', 'resourcePoolId', resourcePoolId)
+            const localVarPath = `/resourcePools/{resourcePoolId}`
+                .replace(`{${"resourcePoolId"}}`, encodeURIComponent(String(resourcePoolId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
          * @summary 获取资源池列表
          * @param {*} [options] Override http request option.
@@ -4060,6 +4103,53 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取资源使用记录
+         * @summary 获取资源使用记录
+         * @param {string} resourceUsedRecordId 
+         * @param {boolean} [containerDetail] 默认为false
+         * @param {boolean} [projectDetail] 默认为false
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getResourceUsedRecordsResourceUsedRecordId: async (resourceUsedRecordId: string, containerDetail?: boolean, projectDetail?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'resourceUsedRecordId' is not null or undefined
+            assertParamExists('getResourceUsedRecordsResourceUsedRecordId', 'resourceUsedRecordId', resourceUsedRecordId)
+            const localVarPath = `/resourceUsedRecords/{resourceUsedRecordId}`
+                .replace(`{${"resourceUsedRecordId"}}`, encodeURIComponent(String(resourceUsedRecordId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (containerDetail !== undefined) {
+                localVarQueryParameter['containerDetail'] = containerDetail;
+            }
+
+            if (projectDetail !== undefined) {
+                localVarQueryParameter['projectDetail'] = projectDetail;
+            }
 
 
     
@@ -5996,6 +6086,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 通过ID获取资源池信息
+         * @summary 获取指定的资源池
+         * @param {string} resourcePoolId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getResourcePoolResourcePoolId(resourcePoolId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourcePool>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getResourcePoolResourcePoolId(resourcePoolId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
          * @summary 获取资源池列表
          * @param {*} [options] Override http request option.
@@ -6003,6 +6104,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getResourcePools(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourcePool>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getResourcePools(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取资源使用记录
+         * @summary 获取资源使用记录
+         * @param {string} resourceUsedRecordId 
+         * @param {boolean} [containerDetail] 默认为false
+         * @param {boolean} [projectDetail] 默认为false
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getResourceUsedRecordsResourceUsedRecordId(resourceUsedRecordId: string, containerDetail?: boolean, projectDetail?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceUsedRecord>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceUsedRecordsResourceUsedRecordId(resourceUsedRecordId, containerDetail, projectDetail, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6815,6 +6929,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getProjects(expId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 通过ID获取资源池信息
+         * @summary 获取指定的资源池
+         * @param {string} resourcePoolId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getResourcePoolResourcePoolId(resourcePoolId: string, options?: any): AxiosPromise<ResourcePool> {
+            return localVarFp.getResourcePoolResourcePoolId(resourcePoolId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
          * @summary 获取资源池列表
          * @param {*} [options] Override http request option.
@@ -6822,6 +6946,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getResourcePools(options?: any): AxiosPromise<Array<ResourcePool>> {
             return localVarFp.getResourcePools(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取资源使用记录
+         * @summary 获取资源使用记录
+         * @param {string} resourceUsedRecordId 
+         * @param {boolean} [containerDetail] 默认为false
+         * @param {boolean} [projectDetail] 默认为false
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getResourceUsedRecordsResourceUsedRecordId(resourceUsedRecordId: string, containerDetail?: boolean, projectDetail?: boolean, options?: any): AxiosPromise<ResourceUsedRecord> {
+            return localVarFp.getResourceUsedRecordsResourceUsedRecordId(resourceUsedRecordId, containerDetail, projectDetail, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取课程中所有实验的统计信息，本课程的助教或教师调用
@@ -7665,6 +7801,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 通过ID获取资源池信息
+     * @summary 获取指定的资源池
+     * @param {string} resourcePoolId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getResourcePoolResourcePoolId(resourcePoolId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getResourcePoolResourcePoolId(resourcePoolId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 用户获取自己所属的资源池列表。 如果是管理员调用的话，则返回当前所有用户的资源池情况。
      * @summary 获取资源池列表
      * @param {*} [options] Override http request option.
@@ -7673,6 +7821,20 @@ export class DefaultApi extends BaseAPI {
      */
     public getResourcePools(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getResourcePools(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取资源使用记录
+     * @summary 获取资源使用记录
+     * @param {string} resourceUsedRecordId 
+     * @param {boolean} [containerDetail] 默认为false
+     * @param {boolean} [projectDetail] 默认为false
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getResourceUsedRecordsResourceUsedRecordId(resourceUsedRecordId: string, containerDetail?: boolean, projectDetail?: boolean, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getResourceUsedRecordsResourceUsedRecordId(resourceUsedRecordId, containerDetail, projectDetail, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

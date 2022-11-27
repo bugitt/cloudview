@@ -32,7 +32,7 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
         () => cloudapiClient.getProjectProjectIdResourcePools(props.projectId),
         {
             manual: true,
-            onSuccess: (result, params) => {
+            onSuccess: result => {
                 setResourcePools(result.data)
             },
             onError: error => {
