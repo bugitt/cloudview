@@ -29,13 +29,9 @@ export const ContainerInfoCard = (props: ContainerInfoCardProps) => {
                 ) : null}
                 {container.envs ? (
                     <Descriptions.Item label="环境变量">
-                        <List
-                            size="small"
-                            dataSource={container.envs?.map(
-                                env => `${env.key}=${env.value}`
-                            )}
-                            renderItem={item => <List.Item>{item}</List.Item>}
-                        />
+                        {container.envs.map(env => (
+                            <p>{`${env.key} = ${env.value}`}</p>
+                        ))}
                     </Descriptions.Item>
                 ) : null}
             </Descriptions>
