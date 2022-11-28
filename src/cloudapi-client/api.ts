@@ -1279,6 +1279,25 @@ export interface GetCaptcha200Response {
 /**
  * 
  * @export
+ * @interface GetStatResourcePoolsResourcePoolIdUsed200Response
+ */
+export interface GetStatResourcePoolsResourcePoolIdUsed200Response {
+    /**
+     * 
+     * @type {Array<ResourceUsedStatItem>}
+     * @memberof GetStatResourcePoolsResourcePoolIdUsed200Response
+     */
+    'cpu': Array<ResourceUsedStatItem>;
+    /**
+     * 
+     * @type {Array<ResourceUsedStatItem>}
+     * @memberof GetStatResourcePoolsResourcePoolIdUsed200Response
+     */
+    'memory': Array<ResourceUsedStatItem>;
+}
+/**
+ * 
+ * @export
  * @interface Image
  */
 export interface Image {
@@ -2173,6 +2192,25 @@ export interface ResourceUsedRecord {
 /**
  * 
  * @export
+ * @interface ResourceUsedStatItem
+ */
+export interface ResourceUsedStatItem {
+    /**
+     * 未使用的份额的name值是 \"空闲\" 否则，其格式应该为 \"${project_name} / ${container_service_name}\"
+     * @type {string}
+     * @memberof ResourceUsedStatItem
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ResourceUsedStatItem
+     */
+    'value': number;
+}
+/**
+ * 
+ * @export
  * @interface SimpleUser
  */
 export interface SimpleUser {
@@ -2856,12 +2894,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 删除指定的容器服务
          * @summary 删除容器服务
-         * @param {string} projectId 
-         * @param {string} containerServiceId 
+         * @param {number} projectId 
+         * @param {number} containerServiceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteProjectProjectIdContainersContainerServiceId: async (projectId: string, containerServiceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deleteProjectProjectIdContainersContainerServiceId: async (projectId: number, containerServiceId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'projectId' is not null or undefined
             assertParamExists('deleteProjectProjectIdContainersContainerServiceId', 'projectId', projectId)
             // verify required parameter 'containerServiceId' is not null or undefined
@@ -3749,6 +3787,47 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 根据ID获取容器服务
+         * @summary 获取容器服务
+         * @param {number} projectId 
+         * @param {number} containerServiceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdContainersContainerServiceId: async (projectId: number, containerServiceId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('getProjectProjectIdContainersContainerServiceId', 'projectId', projectId)
+            // verify required parameter 'containerServiceId' is not null or undefined
+            assertParamExists('getProjectProjectIdContainersContainerServiceId', 'containerServiceId', containerServiceId)
+            const localVarPath = `/project/{projectId}/containers/{containerServiceId}`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"containerServiceId"}}`, encodeURIComponent(String(containerServiceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取当前项目下的所有镜像构建任务
          * @summary 获取镜像构建任务
          * @param {string} projectId 
@@ -4285,6 +4364,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('getStatExpExpIdAssignment_3', 'expId', expId)
             const localVarPath = `/stat/exp/{expId}/assignments`
                 .replace(`{${"expId"}}`, encodeURIComponent(String(expId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 统计资源池的资源使用情况
+         * @summary 统计资源池的资源使用情况
+         * @param {string} resourcePoolId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatResourcePoolsResourcePoolIdUsed: async (resourcePoolId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'resourcePoolId' is not null or undefined
+            assertParamExists('getStatResourcePoolsResourcePoolIdUsed', 'resourcePoolId', resourcePoolId)
+            const localVarPath = `/stat/resourcePools/{resourcePoolId}/used`
+                .replace(`{${"resourcePoolId"}}`, encodeURIComponent(String(resourcePoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5740,12 +5856,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 删除指定的容器服务
          * @summary 删除容器服务
-         * @param {string} projectId 
-         * @param {string} containerServiceId 
+         * @param {number} projectId 
+         * @param {number} containerServiceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteProjectProjectIdContainersContainerServiceId(projectId: string, containerServiceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteProjectProjectIdContainersContainerServiceId(projectId: number, containerServiceId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteProjectProjectIdContainersContainerServiceId(projectId, containerServiceId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5998,6 +6114,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 根据ID获取容器服务
+         * @summary 获取容器服务
+         * @param {number} projectId 
+         * @param {number} containerServiceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProjectProjectIdContainersContainerServiceId(projectId: number, containerServiceId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContainerServiceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdContainersContainerServiceId(projectId, containerServiceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取当前项目下的所有镜像构建任务
          * @summary 获取镜像构建任务
          * @param {string} projectId 
@@ -6161,6 +6289,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getStatExpExpIdAssignment_3(expId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatExpAssignmentResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getStatExpExpIdAssignment_3(expId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 统计资源池的资源使用情况
+         * @summary 统计资源池的资源使用情况
+         * @param {string} resourcePoolId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStatResourcePoolsResourcePoolIdUsed(resourcePoolId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetStatResourcePoolsResourcePoolIdUsed200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatResourcePoolsResourcePoolIdUsed(resourcePoolId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6614,12 +6753,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 删除指定的容器服务
          * @summary 删除容器服务
-         * @param {string} projectId 
-         * @param {string} containerServiceId 
+         * @param {number} projectId 
+         * @param {number} containerServiceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteProjectProjectIdContainersContainerServiceId(projectId: string, containerServiceId: string, options?: any): AxiosPromise<void> {
+        deleteProjectProjectIdContainersContainerServiceId(projectId: number, containerServiceId: number, options?: any): AxiosPromise<void> {
             return localVarFp.deleteProjectProjectIdContainersContainerServiceId(projectId, containerServiceId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6849,6 +6988,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getProjectProjectIdContainers(projectId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 根据ID获取容器服务
+         * @summary 获取容器服务
+         * @param {number} projectId 
+         * @param {number} containerServiceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProjectProjectIdContainersContainerServiceId(projectId: number, containerServiceId: number, options?: any): AxiosPromise<ContainerServiceResponse> {
+            return localVarFp.getProjectProjectIdContainersContainerServiceId(projectId, containerServiceId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取当前项目下的所有镜像构建任务
          * @summary 获取镜像构建任务
          * @param {string} projectId 
@@ -6998,6 +7148,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getStatExpExpIdAssignment_3(expId: number, options?: any): AxiosPromise<StatExpAssignmentResponse> {
             return localVarFp.getStatExpExpIdAssignment_3(expId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 统计资源池的资源使用情况
+         * @summary 统计资源池的资源使用情况
+         * @param {string} resourcePoolId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatResourcePoolsResourcePoolIdUsed(resourcePoolId: string, options?: any): AxiosPromise<GetStatResourcePoolsResourcePoolIdUsed200Response> {
+            return localVarFp.getStatResourcePoolsResourcePoolIdUsed(resourcePoolId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
@@ -7424,13 +7584,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 删除指定的容器服务
      * @summary 删除容器服务
-     * @param {string} projectId 
-     * @param {string} containerServiceId 
+     * @param {number} projectId 
+     * @param {number} containerServiceId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public deleteProjectProjectIdContainersContainerServiceId(projectId: string, containerServiceId: string, options?: AxiosRequestConfig) {
+    public deleteProjectProjectIdContainersContainerServiceId(projectId: number, containerServiceId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).deleteProjectProjectIdContainersContainerServiceId(projectId, containerServiceId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -7705,6 +7865,19 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 根据ID获取容器服务
+     * @summary 获取容器服务
+     * @param {number} projectId 
+     * @param {number} containerServiceId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getProjectProjectIdContainersContainerServiceId(projectId: number, containerServiceId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdContainersContainerServiceId(projectId, containerServiceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取当前项目下的所有镜像构建任务
      * @summary 获取镜像构建任务
      * @param {string} projectId 
@@ -7883,6 +8056,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getStatExpExpIdAssignment_3(expId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getStatExpExpIdAssignment_3(expId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 统计资源池的资源使用情况
+     * @summary 统计资源池的资源使用情况
+     * @param {string} resourcePoolId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getStatResourcePoolsResourcePoolIdUsed(resourcePoolId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStatResourcePoolsResourcePoolIdUsed(resourcePoolId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

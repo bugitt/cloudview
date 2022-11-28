@@ -22,6 +22,7 @@ import {
     projectNameExtraInfo,
     randomColor
 } from '../../utils'
+import { ResourcePoolListTable } from './resource/ResourcePoolListTable'
 
 interface ProjectTableType extends Project {
     key: React.Key
@@ -178,6 +179,8 @@ export const Projects = () => {
         { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt' }
     ]
 
+    const useId = getUserId()
+
     return (
         <>
             <ProTable
@@ -188,6 +191,7 @@ export const Projects = () => {
                 headerTitle="项目列表"
                 toolBarRender={() => [createProjectForm()]}
             />
+            <ResourcePoolListTable />
         </>
     )
 }

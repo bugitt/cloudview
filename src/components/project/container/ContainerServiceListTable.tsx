@@ -182,8 +182,8 @@ export const ContainerServiceListTable = () => {
                         title={`确定要删除容器服务 ${record.name} 吗？`}
                         onConfirm={() =>
                             cloudapiClient.deleteProjectProjectIdContainersContainerServiceId(
-                                projectId,
-                                record.id.toString()
+                                Number.parseInt(projectId),
+                                record.id
                             )
                         }
                     >
