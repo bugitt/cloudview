@@ -7,9 +7,12 @@ import {
     ProFormSelect,
     ProFormText
 } from '@ant-design/pro-form'
-import { Button, Card, Progress } from 'antd'
-import { ProjectIdProps } from '../../../assets/types'
-import { ContainerServiceRequest, ResourcePool } from '../../../cloudapi-client'
+import { Button, Card } from 'antd'
+import {
+    ContainerServiceRequest,
+    Project,
+    ResourcePool
+} from '../../../cloudapi-client'
 import {
     cloudapiClient,
     formItemProjectNameValidator,
@@ -24,12 +27,15 @@ import { useRequest } from 'ahooks'
 import { ProSchemaValueEnumObj } from '@ant-design/pro-components'
 import { ResourcePoolProgress } from '../resource/ResourcePoolProgress'
 
-export const CreateContainerServiceForm = (props: ProjectIdProps) => {
+export const CreateContainerServiceForm = (props: { project?: Project }) => {
     const formRef = useRef<ProFormInstance>()
+    const { project } = props
+    const [projects, setProjects] = useState<Project[]>([])
     const [resourcePools, setResourcePools] = useState<ResourcePool[]>([])
 
     const resourcePoolsReq = useRequest(
-        () => cloudapiClient.getProjectProjectIdResourcePools(props.projectId),
+        (projectId: number) =>
+            cloudapiClient.getProjectProjectIdResourcePools(String(projectId)),
         {
             manual: true,
             onSuccess: result => {
@@ -40,9 +46,30 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
             }
         }
     )
+
     useEffect(() => {
-        resourcePoolsReq.run()
-    }, [props.projectId])
+        if (!project) {
+            cloudapiClient
+                .getProjects()
+                .then(result => {
+                    setProjects(result.data)
+                })
+                .catch(error => {
+                    notificationError(error)
+                })
+        }
+        if (project) {
+            resourcePoolsReq.run(project.id)
+            formRef.current?.setFieldValue('projectId', project.id)
+        }
+    }, [project?.id])
+
+    console.log(project, formRef.current?.getFieldValue('projectId'))
+
+    const projectValueEnum: ProSchemaValueEnumObj = {}
+    projects.forEach(project => {
+        projectValueEnum[project.id] = project.name
+    })
 
     const resourcePoolOptionsObj: ProSchemaValueEnumObj = {}
     resourcePools.forEach(pool => {
@@ -107,14 +134,15 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
                 }
             })
         }
+        const projectId = project ? project.id : (values.projectId as number)
         try {
             await cloudapiClient.postProjectProjectIdContainers(
-                props.projectId,
+                String(projectId),
                 req
             )
             messageInfo(`容器服务 ${values.name} 已成功加入任务队列`)
             formRef?.current?.resetFields()
-            resourcePoolsReq.run()
+            resourcePoolsReq.run(Number(projectId))
             return true
         } catch (_) {
             messageError(`提交容器服务失败`)
@@ -131,6 +159,20 @@ export const CreateContainerServiceForm = (props: ProjectIdProps) => {
             width="2000px"
             trigger={<Button type="primary">创建容器服务</Button>}
         >
+            {project ? null : (
+                <ProFormSelect
+                    name="projectId"
+                    label="归属项目"
+                    fieldProps={{
+                        onSelect: text => {
+                            resourcePoolsReq.run(Number(text))
+                        }
+                    }}
+                    valueEnum={projectValueEnum}
+                    placeholder="请选择归属项目"
+                    rules={[{ required: true }]}
+                />
+            )}
             <ProFormText
                 name="name"
                 label="容器服务名称"

@@ -552,6 +552,18 @@ export interface ContainerServiceResponse {
      */
     'projectId': number;
     /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceResponse
+     */
+    'projectName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceResponse
+     */
+    'templateId'?: string;
+    /**
      * SERVICE, JOB
      * @type {string}
      * @memberof ContainerServiceResponse
@@ -575,6 +587,104 @@ export interface ContainerServiceResponse {
      * @memberof ContainerServiceResponse
      */
     'createdTime': number;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerServiceTemplate
+ */
+export interface ContainerServiceTemplate {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplate
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplate
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplate
+     */
+    'category': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplate
+     */
+    'segment'?: string;
+    /**
+     * 
+     * @type {Array<ContainerServiceTemplateConfigItem>}
+     * @memberof ContainerServiceTemplate
+     */
+    'config': Array<ContainerServiceTemplateConfigItem>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplate
+     */
+    'description'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplate
+     */
+    'iconUrl'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface ContainerServiceTemplateConfigItem
+ */
+export interface ContainerServiceTemplateConfigItem {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'label': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'name': string;
+    /**
+     * string, number, boolean
+     * @type {string}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'type': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'required': boolean;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'options'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'default'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContainerServiceTemplateConfigItem
+     */
+    'description'?: string;
 }
 /**
  * 
@@ -1275,6 +1385,44 @@ export interface GetCaptcha200Response {
      * @memberof GetCaptcha200Response
      */
     'image': string;
+}
+/**
+ * 
+ * @export
+ * @interface GetContainerServiceTemplates200ResponseInner
+ */
+export interface GetContainerServiceTemplates200ResponseInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetContainerServiceTemplates200ResponseInner
+     */
+    'categoryName': string;
+    /**
+     * 
+     * @type {Array<GetContainerServiceTemplates200ResponseInnerSegmentsInner>}
+     * @memberof GetContainerServiceTemplates200ResponseInner
+     */
+    'segments': Array<GetContainerServiceTemplates200ResponseInnerSegmentsInner>;
+}
+/**
+ * 
+ * @export
+ * @interface GetContainerServiceTemplates200ResponseInnerSegmentsInner
+ */
+export interface GetContainerServiceTemplates200ResponseInnerSegmentsInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetContainerServiceTemplates200ResponseInnerSegmentsInner
+     */
+    'segmaneName': string;
+    /**
+     * 
+     * @type {Array<ContainerServiceTemplate>}
+     * @memberof GetContainerServiceTemplates200ResponseInnerSegmentsInner
+     */
+    'templateList': Array<ContainerServiceTemplate>;
 }
 /**
  * 
@@ -3103,6 +3251,72 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取容器服务模板列表
+         * @summary 获取容器服务模板列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getContainerServiceTemplates: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/containerServiceTemplates`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取当前用户所归属的所有项目的所有容器服务列表的总和
+         * @summary 获取所有容器服务列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getContainerServices: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/containerServices`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -5921,6 +6135,26 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取容器服务模板列表
+         * @summary 获取容器服务模板列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getContainerServiceTemplates(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GetContainerServiceTemplates200ResponseInner>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getContainerServiceTemplates(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取当前用户所归属的所有项目的所有容器服务列表的总和
+         * @summary 获取所有容器服务列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getContainerServices(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ContainerServiceResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getContainerServices(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取课程信息
          * @summary 获取课程信息
          * @param {string} courseId 
@@ -6812,6 +7046,24 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getCaptcha(options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取容器服务模板列表
+         * @summary 获取容器服务模板列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getContainerServiceTemplates(options?: any): AxiosPromise<Array<GetContainerServiceTemplates200ResponseInner>> {
+            return localVarFp.getContainerServiceTemplates(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取当前用户所归属的所有项目的所有容器服务列表的总和
+         * @summary 获取所有容器服务列表
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getContainerServices(options?: any): AxiosPromise<Array<ContainerServiceResponse>> {
+            return localVarFp.getContainerServices(options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取课程信息
          * @summary 获取课程信息
          * @param {string} courseId 
@@ -7652,6 +7904,28 @@ export class DefaultApi extends BaseAPI {
      */
     public getCaptcha(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getCaptcha(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取容器服务模板列表
+     * @summary 获取容器服务模板列表
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getContainerServiceTemplates(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getContainerServiceTemplates(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取当前用户所归属的所有项目的所有容器服务列表的总和
+     * @summary 获取所有容器服务列表
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getContainerServices(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getContainerServices(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

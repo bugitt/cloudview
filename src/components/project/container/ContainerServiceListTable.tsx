@@ -1,16 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ProColumns, ProTable } from '@ant-design/pro-table'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import {
     cloudapiClient,
     formatTimeStamp,
     getColumnSearchProps,
+    getToken,
+    getUserId,
     notificationError
 } from '../../../utils'
 import {
     ContainerResponse,
-    ContainerServiceResponse
+    ContainerServiceResponse,
+    Project
 } from '../../../cloudapi-client'
 import { Modal, Popconfirm, Space, Tag } from 'antd'
 import { ContainerServiceDetail } from './ContainerServiceDetail'
@@ -24,14 +27,22 @@ export interface ContainerServiceTableType {
     status: string
     creator: string
     createdTime: string
+    projectId: number
+    projectName: string
     containers: ContainerResponse[]
 }
 
-export const ContainerServiceListTable = () => {
-    const projectId = useParams().projectId ?? '0'
+export const ContainerServiceListTable = (props: { project?: Project }) => {
+    const { project } = props
+
     const { data, loading, error } = useRequest(
-        () => cloudapiClient.getProjectProjectIdContainers(projectId),
-        { pollingInterval: 1000 }
+        () =>
+            cloudapiClient.getProjectProjectIdContainers(
+                String(project ? project.id : -1)
+            ),
+        {
+            pollingInterval: 1000
+        }
     )
     notificationError(error)
 
@@ -55,7 +66,9 @@ export const ContainerServiceListTable = () => {
                     status: service.status?.toLowerCase() ?? '',
                     creator: service.creator,
                     createdTime: formatTimeStamp(service.createdTime),
-                    containers: service.containers
+                    containers: service.containers,
+                    projectId: service.projectId,
+                    projectName: service.projectName
                 }
             }) || []
 
@@ -167,7 +180,7 @@ export const ContainerServiceListTable = () => {
                         title={`确定要重新运行/部署服务 ${record.name} 吗？`}
                         onConfirm={() =>
                             cloudapiClient.postProjectProjectIdContainersRerun(
-                                projectId,
+                                String(record.projectId),
                                 record.id.toString()
                             )
                         }
@@ -182,7 +195,7 @@ export const ContainerServiceListTable = () => {
                         title={`确定要删除容器服务 ${record.name} 吗？`}
                         onConfirm={() =>
                             cloudapiClient.deleteProjectProjectIdContainersContainerServiceId(
-                                Number.parseInt(projectId),
+                                record.projectId,
                                 record.id
                             )
                         }
@@ -194,6 +207,23 @@ export const ContainerServiceListTable = () => {
         }
     ]
 
+    columns.splice(1, 0, {
+        title: '归属项目',
+        dataIndex: 'projectName',
+        key: 'projectName',
+        render: (text, record) => {
+            return (
+                <Link
+                    to={`/project/${
+                        record.projectId
+                    }/?token=${getToken()}&userId=${getUserId()}`}
+                >
+                    {record.projectName}
+                </Link>
+            )
+        }
+    })
+
     return (
         <>
             <ProTable<ContainerServiceTableType>
@@ -203,7 +233,7 @@ export const ContainerServiceListTable = () => {
                 columns={columns}
                 dataSource={serviceList}
                 toolBarRender={() => [
-                    <CreateContainerServiceForm projectId={projectId} />
+                    <CreateContainerServiceForm project={project} />
                 ]}
             />
         </>

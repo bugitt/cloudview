@@ -34,7 +34,7 @@ export const Project = () => {
                     </Descriptions>
                     <GitService />
                     <ImageService />
-                    <ContainerService />
+                    <ContainerService project={project} />
                 </Space>
             </PageHeader>
         </>

@@ -22,6 +22,7 @@ import {
     projectNameExtraInfo,
     randomColor
 } from '../../utils'
+import { ContainerServiceListTable } from './container/ContainerServiceListTable'
 import { ResourcePoolListTable } from './resource/ResourcePoolListTable'
 
 interface ProjectTableType extends Project {
@@ -192,6 +193,7 @@ export const Projects = () => {
                 toolBarRender={() => [createProjectForm()]}
             />
             <ResourcePoolListTable />
+            <ContainerServiceListTable />
         </>
     )
 }
