@@ -15,9 +15,15 @@ import {
     ContainerServiceResponse,
     Project
 } from '../../../cloudapi-client'
-import { Modal, Popconfirm, Space, Tag } from 'antd'
+import { Button, Modal, Popconfirm, Space, Tag } from 'antd'
 import { ContainerServiceDetail } from './ContainerServiceDetail'
 import { CreateContainerServiceForm } from './CreateContainerServiceForm'
+import { ContainerServiceTemplateGallery } from './ContainerServiceTemplate'
+import {
+    ApiOutlined,
+    AppstoreAddOutlined,
+    DragOutlined
+} from '@ant-design/icons'
 
 export interface ContainerServiceTableType {
     key: React.Key
@@ -34,6 +40,9 @@ export interface ContainerServiceTableType {
 
 export const ContainerServiceListTable = (props: { project?: Project }) => {
     const { project } = props
+
+    const [templateGalleryModalVisible, setTemplateGalleryModalVisible] =
+        useState(Boolean)
 
     const { data, loading, error } = useRequest(
         () =>
@@ -233,9 +242,25 @@ export const ContainerServiceListTable = (props: { project?: Project }) => {
                 columns={columns}
                 dataSource={serviceList}
                 toolBarRender={() => [
+                    <Button
+                        type="primary"
+                        onClick={() => setTemplateGalleryModalVisible(true)}
+                    >
+                        <AppstoreAddOutlined /> 从模板创建
+                    </Button>,
                     <CreateContainerServiceForm project={project} />
                 ]}
             />
+
+            <Modal
+                footer={null}
+                open={templateGalleryModalVisible}
+                width="60%"
+                title="从模板创建容器服务"
+                onCancel={() => setTemplateGalleryModalVisible(false)}
+            >
+                <ContainerServiceTemplateGallery project={project} />
+            </Modal>
         </>
     )
 }

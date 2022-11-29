@@ -356,10 +356,10 @@ export interface ContainerRequest {
     'workingDir'?: string;
     /**
      * 
-     * @type {Array<ContainerRequestEnvsInner>}
+     * @type {Array<KvPair>}
      * @memberof ContainerRequest
      */
-    'envs'?: Array<ContainerRequestEnvsInner>;
+    'envs'?: Array<KvPair>;
     /**
      * 
      * @type {Array<ContainerServicePort>}
@@ -378,25 +378,6 @@ export interface ContainerRequest {
      * @memberof ContainerRequest
      */
     'limitedResource': Resource;
-}
-/**
- * 
- * @export
- * @interface ContainerRequestEnvsInner
- */
-export interface ContainerRequestEnvsInner {
-    /**
-     * 
-     * @type {string}
-     * @memberof ContainerRequestEnvsInner
-     */
-    'key': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ContainerRequestEnvsInner
-     */
-    'value': string;
 }
 /**
  * 
@@ -436,10 +417,10 @@ export interface ContainerResponse {
     'workingDir'?: string;
     /**
      * 
-     * @type {Array<ContainerRequestEnvsInner>}
+     * @type {Array<KvPair>}
      * @memberof ContainerResponse
      */
-    'envs'?: Array<ContainerRequestEnvsInner>;
+    'envs'?: Array<KvPair>;
     /**
      * 
      * @type {Array<ContainerServicePort>}
@@ -1416,7 +1397,7 @@ export interface GetContainerServiceTemplates200ResponseInnerSegmentsInner {
      * @type {string}
      * @memberof GetContainerServiceTemplates200ResponseInnerSegmentsInner
      */
-    'segmaneName': string;
+    'segmentName': string;
     /**
      * 
      * @type {Array<ContainerServiceTemplate>}
@@ -1583,6 +1564,25 @@ export interface ImageRepo {
      * @memberof ImageRepo
      */
     'images'?: Array<Image>;
+}
+/**
+ * 
+ * @export
+ * @interface KvPair
+ */
+export interface KvPair {
+    /**
+     * 
+     * @type {string}
+     * @memberof KvPair
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof KvPair
+     */
+    'value': string;
 }
 /**
  * 
@@ -1788,6 +1788,37 @@ export interface PostPaasUserRequest {
      * @memberof PostPaasUserRequest
      */
     'userId': string;
+}
+/**
+ * 
+ * @export
+ * @interface PostProjectProjectIdContainersFromTemplateRequest
+ */
+export interface PostProjectProjectIdContainersFromTemplateRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdContainersFromTemplateRequest
+     */
+    'templateId': string;
+    /**
+     * 
+     * @type {Array<KvPair>}
+     * @memberof PostProjectProjectIdContainersFromTemplateRequest
+     */
+    'configs': Array<KvPair>;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdContainersFromTemplateRequest
+     */
+    'resourcePoolId': string;
+    /**
+     * 
+     * @type {Resource}
+     * @memberof PostProjectProjectIdContainersFromTemplateRequest
+     */
+    'limitedResource': Resource;
 }
 /**
  * 
@@ -3396,6 +3427,39 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (type !== undefined) {
                 localVarQueryParameter['type'] = type;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 管理员获取所有课程
+         * @summary 管理员获取所有课程
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCourseList: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/courses`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -5703,6 +5767,47 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 从模板创建容器服务
+         * @summary 从模板创建容器服务
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdContainersFromTemplateRequest} [postProjectProjectIdContainersFromTemplateRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdContainersFromTemplate: async (projectId: string, postProjectProjectIdContainersFromTemplateRequest?: PostProjectProjectIdContainersFromTemplateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('postProjectProjectIdContainersFromTemplate', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/containers/fromTemplate`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(postProjectProjectIdContainersFromTemplateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 异步创建。不返回任何内容。
          * @summary 重新部署容器服务
          * @param {string} projectId 
@@ -6175,6 +6280,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getCourseCourseIdResource(courseId: number, type?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CourseResourceResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCourseCourseIdResource(courseId, type, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 管理员获取所有课程
+         * @summary 管理员获取所有课程
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCourseList(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CourseResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCourseList(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6841,6 +6956,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 从模板创建容器服务
+         * @summary 从模板创建容器服务
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdContainersFromTemplateRequest} [postProjectProjectIdContainersFromTemplateRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postProjectProjectIdContainersFromTemplate(projectId: string, postProjectProjectIdContainersFromTemplateRequest?: PostProjectProjectIdContainersFromTemplateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postProjectProjectIdContainersFromTemplate(projectId, postProjectProjectIdContainersFromTemplateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 异步创建。不返回任何内容。
          * @summary 重新部署容器服务
          * @param {string} projectId 
@@ -7083,6 +7210,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getCourseCourseIdResource(courseId: number, type?: string, options?: any): AxiosPromise<Array<CourseResourceResponse>> {
             return localVarFp.getCourseCourseIdResource(courseId, type, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 管理员获取所有课程
+         * @summary 管理员获取所有课程
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCourseList(options?: any): AxiosPromise<Array<CourseResponse>> {
+            return localVarFp.getCourseList(options).then((request) => request(axios, basePath));
         },
         /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
@@ -7690,6 +7826,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.postProjectProjectIdContainers(projectId, containerServiceRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 从模板创建容器服务
+         * @summary 从模板创建容器服务
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdContainersFromTemplateRequest} [postProjectProjectIdContainersFromTemplateRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdContainersFromTemplate(projectId: string, postProjectProjectIdContainersFromTemplateRequest?: PostProjectProjectIdContainersFromTemplateRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.postProjectProjectIdContainersFromTemplate(projectId, postProjectProjectIdContainersFromTemplateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 异步创建。不返回任何内容。
          * @summary 重新部署容器服务
          * @param {string} projectId 
@@ -7951,6 +8098,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getCourseCourseIdResource(courseId: number, type?: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getCourseCourseIdResource(courseId, type, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 管理员获取所有课程
+     * @summary 管理员获取所有课程
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getCourseList(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getCourseList(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8672,6 +8830,19 @@ export class DefaultApi extends BaseAPI {
      */
     public postProjectProjectIdContainers(projectId: string, containerServiceRequest?: ContainerServiceRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).postProjectProjectIdContainers(projectId, containerServiceRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 从模板创建容器服务
+     * @summary 从模板创建容器服务
+     * @param {string} projectId 
+     * @param {PostProjectProjectIdContainersFromTemplateRequest} [postProjectProjectIdContainersFromTemplateRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postProjectProjectIdContainersFromTemplate(projectId: string, postProjectProjectIdContainersFromTemplateRequest?: PostProjectProjectIdContainersFromTemplateRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postProjectProjectIdContainersFromTemplate(projectId, postProjectProjectIdContainersFromTemplateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

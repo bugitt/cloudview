@@ -5,11 +5,15 @@ import {
     ProFormInstance,
     ProFormList,
     ProFormSelect,
+    ProFormSwitch,
     ProFormText
 } from '@ant-design/pro-form'
 import { Button, Card } from 'antd'
 import {
     ContainerServiceRequest,
+    ContainerServiceTemplate,
+    KvPair,
+    PostProjectProjectIdContainersFromTemplateRequest,
     Project,
     ResourcePool
 } from '../../../cloudapi-client'
@@ -26,10 +30,15 @@ import { useEffect, useRef, useState } from 'react'
 import { useRequest } from 'ahooks'
 import { ProSchemaValueEnumObj } from '@ant-design/pro-components'
 import { ResourcePoolProgress } from '../resource/ResourcePoolProgress'
+import { ApiOutlined } from '@ant-design/icons'
+import Meta from 'antd/es/card/Meta'
 
-export const CreateContainerServiceForm = (props: { project?: Project }) => {
+export const CreateContainerServiceForm = (props: {
+    project?: Project
+    template?: ContainerServiceTemplate
+}) => {
     const formRef = useRef<ProFormInstance>()
-    const { project } = props
+    const { template, project } = props
     const [projects, setProjects] = useState<Project[]>([])
     const [resourcePools, setResourcePools] = useState<ResourcePool[]>([])
 
@@ -63,8 +72,6 @@ export const CreateContainerServiceForm = (props: { project?: Project }) => {
             formRef.current?.setFieldValue('projectId', project.id)
         }
     }, [project?.id])
-
-    console.log(project, formRef.current?.getFieldValue('projectId'))
 
     const projectValueEnum: ProSchemaValueEnumObj = {}
     projects.forEach(project => {
@@ -102,44 +109,73 @@ export const CreateContainerServiceForm = (props: { project?: Project }) => {
             }
         })
         if (!resourceValid) return
-        const req: ContainerServiceRequest = {
-            name: values.name,
-            serviceType: values.serviceType,
-            containers: (values.containers as any[]).map(container => {
-                return {
-                    name: container.name,
-                    image: container.image,
-                    command: container.command,
-                    workingDir: container.workingDir,
-                    envs:
-                        (container.envs as any[])?.map(env => {
-                            return {
-                                key: env.key,
-                                value: env.value
-                            }
-                        }) || [],
-                    ports:
-                        (container.ports as any[])?.map(port => {
-                            return {
-                                name: port.name,
-                                port: port.port,
-                                protocol: port.protocol
-                            }
-                        }) || [],
-                    resourcePoolId: container.resourcePool as string,
-                    limitedResource: {
-                        cpu: container.cpu as number,
-                        memory: container.memory as number
-                    }
-                }
-            })
-        }
+        let postReq = async () => {}
         const projectId = project ? project.id : (values.projectId as number)
+        if (template) {
+            const configs: KvPair[] = []
+            new Map(Object.entries(values)).forEach((value, key) => {
+                configs.push({
+                    name: key,
+                    value: String(value)
+                })
+            })
+            const req: PostProjectProjectIdContainersFromTemplateRequest = {
+                templateId: template.id,
+                configs: configs,
+                resourcePoolId: values.resourcePoolId as string,
+                limitedResource: {
+                    cpu: values.cpu as number,
+                    memory: values.memory as number
+                }
+            }
+            postReq = async () => {
+                await cloudapiClient.postProjectProjectIdContainersFromTemplate(
+                    String(values.projectId),
+                    req
+                )
+            }
+        } else {
+            const req: ContainerServiceRequest = {
+                name: values.name,
+                serviceType: values.serviceType,
+                containers: (values.containers as any[]).map(container => {
+                    return {
+                        name: container.name,
+                        image: container.image,
+                        command: container.command,
+                        workingDir: container.workingDir,
+                        envs:
+                            (container.envs as any[])?.map(env => {
+                                return {
+                                    name: env.key,
+                                    value: env.value
+                                }
+                            }) || [],
+                        ports:
+                            (container.ports as any[])?.map(port => {
+                                return {
+                                    name: port.name,
+                                    port: port.port,
+                                    protocol: port.protocol
+                                }
+                            }) || [],
+                        resourcePoolId: container.resourcePool as string,
+                        limitedResource: {
+                            cpu: container.cpu as number,
+                            memory: container.memory as number
+                        }
+                    }
+                })
+            }
+            postReq = async () => {
+                await cloudapiClient.postProjectProjectIdContainers(
+                    String(values.projectId),
+                    req
+                )
+            }
+        }
         try {
-            await cloudapiClient.postProjectProjectIdContainers(
-                String(projectId),
-                req
-            )
+            await postReq()
             messageInfo(`容器服务 ${values.name} 已成功加入任务队列`)
             formRef?.current?.resetFields()
             resourcePoolsReq.run(Number(projectId))
@@ -157,7 +193,29 @@ export const CreateContainerServiceForm = (props: { project?: Project }) => {
             formRef={formRef}
             autoComplete="off"
             width="2000px"
-            trigger={<Button type="primary">创建容器服务</Button>}
+            trigger={
+                template ? (
+                    <Card
+                        hoverable
+                        style={{ width: 240 }}
+                        cover={
+                            <img alt={template.name} src={template.iconUrl} />
+                        }
+                    >
+                        <Meta
+                            title={template.name}
+                            description={
+                                template.description ? template.description : ''
+                            }
+                        />
+                    </Card>
+                ) : (
+                    <Button type="primary">
+                        <ApiOutlined />
+                        创建容器服务
+                    </Button>
+                )
+            }
         >
             {project ? null : (
                 <ProFormSelect
@@ -173,6 +231,65 @@ export const CreateContainerServiceForm = (props: { project?: Project }) => {
                     rules={[{ required: true }]}
                 />
             )}
+            {template ? (
+                <TemplateFormList
+                    template={template}
+                    resourcePoolOptionsObj={resourcePoolOptionsObj}
+                />
+            ) : (
+                <CustomFormItemList
+                    resourcePoolOptionsObj={resourcePoolOptionsObj}
+                />
+            )}
+        </ModalForm>
+    )
+}
+
+const TemplateFormList = (props: {
+    resourcePoolOptionsObj: ProSchemaValueEnumObj
+    template: ContainerServiceTemplate
+}) => {
+    const formItemList = props.template.config.map(config => {
+        if (config.type === 'string') {
+            return (
+                <ProFormText
+                    name={config.name}
+                    label={config.name}
+                    rules={[{ required: config.required }]}
+                    extra={config.description}
+                />
+            )
+        } else if (config.type === 'number') {
+            return (
+                <ProFormDigit
+                    name={config.name}
+                    label={config.name}
+                    rules={[{ required: config.required }]}
+                    extra={config.description}
+                />
+            )
+        } else if (config.type === 'boolean') {
+            return (
+                <ProFormSwitch
+                    name={config.name}
+                    label={config.label}
+                    rules={[{ required: config.required }]}
+                    extra={config.description}
+                />
+            )
+        } else {
+            return null
+        }
+    })
+    return <>{formItemList}</>
+}
+
+const CustomFormItemList = (props: {
+    resourcePoolOptionsObj: ProSchemaValueEnumObj
+}) => {
+    const { resourcePoolOptionsObj } = props
+    return (
+        <>
             <ProFormText
                 name="name"
                 label="容器服务名称"
@@ -375,6 +492,6 @@ export const CreateContainerServiceForm = (props: { project?: Project }) => {
                     </ProFormGroup>
                 </ProFormList>
             </ProFormList>
-        </ModalForm>
+        </>
     )
 }
