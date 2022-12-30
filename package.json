@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
-    "@ant-design/pro-form": "^2.5.1",
-    "@ant-design/pro-table": "^3.2.9",
+    "@ant-design/pro-components": "^2.3.49",
     "@next/font": "13.1.1",
     "@types/js-cookie": "^3.0.2",
     "@types/md5": "^2.3.2",
