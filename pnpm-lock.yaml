@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@ant-design/pro-form': ^2.5.1
   '@ant-design/pro-table': ^3.2.9
   '@next/font': 13.1.1
   '@types/js-cookie': ^3.0.2
@@ -20,6 +21,7 @@ specifiers:
   typescript: 4.9.4
 
 dependencies:
+  '@ant-design/pro-form': 2.5.1_aklh6uuawwn64a7sisq6vkrdxq
   '@ant-design/pro-table': 3.2.9_aklh6uuawwn64a7sisq6vkrdxq
   '@next/font': 13.1.1
   '@types/js-cookie': 3.0.2
