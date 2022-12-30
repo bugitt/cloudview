@@ -1,0 +1,27 @@
+import globalAxios from 'axios'
+import { Configuration, DefaultApiFactory } from '../cloudapi-client'
+import { notificationError } from './notification'
+import { getToken } from './token'
+
+const cloudapiAxios = globalAxios
+
+cloudapiAxios.interceptors.response.use(
+    response => response,
+    error => {
+        const statusCode = error.response?.status
+        if (statusCode === 401 || statusCode === 403) {
+            error.message = '登录已过期，请重新登录'
+            notificationError(error, '登录过期')
+        }
+        throw error
+    }
+)
+
+export const cloudapiClient = (token: string) => DefaultApiFactory(
+    new Configuration({
+        apiKey: token
+    }),
+    undefined,
+    cloudapiAxios
+)
+
