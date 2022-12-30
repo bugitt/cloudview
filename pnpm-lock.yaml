@@ -9,6 +9,7 @@ specifiers:
   '@types/node': 18.11.18
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.10
+  '@types/react-highlight-words': ^0.16.4
   ahooks: ^3.7.4
   antd: ^5.1.2
   axios: ^1.2.2
@@ -19,6 +20,7 @@ specifiers:
   rc-field-form: ^1.22.0
   react: 18.2.0
   react-dom: 18.2.0
+  react-highlight-words: ^0.18.0
   typescript: 4.9.4
 
 dependencies:
@@ -30,6 +32,7 @@ dependencies:
   '@types/node': 18.11.18
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.10
+  '@types/react-highlight-words': 0.16.4
   ahooks: 3.7.4_react@18.2.0
   antd: 5.1.2_biqbaboplfbrettd7655fr4n2y
   axios: 1.2.2
@@ -40,6 +43,7 @@ dependencies:
   rc-field-form: 1.27.3_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-highlight-words: 0.18.0_react@18.2.0
   typescript: 4.9.4
 
 packages:
@@ -550,6 +554,12 @@ packages:
 
   /@types/react-dom/18.0.10:
     resolution: {integrity: sha512-E42GW/JA4Qv15wQdqJq8DL4JhNpB3prJgjgapN3qJT9K2zO5IIAQh4VXvCEDupoqAwnz0cY4RlXeC/ajX5SFHg==}
+    dependencies:
+      '@types/react': 18.0.26
+    dev: false
+
+  /@types/react-highlight-words/0.16.4:
+    resolution: {integrity: sha512-KITBX3xzheQLu2s3bUgLmRE7ekmhc52zRjRTwkKayQARh30L4fjEGzGm7ULK9TuX2LgxWWavZqyQGDGjAHbL3w==}
     dependencies:
       '@types/react': 18.0.26
     dev: false
@@ -1622,6 +1632,10 @@ packages:
       function-bind: 1.1.1
     dev: false
 
+  /highlight-words-core/1.2.2:
+    resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
+    dev: false
+
   /ignore/5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
@@ -1889,6 +1903,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+    dev: false
+
+  /memoize-one/4.0.3:
+    resolution: {integrity: sha512-QmpUu4KqDmX0plH4u+tf0riMc1KHE1+lw95cMrLlXQAFOx/xnBtwhZ52XJxd9X2O6kwKBqX32kmhbhlobD0cuw==}
     dev: false
 
   /merge2/1.4.1:
@@ -2723,6 +2741,17 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-highlight-words/0.18.0_react@18.2.0:
+    resolution: {integrity: sha512-5z+46eLPjB4JWgOhuQ0E+6iUPTD1U3amiy5KKjzZmeJ5zyvHr91hnzBT3UHya/KlySm5KRTKpYpba9vs67oO2A==}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
+    dependencies:
+      highlight-words-core: 1.2.2
+      memoize-one: 4.0.3
+      prop-types: 15.8.1
+      react: 18.2.0
     dev: false
 
   /react-is/16.13.1:
