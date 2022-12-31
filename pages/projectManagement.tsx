@@ -21,7 +21,7 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
 
 export const getServerSideProps: GetServerSideProps<ProjectsProps> = async (ctx) => {
     const token = ssrToken(ctx)
-    const client = cloudapiClient(token)
+    const client = cloudapiClient(token, process.env.CLOUDAPI_URL)
     const data = (await client.getProjects()).data
     return {
         props: {
