@@ -1,7 +1,6 @@
 import globalAxios from 'axios'
 import { Configuration, DefaultApiFactory } from '../cloudapi-client'
 import { notificationError } from './notification'
-import { getToken } from './token'
 
 const cloudapiAxios = globalAxios
 

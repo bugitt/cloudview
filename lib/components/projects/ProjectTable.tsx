@@ -1,13 +1,13 @@
 import { ModalForm, ProColumns, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components'
 import { useRequest } from 'ahooks'
 import { Button, Tag } from 'antd'
+import Link from 'next/link'
 import { ReactNode, useState } from 'react'
 import {
     ExperimentResponse,
     PostProjectsRequest,
     Project
 } from '../../cloudapi-client'
-import { cloudapiClient } from '../../utils/cloudapi'
 import { randomColor } from '../../utils/color'
 import { formatTimeStamp } from '../../utils/date'
 import { messageError, messageInfo, notificationError } from '../../utils/notification'
@@ -143,7 +143,9 @@ export const ProjectTable = (props: ProjectTableProps) => {
             // @ts-ignore
             ...GetColumnSearchProps('name', undefined, (_, record) => {
                 return (
-                    <div>{record.name}</div>
+                    <Link href={`/projects/${record.id}`}>
+                        {record.name}
+                    </Link>
                 )
             })
         },
