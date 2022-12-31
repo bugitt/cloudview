@@ -1,4 +1,3 @@
-import { useRequest } from "ahooks"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project } from "../lib/cloudapi-client"
 import { ProjectTable } from "../lib/components/projects/ProjectTable"
