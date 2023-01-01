@@ -11,7 +11,6 @@ import {
 import { randomColor } from '../../utils/color'
 import { formatTimeStamp } from '../../utils/date'
 import { messageError, messageInfo, notificationError } from '../../utils/notification'
-import { formItemProjectNameValidator, projectNameExtraInfo } from '../../utils/project'
 import { GetColumnSearchProps } from '../../utils/table'
 import { getUserId } from '../../utils/token'
 import { NetworkComponentPropsType } from '../../utils/type'
@@ -36,7 +35,7 @@ const CreateProjectForm = (props: NetworkComponentPropsType) => {
     const experiments: ExperimentResponse[] = data?.data || []
 
     const onCreateProjectFormFinish = async (values: any) => {
-        const req: PostProjectsRequest = { name: values.name }
+        const req: PostProjectsRequest = { displayName: values.name as string }
         req.expId = values.expId || undefined
         req.description = values.description || undefined
         req.isPersonal = !values.expId
@@ -72,14 +71,8 @@ const CreateProjectForm = (props: NetworkComponentPropsType) => {
             <ProFormText
                 name="name"
                 label="项目名称"
-                extra={projectNameExtraInfo}
                 rules={[
                     { required: true },
-                    {
-                        type: 'string',
-                        validator: (_, value) =>
-                            formItemProjectNameValidator(value)
-                    }
                 ]}
             />
             <ProFormSelect
@@ -138,13 +131,13 @@ export const ProjectTable = (props: ProjectTableProps) => {
     const columns: ProColumns<ProjectTableType>[] = [
         {
             title: '项目名称',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'displayName',
+            key: 'displayName',
             // @ts-ignore
-            ...GetColumnSearchProps('name', undefined, (_, record) => {
+            ...GetColumnSearchProps('displayName', undefined, (_, record) => {
                 return (
                     <Link href={`/projects/${record.id}`}>
-                        {record.name}
+                        {record.displayName}
                     </Link>
                 )
             })

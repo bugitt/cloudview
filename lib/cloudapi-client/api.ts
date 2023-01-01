@@ -1919,12 +1919,6 @@ export interface PostProjectProjectIdMembersRequest {
  */
 export interface PostProjectsRequest {
     /**
-     * 字符串格式为 RFC1035
-     * @type {string}
-     * @memberof PostProjectsRequest
-     */
-    'name': string;
-    /**
      * 
      * @type {number}
      * @memberof PostProjectsRequest
@@ -1935,7 +1929,7 @@ export interface PostProjectsRequest {
      * @type {string}
      * @memberof PostProjectsRequest
      */
-    'displayName'?: string;
+    'displayName': string;
     /**
      * 
      * @type {string}
