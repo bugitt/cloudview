@@ -11,6 +11,7 @@ import ButtonGroup from "antd/es/button/button-group";
 import { AddGitRepoForm } from "./git/AddGitRepoForm";
 import { ProCard } from "@ant-design/pro-components";
 import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
+import { CopyGitCloneCommandButton } from "./git/CopyGitCloneCommandButton";
 
 interface ProjectFlowProps extends NetworkComponentPropsType {
     project: Project,
@@ -42,7 +43,7 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
                 >
                     <Space>
                         <ShowGitRepoDrawer repo={repo} />
-                        <Button>复制克隆命令</Button>
+                        <CopyGitCloneCommandButton repo={repo} />
                     </Space>
                 </ProCard>
             </div>
