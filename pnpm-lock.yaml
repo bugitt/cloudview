@@ -23,6 +23,7 @@ specifiers:
   react: 18.2.0
   react-dom: 18.2.0
   react-highlight-words: ^0.18.0
+  react-icons: ^4.7.1
   reactflow: ^11.4.0
   typescript: 4.9.4
 
@@ -49,6 +50,7 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-highlight-words: 0.18.0_react@18.2.0
+  react-icons: 4.7.1_react@18.2.0
   reactflow: 11.4.0_biqbaboplfbrettd7655fr4n2y
   typescript: 4.9.4
 
@@ -3282,6 +3284,14 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-icons/4.7.1_react@18.2.0:
+    resolution: {integrity: sha512-yHd3oKGMgm7zxo3EA7H2n7vxSoiGmHk5t6Ou4bXsfcgWyhfDKMpyKfhHR6Bjnn63c+YXBLBPUql9H4wPJM6sXw==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: false
@@ -3760,7 +3770,7 @@ packages:
     dev: false
 
   github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2:
-    resolution: {commit: 000ac1800e620f770f4eb31b5ae908f6167b0ab2, repo: git+ssh://git@github.com/moment/moment.git, type: git}
+    resolution: {tarball: https://codeload.github.com/moment/moment/tar.gz/000ac1800e620f770f4eb31b5ae908f6167b0ab2}
     name: moment
     version: 2.29.4
     dev: false
