@@ -1,10 +1,10 @@
 import { ProForm, ProFormInstance, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
 import { Button, Drawer, Form, notification } from "antd";
 import { useRef, useState } from "react";
-import { PostProjectProjectIdReposRequest, Project } from "../../cloudapi-client";
-import { notificationError } from "../../utils/notification";
-import { formItemProjectNameValidator, projectNameExtraInfo } from "../../utils/project";
-import { NetworkComponentPropsType } from "../../utils/type";
+import { PostProjectProjectIdReposRequest, Project } from "../../../cloudapi-client";
+import { notificationError } from "../../../utils/notification";
+import { formItemProjectNameValidator, projectNameExtraInfo } from "../../../utils/project";
+import { NetworkComponentPropsType } from "../../../utils/type";
 
 interface AddGitRepoFormProps extends NetworkComponentPropsType {
     project: Project

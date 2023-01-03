@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useRequest } from "ahooks";
 import { notificationError } from "../../utils/notification";
 import ButtonGroup from "antd/es/button/button-group";
-import { AddGitRepoForm } from "./AddGitRepoForm";
+import { AddGitRepoForm } from "./git/AddGitRepoForm";
 import { ProCard } from "@ant-design/pro-components";
 
 interface ProjectFlowProps extends NetworkComponentPropsType {
