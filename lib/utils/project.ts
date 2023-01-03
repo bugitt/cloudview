@@ -1,4 +1,4 @@
-export const projectNameExtraInfo = `仅允许包含小写字母、数字、'-'，且必须以小写字母开头，并以小写字母或数字结尾，且长度小于等于24。`
+export const projectNameExtraInfo = `仅允许包含小写字母、数字、'-'，且必须以小写字母开头，并以小写字母或数字结尾，且长度小于等于23。`
 
 export const isValidProjectName = (name: string): Boolean => {
     return /^[a-z]([-a-z0-9]*[a-z0-9])?$/.test(name) && name.length <= 24

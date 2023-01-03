@@ -19,7 +19,7 @@ cloudapiAxios.interceptors.response.use(
 export const cloudapiClient = (token: string, url?: string) => DefaultApiFactory(
     new Configuration({
         apiKey: token,
-        basePath: (url ?? 'https://scs.buaa.edu.cn') + '/api/v2'
+        basePath: (url ?? 'http://localhost:9999') + '/api/v2'
     }),
     undefined,
     cloudapiAxios

@@ -1915,6 +1915,43 @@ export interface PostProjectProjectIdMembersRequest {
 /**
  * 
  * @export
+ * @interface PostProjectProjectIdReposRequest
+ */
+export interface PostProjectProjectIdReposRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdReposRequest
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdReposRequest
+     */
+    'description'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PostProjectProjectIdReposRequest
+     */
+    'private': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdReposRequest
+     */
+    'gitignores'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PostProjectProjectIdReposRequest
+     */
+    'license'?: string;
+}
+/**
+ * 
+ * @export
  * @interface PostProjectsRequest
  */
 export interface PostProjectsRequest {
@@ -2041,7 +2078,7 @@ export interface Project {
      * @type {string}
      * @memberof Project
      */
-    'displayName'?: string;
+    'displayName': string;
     /**
      * 
      * @type {string}
@@ -2183,6 +2220,18 @@ export interface Repository {
      * @memberof Repository
      */
     'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Repository
+     */
+    'repoName': string;
+    /**
+     * 所有者的名称
+     * @type {string}
+     * @memberof Repository
+     */
+    'owner': string;
     /**
      * 代码仓库的URL
      * @type {string}
@@ -4446,6 +4495,46 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 检查git仓库名称是否重复
+         * @summary 检查git仓库名称是否重复
+         * @param {string} name 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReposNameExist: async (name: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('getReposNameExist', 'name', name)
+            const localVarPath = `/repos/name/exist`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 通过ID获取资源池信息
          * @summary 获取指定的资源池
          * @param {string} resourcePoolId 
@@ -6040,6 +6129,47 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 在指定项目中创建代码仓库
+         * @summary 创建代码仓库
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdReposRequest} [postProjectProjectIdReposRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdRepos: async (projectId: string, postProjectProjectIdReposRequest?: PostProjectProjectIdReposRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('postProjectProjectIdRepos', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/repos`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(postProjectProjectIdReposRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 接口调用者为自己创建一个新项目
          * @summary 创建新项目
          * @param {PostProjectsRequest} [postProjectsRequest] 
@@ -6672,6 +6802,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 检查git仓库名称是否重复
+         * @summary 检查git仓库名称是否重复
+         * @param {string} name 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getReposNameExist(name: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<boolean>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getReposNameExist(name, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 通过ID获取资源池信息
          * @summary 获取指定的资源池
          * @param {string} resourcePoolId 
@@ -7125,6 +7266,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async postProjectProjectIdMembers(projectId: number, postProjectProjectIdMembersRequest?: PostProjectProjectIdMembersRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectMember>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postProjectProjectIdMembers(projectId, postProjectProjectIdMembersRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 在指定项目中创建代码仓库
+         * @summary 创建代码仓库
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdReposRequest} [postProjectProjectIdReposRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postProjectProjectIdRepos(projectId: string, postProjectProjectIdReposRequest?: PostProjectProjectIdReposRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Repository>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postProjectProjectIdRepos(projectId, postProjectProjectIdReposRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7591,6 +7744,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getProjects(expId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 检查git仓库名称是否重复
+         * @summary 检查git仓库名称是否重复
+         * @param {string} name 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReposNameExist(name: string, options?: any): AxiosPromise<boolean> {
+            return localVarFp.getReposNameExist(name, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 通过ID获取资源池信息
          * @summary 获取指定的资源池
          * @param {string} resourcePoolId 
@@ -8006,6 +8169,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         postProjectProjectIdMembers(projectId: number, postProjectProjectIdMembersRequest?: PostProjectProjectIdMembersRequest, options?: any): AxiosPromise<ProjectMember> {
             return localVarFp.postProjectProjectIdMembers(projectId, postProjectProjectIdMembersRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 在指定项目中创建代码仓库
+         * @summary 创建代码仓库
+         * @param {string} projectId 
+         * @param {PostProjectProjectIdReposRequest} [postProjectProjectIdReposRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postProjectProjectIdRepos(projectId: string, postProjectProjectIdReposRequest?: PostProjectProjectIdReposRequest, options?: any): AxiosPromise<Repository> {
+            return localVarFp.postProjectProjectIdRepos(projectId, postProjectProjectIdReposRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 接口调用者为自己创建一个新项目
@@ -8544,6 +8718,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 检查git仓库名称是否重复
+     * @summary 检查git仓库名称是否重复
+     * @param {string} name 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getReposNameExist(name: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getReposNameExist(name, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 通过ID获取资源池信息
      * @summary 获取指定的资源池
      * @param {string} resourcePoolId 
@@ -9036,6 +9222,19 @@ export class DefaultApi extends BaseAPI {
      */
     public postProjectProjectIdMembers(projectId: number, postProjectProjectIdMembersRequest?: PostProjectProjectIdMembersRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).postProjectProjectIdMembers(projectId, postProjectProjectIdMembersRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 在指定项目中创建代码仓库
+     * @summary 创建代码仓库
+     * @param {string} projectId 
+     * @param {PostProjectProjectIdReposRequest} [postProjectProjectIdReposRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public postProjectProjectIdRepos(projectId: string, postProjectProjectIdReposRequest?: PostProjectProjectIdReposRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).postProjectProjectIdRepos(projectId, postProjectProjectIdReposRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

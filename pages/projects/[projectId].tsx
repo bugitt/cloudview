@@ -1,25 +1,24 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
-import { useRouter } from "next/router"
-import { Project } from "../../lib/cloudapi-client"
+import { Project, Repository } from "../../lib/cloudapi-client"
+import { ProjectFlow } from "../../lib/components/projects/ProjectFlow"
 import { cloudapiClient } from "../../lib/utils/cloudapi"
 import { ssrToken, ssrUserId } from "../../lib/utils/token"
 import { BaseSSRType } from "../../lib/utils/type"
 
 interface ProjectProps extends BaseSSRType {
     project: Project
+    gitRepos: Repository[]
 }
 
-export default function SingleProject(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const router = useRouter()
-    const { project, token } = props
+export default function SingleProjectPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    const { project, token, gitRepos } = props
     const client = cloudapiClient(token)
     return (
         <>
-            <div>
-                <h1>
-                    {project.name}
-                </h1>
-            </div>
+            <h1>
+                {project.name}
+            </h1>
+            <ProjectFlow project={project} client={client} />
         </>
     )
 }
@@ -28,12 +27,14 @@ export const getServerSideProps: GetServerSideProps<ProjectProps> = async (ctx) 
     const token = ssrToken(ctx)
     const client = cloudapiClient(token, process.env.CLOUDAPI_URL)
     const projectId = Number(ctx.query.projectId)
-    const data = (await client.getProjectProjectId(projectId)).data
+    const project = (await client.getProjectProjectId(projectId)).data
+    const gitRepos = (await client.getProjectProjectIdRepos(String(projectId))).data
     return {
         props: {
             token: ssrToken(ctx),
             userId: ssrUserId(ctx),
-            project: data,
+            project: project,
+            gitRepos: gitRepos,
         },
     }
 }
