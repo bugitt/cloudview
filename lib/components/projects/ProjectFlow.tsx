@@ -2,13 +2,15 @@ import { Project, Repository } from "../../cloudapi-client";
 import { NetworkComponentPropsType } from "../../utils/type";
 import ReactFlow, { Background, Controls, Edge, Handle, Node, NodeProps, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Button, Card, notification } from "antd";
-import { useCallback, useMemo, useState } from "react";
+import { Button, Space } from "antd";
+import { useState } from "react";
+import { RiGitRepositoryLine } from "react-icons/ri";
 import { useRequest } from "ahooks";
 import { notificationError } from "../../utils/notification";
 import ButtonGroup from "antd/es/button/button-group";
 import { AddGitRepoForm } from "./git/AddGitRepoForm";
 import { ProCard } from "@ant-design/pro-components";
+import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
 
 interface ProjectFlowProps extends NetworkComponentPropsType {
     project: Project,
@@ -23,13 +25,29 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
     return (
         <>
             <div>
-                <ProCard title={repo.repoName} style={{ height: 100 }} bordered>
-                    <p>{repo.url}</p>
+                <ProCard
+                    title={(
+                        <>
+                            <RiGitRepositoryLine />
+                            &nbsp;
+                            {repo.name}
+                        </>
+                    )}
+                    style={{
+                        width: 400,
+                        height: 100,
+                    }}
+                    bordered
+                    boxShadow
+                >
+                    <Space>
+                        <ShowGitRepoDrawer repo={repo} />
+                        <Button>复制克隆命令</Button>
+                    </Space>
                 </ProCard>
             </div>
             <Handle type="source" position={Position.Right} />
         </>
-
     )
 }
 
@@ -49,7 +67,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
         return {
             id: `gitRepo-${i}`,
             type: 'gitRepoNode',
-            position: { x: 0, y: i * (100 + 2) },
+            position: { x: 0, y: i * (100 + 25) + 25 },
             data: { repo: repo },
         }
     })
