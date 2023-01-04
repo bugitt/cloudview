@@ -8,14 +8,14 @@ import {
     PostProjectsRequest,
     Project
 } from '../../cloudapi-client'
+import { cloudapiClient } from '../../utils/cloudapi'
 import { randomColor } from '../../utils/color'
 import { formatTimeStamp } from '../../utils/date'
 import { messageError, messageInfo, notificationError } from '../../utils/notification'
 import { GetColumnSearchProps } from '../../utils/table'
 import { getUserId } from '../../utils/token'
-import { NetworkComponentPropsType } from '../../utils/type'
 
-interface ProjectTableProps extends NetworkComponentPropsType {
+interface ProjectTableProps {
     projectList: Project[]
 }
 
@@ -28,10 +28,9 @@ interface ProjectTableType extends Project {
     type: string
 }
 
-const CreateProjectForm = (props: NetworkComponentPropsType) => {
-    const { client } = props
-    const { data } = useRequest(() => client.getExperiments())
-    const projectsReq = useRequest(client.getProjects)
+const CreateProjectForm = () => {
+    const { data } = useRequest(() => cloudapiClient.getExperiments())
+    const projectsReq = useRequest(cloudapiClient.getProjects)
     const experiments: ExperimentResponse[] = data?.data || []
 
     const onCreateProjectFormFinish = async (values: any) => {
@@ -40,7 +39,7 @@ const CreateProjectForm = (props: NetworkComponentPropsType) => {
         req.description = values.description || undefined
         req.isPersonal = !values.expId
         try {
-            await client.postProjects(req)
+            await cloudapiClient.postProjects(req)
             messageInfo(`项目 ${values.name} 创建成功`)
             return true
         } catch (_) {
@@ -89,12 +88,11 @@ const CreateProjectForm = (props: NetworkComponentPropsType) => {
 }
 
 export const ProjectTable = (props: ProjectTableProps) => {
-    const { client } = props
-    const experimentsReq = useRequest(() => client.getExperiments())
+    const experimentsReq = useRequest(() => cloudapiClient.getExperiments())
     notificationError(experimentsReq.error)
 
     const [projectList, setProjectList] = useState<Project[]>(props.projectList)
-    const projectListReq = useRequest(client.getProjects, {
+    const projectListReq = useRequest(cloudapiClient.getProjects, {
         manual: true,
         onSuccess: (data) => {
             setProjectList(data?.data ?? props.projectList)
@@ -184,7 +182,7 @@ export const ProjectTable = (props: ProjectTableProps) => {
                 columns={columns}
                 search={false}
                 headerTitle="项目列表"
-                toolBarRender={() => [CreateProjectForm({ client })]}
+                toolBarRender={() => [CreateProjectForm()]}
             />
         </>
     )

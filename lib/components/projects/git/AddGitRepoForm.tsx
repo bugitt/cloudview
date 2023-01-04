@@ -1,12 +1,12 @@
 import { ProForm, ProFormInstance, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
-import { Button, Drawer, Form, notification } from "antd";
+import { Button, Drawer } from "antd";
 import { useRef, useState } from "react";
 import { PostProjectProjectIdReposRequest, Project } from "../../../cloudapi-client";
+import { cloudapiClient } from "../../../utils/cloudapi";
 import { notificationError } from "../../../utils/notification";
 import { formItemProjectNameValidator, projectNameExtraInfo } from "../../../utils/project";
-import { NetworkComponentPropsType } from "../../../utils/type";
 
-interface AddGitRepoFormProps extends NetworkComponentPropsType {
+interface AddGitRepoFormProps {
     project: Project
     hook(): void
 }
@@ -23,7 +23,7 @@ export function AddGitRepoForm(props: AddGitRepoFormProps) {
     const formRef = useRef<ProFormInstance>()
     const [open, setOpen] = useState(false);
 
-    const { client, project, hook } = props
+    const { project, hook } = props
 
     const showDrawer = () => {
         setOpen(true);
@@ -44,7 +44,7 @@ export function AddGitRepoForm(props: AddGitRepoFormProps) {
         }
         console.log(req)
         try {
-            await client.postProjectProjectIdRepos(String(project.id), req)
+            await cloudapiClient.postProjectProjectIdRepos(String(project.id), req)
             await hook()
             formRef.current?.resetFields()
             onClose()
@@ -85,7 +85,7 @@ export function AddGitRepoForm(props: AddGitRepoFormProps) {
                             {
                                 type: 'string',
                                 validator: (_, value) => {
-                                    return client.getReposNameExist(value).then((res) => {
+                                    return cloudapiClient.getReposNameExist(value).then((res) => {
                                         if (res.data) {
                                             return Promise.reject('代码仓库名称已存在')
                                         }

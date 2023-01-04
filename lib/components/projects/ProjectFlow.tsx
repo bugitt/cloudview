@@ -1,5 +1,4 @@
 import { Project, Repository } from "../../cloudapi-client";
-import { NetworkComponentPropsType } from "../../utils/type";
 import ReactFlow, { Background, Controls, Edge, Handle, Node, NodeProps, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Button, Space } from "antd";
@@ -12,8 +11,9 @@ import { AddGitRepoForm } from "./git/AddGitRepoForm";
 import { ProCard } from "@ant-design/pro-components";
 import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
 import { CopyGitCloneCommandButton } from "./git/CopyGitCloneCommandButton";
+import { cloudapiClient } from "../../utils/cloudapi";
 
-interface ProjectFlowProps extends NetworkComponentPropsType {
+interface ProjectFlowProps {
     project: Project,
 }
 
@@ -53,9 +53,9 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
 }
 
 export function ProjectFlow(props: ProjectFlowProps) {
-    const { project, client } = props
+    const { project } = props
     const [gitRepos, setGitRepos] = useState<Repository[]>([])
-    const gitRepoReq = useRequest(() => client.getProjectProjectIdRepos(String(project.id)), {
+    const gitRepoReq = useRequest(() => cloudapiClient.getProjectProjectIdRepos(String(project.id)), {
         onSuccess: (data) => {
             setGitRepos(data.data)
         },
@@ -90,7 +90,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
         <>
             <div style={{ height: 3000 }}>
                 <ButtonGroup>
-                    <AddGitRepoForm client={client} project={project} hook={() => { gitRepoReq.run() }} />
+                    <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
                     <Button onClick={addGitRepoClick} type='primary'>添加 镜像构建任务</Button>
                     <Button onClick={addGitRepoClick} type='primary'>添加 容器部署任务</Button>
                 </ButtonGroup>

@@ -1,6 +1,8 @@
 import globalAxios from 'axios'
 import { Configuration, DefaultApiFactory } from '../cloudapi-client'
+import { cloudapi } from '../config/env'
 import { notificationError } from './notification'
+import { getToken } from './token'
 
 const cloudapiAxios = globalAxios
 
@@ -16,10 +18,18 @@ cloudapiAxios.interceptors.response.use(
     }
 )
 
-export const cloudapiClient = (token: string, url?: string) => DefaultApiFactory(
+export const cloudapiClient = DefaultApiFactory(
+    new Configuration({
+        apiKey: () => getToken()
+    }),
+    undefined,
+    cloudapiAxios
+)
+
+export const serverSideCloudapiClient = (token: string) => DefaultApiFactory(
     new Configuration({
         apiKey: token,
-        basePath: (url ?? 'http://localhost:9999') + '/api/v2'
+        basePath: cloudapi.serverSideEndpoint + "/api/v2"
     }),
     undefined,
     cloudapiAxios
