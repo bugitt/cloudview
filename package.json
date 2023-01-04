@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
     "@ant-design/pro-components": "^2.3.49",
+    "@kubernetes/client-node": "^0.18.0",
     "@next/font": "13.1.1",
     "@types/js-cookie": "^3.0.2",
     "@types/md5": "^2.3.2",
