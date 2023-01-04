@@ -24,4 +24,3 @@ export const cloudapiClient = (token: string, url?: string) => DefaultApiFactory
     undefined,
     cloudapiAxios
 )
-
