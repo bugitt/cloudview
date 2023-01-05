@@ -1,12 +1,14 @@
 import globalAxios from 'axios'
 import { Configuration, DefaultApiFactory } from '../cloudapi-client'
 import { cloudapi } from '../config/env'
+import { Builder } from '../models/builder'
+import { CreateImageBuilderRequest } from '../models/createImageBuilderRequest'
 import { notificationError } from './notification'
 import { getToken } from './token'
 
-const cloudapiAxios = globalAxios
+const cloudviewAxios = globalAxios
 
-cloudapiAxios.interceptors.response.use(
+cloudviewAxios.interceptors.response.use(
     response => response,
     error => {
         const statusCode = error.response?.status
@@ -23,7 +25,7 @@ export const cloudapiClient = DefaultApiFactory(
         apiKey: () => getToken()
     }),
     undefined,
-    cloudapiAxios
+    cloudviewAxios
 )
 
 export const serverSideCloudapiClient = (token: string) => DefaultApiFactory(
@@ -32,5 +34,21 @@ export const serverSideCloudapiClient = (token: string) => DefaultApiFactory(
         basePath: cloudapi.serverSideEndpoint + "/api/v2"
     }),
     undefined,
-    cloudapiAxios
+    cloudviewAxios
 )
+
+const viewApiClientConfig = () => {
+    const token = getToken()
+    return {
+        headers: {
+            Authorization: token,
+        },
+        baseURL: "https://scs.buaa.edu.cn/view/v2/api",
+    }
+}
+
+export const viewApiClient = {
+    createImageBuilder: async (request: CreateImageBuilderRequest) => {
+        return (await cloudviewAxios.post('/imageBuilders', request, viewApiClientConfig())).data as Builder[]
+    }
+}
