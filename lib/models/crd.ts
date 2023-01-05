@@ -1,10 +1,6 @@
 import * as k8s from '@kubernetes/client-node';
 
-export interface BaseCRD {
-    apiVersion?: string;
-    kind?: string;
-    metadata?: k8s.V1ObjectMeta;
-}
+export const crdApiVersion = "cloudapi.scs.buaa.edu.cn/v1alpha1";
 
 export interface BaseCRDStatus {
     base?: {

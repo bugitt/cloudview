@@ -1,11 +1,13 @@
 /* tslint:disable */
 import * as k8s from '@kubernetes/client-node';
-import { BaseCRD, BaseCRDStatus } from './crd';
+import { BaseCRDStatus } from './crd';
+
+export const crdBuilderKind = "Builder";
 
 /**
  * Builder is the Schema for the builders API
  */
-export interface Builder extends BaseCRD {
+export interface Builder extends k8s.KubernetesObject {
   /**
    * BuilderSpec defines the desired state of Builder
    */

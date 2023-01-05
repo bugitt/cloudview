@@ -8,3 +8,17 @@ export const businessK8s = {
 export const cloudapi = {
     serverSideEndpoint: process.env.CLOUDAPI_SERVER_SIDE_ENDPOINT,
 }
+
+// for image builder
+export const imageBuilder = {
+    s3: {
+        endpoint: process.env.IMAGE_BUILDER_S3_ENDPOINT,
+        accessKeyID: process.env.IMAGE_BUILDER_S3_ACCESS_KEY_ID,
+        accessSecretKey: process.env.IMAGE_BUILDER_S3_ACCESS_SECRET_KEY,
+        bucket: process.env.IMAGE_BUILDER_S3_BUCKET,
+        region: process.env.IMAGE_BUILDER_S3_REGION,
+    },
+    imageRegistry: process.env.IMAGE_BUILDER_IMAGE_REGISTRY,
+    pushSecretName: process.env.IMAGE_BUILDER_PUSH_SECRET_NAME ?? "push-secret",
+    dockerconfigjson: process.env.IMAGE_BUILDER_DOCKERCONFIGJSON ?? "",
+}

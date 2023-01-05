@@ -1480,53 +1480,289 @@ export interface Image {
     'pullCommand': string;
 }
 /**
+ * Image builder CRD
+ * @export
+ * @interface ImageBuilder
+ */
+export interface ImageBuilder {
+    /**
+     * APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+     * @type {string}
+     * @memberof ImageBuilder
+     */
+    'apiVersion': string;
+    /**
+     * Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+     * @type {string}
+     * @memberof ImageBuilder
+     */
+    'kind': string;
+    /**
+     * 
+     * @type {ImageBuilderMetadata}
+     * @memberof ImageBuilder
+     */
+    'metadata': ImageBuilderMetadata;
+    /**
+     * 
+     * @type {ImageBuilderSpec}
+     * @memberof ImageBuilder
+     */
+    'spec': ImageBuilderSpec;
+    /**
+     * 
+     * @type {ImageBuilderStatus}
+     * @memberof ImageBuilder
+     */
+    'status'?: ImageBuilderStatus;
+}
+/**
  * 
  * @export
- * @interface ImageBuildTask
+ * @interface ImageBuilderMetadata
  */
-export interface ImageBuildTask {
+export interface ImageBuilderMetadata {
     /**
      * 
      * @type {string}
-     * @memberof ImageBuildTask
+     * @memberof ImageBuilderMetadata
      */
-    'hostPrefix': string;
+    'name': string;
     /**
      * 
      * @type {string}
-     * @memberof ImageBuildTask
+     * @memberof ImageBuilderMetadata
      */
-    'owner': string;
+    'namespace': string;
+}
+/**
+ * BuilderSpec defines the desired state of Builder
+ * @export
+ * @interface ImageBuilderSpec
+ */
+export interface ImageBuilderSpec {
+    /**
+     * 
+     * @type {ImageBuilderSpecContext}
+     * @memberof ImageBuilderSpec
+     */
+    'context': ImageBuilderSpecContext;
     /**
      * 
      * @type {string}
-     * @memberof ImageBuildTask
+     * @memberof ImageBuilderSpec
      */
-    'repo': string;
+    'destination': string;
     /**
      * 
      * @type {string}
-     * @memberof ImageBuildTask
+     * @memberof ImageBuilderSpec
      */
-    'tag': string;
+    'dockerfilePath'?: string;
     /**
-     * UNDO, DOING, SUCCESS, FAIL
+     * 
      * @type {string}
-     * @memberof ImageBuildTask
+     * @memberof ImageBuilderSpec
+     */
+    'pushSecretName'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ImageBuilderSpec
+     */
+    'round'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpec
+     */
+    'workspacePath'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface ImageBuilderSpecContext
+ */
+export interface ImageBuilderSpecContext {
+    /**
+     * 
+     * @type {ImageBuilderSpecContextGit}
+     * @memberof ImageBuilderSpecContext
+     */
+    'git'?: ImageBuilderSpecContextGit;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContext
+     */
+    'raw'?: string;
+    /**
+     * 
+     * @type {ImageBuilderSpecContextS3}
+     * @memberof ImageBuilderSpecContext
+     */
+    's3'?: ImageBuilderSpecContextS3;
+}
+/**
+ * 
+ * @export
+ * @interface ImageBuilderSpecContextGit
+ */
+export interface ImageBuilderSpecContextGit {
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextGit
+     */
+    'endpoint': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextGit
+     */
+    'ref'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextGit
+     */
+    'scheme'?: ImageBuilderSpecContextGitSchemeEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextGit
+     */
+    'userPassword'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextGit
+     */
+    'username'?: string;
+}
+
+export const ImageBuilderSpecContextGitSchemeEnum = {
+    Http: 'http',
+    Https: 'https'
+} as const;
+
+export type ImageBuilderSpecContextGitSchemeEnum = typeof ImageBuilderSpecContextGitSchemeEnum[keyof typeof ImageBuilderSpecContextGitSchemeEnum];
+
+/**
+ * 
+ * @export
+ * @interface ImageBuilderSpecContextS3
+ */
+export interface ImageBuilderSpecContextS3 {
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'accessKeyID': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'accessSecretKey': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'bucket': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'endpoint'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'fileType'?: ImageBuilderSpecContextS3FileTypeEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'objectKey': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'region': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderSpecContextS3
+     */
+    'scheme'?: ImageBuilderSpecContextS3SchemeEnum;
+}
+
+export const ImageBuilderSpecContextS3FileTypeEnum = {
+    Tar: 'tar',
+    TarGz: 'tar.gz',
+    Zip: 'zip',
+    Rar: 'rar',
+    Dir: 'dir'
+} as const;
+
+export type ImageBuilderSpecContextS3FileTypeEnum = typeof ImageBuilderSpecContextS3FileTypeEnum[keyof typeof ImageBuilderSpecContextS3FileTypeEnum];
+export const ImageBuilderSpecContextS3SchemeEnum = {
+    Http: 'http',
+    Https: 'https'
+} as const;
+
+export type ImageBuilderSpecContextS3SchemeEnum = typeof ImageBuilderSpecContextS3SchemeEnum[keyof typeof ImageBuilderSpecContextS3SchemeEnum];
+
+/**
+ * BuilderStatus defines the observed state of Builder
+ * @export
+ * @interface ImageBuilderStatus
+ */
+export interface ImageBuilderStatus {
+    /**
+     * 
+     * @type {ImageBuilderStatusBase}
+     * @memberof ImageBuilderStatus
+     */
+    'base'?: ImageBuilderStatusBase;
+}
+/**
+ * 
+ * @export
+ * @interface ImageBuilderStatusBase
+ */
+export interface ImageBuilderStatusBase {
+    /**
+     * 
+     * @type {number}
+     * @memberof ImageBuilderStatusBase
+     */
+    'currentRound': number;
+    /**
+     * HistoryList is used to store the history of the CRD.
+     * @type {Array<string>}
+     * @memberof ImageBuilderStatusBase
+     */
+    'historyList'?: Array<string>;
+    /**
+     * Message is mainly used to store the error message when the CRD is failed.
+     * @type {string}
+     * @memberof ImageBuilderStatusBase
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ImageBuilderStatusBase
      */
     'status': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ImageBuildTask
-     */
-    'createdTime': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ImageBuildTask
-     */
-    'endTime': number;
 }
 /**
  * 
@@ -1626,6 +1862,12 @@ export interface LoginUserResponse {
      * @memberof LoginUserResponse
      */
     'paasToken': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof LoginUserResponse
+     */
+    'projects'?: Array<string>;
 }
 /**
  * 
@@ -1864,10 +2106,10 @@ export interface PostProjectProjectIdImagesRequest {
     'gitRef'?: string;
     /**
      * 构建上下文压缩包在云平台数据库中对应的文件ID
-     * @type {number}
+     * @type {string}
      * @memberof PostProjectProjectIdImagesRequest
      */
-    'contextFileId'?: number;
+    'contextS3ObjectKey'?: string;
     /**
      * 构建上下文压缩包的网络路径
      * @type {string}
@@ -4204,10 +4446,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectProjectIdImageBuildTasks: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjectProjectIdImageBuilders: async (projectId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'projectId' is not null or undefined
-            assertParamExists('getProjectProjectIdImageBuildTasks', 'projectId', projectId)
-            const localVarPath = `/project/{projectId}/imageBuildTasks`
+            assertParamExists('getProjectProjectIdImageBuilders', 'projectId', projectId)
+            const localVarPath = `/project/{projectId}/imageBuilders`
                 .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5104,10 +5346,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * whoami，通过当前token，得知当前用户的基本信息
          * @summary whoami
+         * @param {boolean} [listProjects] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWhoami: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getWhoami: async (listProjects?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/whoami`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5122,6 +5365,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (listProjects !== undefined) {
+                localVarQueryParameter['listProjects'] = listProjects;
+            }
 
 
     
@@ -6720,8 +6967,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjectProjectIdImageBuildTasks(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ImageBuildTask>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdImageBuildTasks(projectId, options);
+        async getProjectProjectIdImageBuilders(projectId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ImageBuilder>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectProjectIdImageBuilders(projectId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6982,11 +7229,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * whoami，通过当前token，得知当前用户的基本信息
          * @summary whoami
+         * @param {boolean} [listProjects] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWhoami(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWhoami(options);
+        async getWhoami(listProjects?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWhoami(listProjects, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7252,7 +7500,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postProjectProjectIdImages(projectId: string, postProjectProjectIdImagesRequest?: PostProjectProjectIdImagesRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImageBuildTask>> {
+        async postProjectProjectIdImages(projectId: string, postProjectProjectIdImagesRequest?: PostProjectProjectIdImagesRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImageBuilder>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postProjectProjectIdImages(projectId, postProjectProjectIdImagesRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7670,8 +7918,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectProjectIdImageBuildTasks(projectId: string, options?: any): AxiosPromise<Array<ImageBuildTask>> {
-            return localVarFp.getProjectProjectIdImageBuildTasks(projectId, options).then((request) => request(axios, basePath));
+        getProjectProjectIdImageBuilders(projectId: string, options?: any): AxiosPromise<Array<ImageBuilder>> {
+            return localVarFp.getProjectProjectIdImageBuilders(projectId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取当前项目下的所有Harbor镜像仓库
@@ -7908,11 +8156,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * whoami，通过当前token，得知当前用户的基本信息
          * @summary whoami
+         * @param {boolean} [listProjects] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWhoami(options?: any): AxiosPromise<LoginUserResponse> {
-            return localVarFp.getWhoami(options).then((request) => request(axios, basePath));
+        getWhoami(listProjects?: boolean, options?: any): AxiosPromise<LoginUserResponse> {
+            return localVarFp.getWhoami(listProjects, options).then((request) => request(axios, basePath));
         },
         /**
          * 重复上传作业，直接覆盖之前的作业
@@ -8156,7 +8405,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postProjectProjectIdImages(projectId: string, postProjectProjectIdImagesRequest?: PostProjectProjectIdImagesRequest, options?: any): AxiosPromise<ImageBuildTask> {
+        postProjectProjectIdImages(projectId: string, postProjectProjectIdImagesRequest?: PostProjectProjectIdImagesRequest, options?: any): AxiosPromise<ImageBuilder> {
             return localVarFp.postProjectProjectIdImages(projectId, postProjectProjectIdImagesRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -8629,8 +8878,8 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getProjectProjectIdImageBuildTasks(projectId: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getProjectProjectIdImageBuildTasks(projectId, options).then((request) => request(this.axios, this.basePath));
+    public getProjectProjectIdImageBuilders(projectId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjectProjectIdImageBuilders(projectId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8914,12 +9163,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * whoami，通过当前token，得知当前用户的基本信息
      * @summary whoami
+     * @param {boolean} [listProjects] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getWhoami(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getWhoami(options).then((request) => request(this.axios, this.basePath));
+    public getWhoami(listProjects?: boolean, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getWhoami(listProjects, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
