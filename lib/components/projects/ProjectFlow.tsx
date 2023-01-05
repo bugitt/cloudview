@@ -1,7 +1,7 @@
 import { Project, Repository } from "../../cloudapi-client";
 import ReactFlow, { Background, Controls, Edge, Handle, Node, NodeProps, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Button, Space } from "antd";
+import { Space } from "antd";
 import { useState } from "react";
 import { RiGitRepositoryLine } from "react-icons/ri";
 import { useRequest } from "ahooks";
@@ -12,6 +12,7 @@ import { ProCard } from "@ant-design/pro-components";
 import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
 import { CopyGitCloneCommandButton } from "./git/CopyGitCloneCommandButton";
 import { cloudapiClient } from "../../utils/cloudapi";
+import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
 
 interface ProjectFlowProps {
     project: Project,
@@ -91,8 +92,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
             <div style={{ height: 3000 }}>
                 <ButtonGroup>
                     <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
-                    <Button onClick={addGitRepoClick} type='primary'>添加 镜像构建任务</Button>
-                    <Button onClick={addGitRepoClick} type='primary'>添加 容器部署任务</Button>
+                    <AddImageBuilderForm project={project} hook={() => { }} />
                 </ButtonGroup>
                 <ReactFlow nodes={nodes} edges={edges} nodeTypes={{
                     gitRepoNode: GitRepoNode

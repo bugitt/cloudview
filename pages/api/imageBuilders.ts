@@ -29,15 +29,18 @@ export default async function handler(
     switch (method) {
         case 'GET':
             res.status(200).json([])
+            break
 
         case 'POST':
             const body = req.body as CreateImageBuilderRequest;
             const builderList = await createImageBuilder(body);
-            res.status(200).json(builderList);
+            res.status(200).json(builderList)
+            break
             
         default:
             res.setHeader('Allow', ['GET', 'POST'])
             res.status(405).end(`Method ${method} Not Allowed`)
+            break
     }
 }
 
@@ -56,7 +59,7 @@ const createImageBuilder = async(req: CreateImageBuilderRequest) => {
             ".dockerconfigjson": imageBuilder.dockerconfigjson
         },
     }
-    await createOrUpdate(secret)
+    await createOrUpdate(secret, "v1", "Secret")
 
     const builder: Builder = {
         apiVersion: crdApiVersion,
@@ -65,17 +68,15 @@ const createImageBuilder = async(req: CreateImageBuilderRequest) => {
             name: builderName,
             namespace: req.projectName,
             labels: {
-                "image.registry": imageBuilder.imageRegistry ?? "",
                 "image.owner": req.projectName,
                 "image.name": req.imageMeta.name,
                 "image.tag": req.imageMeta.tag,
-                "image.destination": destination,
             }
         },
         spec: {
             context: {
                 git: req.context.git ? {
-                    endpoint: req.context.git.endpointWithAuth,
+                    urlWithAuth: req.context.git.urlWithAuth,
                     ref: req.context.git.ref,
                 } : undefined,
                 raw: req.context.raw,

@@ -3,7 +3,7 @@ import { Button, Drawer } from "antd";
 import { useRef, useState } from "react";
 import { PostProjectProjectIdReposRequest, Project } from "../../../cloudapi-client";
 import { cloudapiClient } from "../../../utils/cloudapi";
-import { notificationError } from "../../../utils/notification";
+import { messageInfo, notificationError } from "../../../utils/notification";
 import { formItemProjectNameValidator, projectNameExtraInfo } from "../../../utils/project";
 
 interface AddGitRepoFormProps {
@@ -34,7 +34,6 @@ export function AddGitRepoForm(props: AddGitRepoFormProps) {
     };
 
     const onFinish = async (values: CreateGitRepoFormDataType) => {
-        console.log(values);
         const req: PostProjectProjectIdReposRequest = {
             name: values.name,
             description: values.description,
@@ -42,9 +41,9 @@ export function AddGitRepoForm(props: AddGitRepoFormProps) {
             gitignores: values.gitignores,
             license: values.license,
         }
-        console.log(req)
         try {
             await cloudapiClient.postProjectProjectIdRepos(String(project.id), req)
+            messageInfo('创建代码仓库成功')
             await hook()
             formRef.current?.resetFields()
             onClose()

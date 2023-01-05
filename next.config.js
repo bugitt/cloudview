@@ -21,7 +21,7 @@ const nextConfig = {
     "rc-picker",
     "rc-util",
     "rc-tree",
-    "rc-tooltip"
+    "rc-tooltip",
   ],
   basePath: '/view/v2',
 }

@@ -4290,7 +4290,7 @@ packages:
     dev: false
 
   github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2:
-    resolution: {tarball: https://codeload.github.com/moment/moment/tar.gz/000ac1800e620f770f4eb31b5ae908f6167b0ab2}
+    resolution: {commit: 000ac1800e620f770f4eb31b5ae908f6167b0ab2, repo: git+ssh://git@github.com/moment/moment.git, type: git}
     name: moment
     version: 2.29.4
     dev: false

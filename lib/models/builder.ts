@@ -14,11 +14,8 @@ export interface Builder extends k8s.KubernetesObject {
   spec: {
     context: {
       git?: {
-        endpoint: string;
+        urlWithAuth: string;
         ref?: string;
-        scheme?: "http" | "https";
-        userPassword?: string;
-        username?: string;
       };
       raw?: string;
       s3?: {

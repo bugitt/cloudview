@@ -6,7 +6,7 @@ export interface CreateImageBuilderRequest {
     }
     context: {
         git?: {
-            endpointWithAuth: string
+            urlWithAuth: string
             ref?: string
         }
         s3?: {
