@@ -10,7 +10,7 @@ import ButtonGroup from "antd/es/button/button-group";
 import { AddGitRepoForm } from "./git/AddGitRepoForm";
 import { ProCard } from "@ant-design/pro-components";
 import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
-import { CopyGitCloneCommandButton } from "./git/CopyGitCloneCommandButton";
+import { CopyGitCloneCommandButton, CopyGitRepoUrlButton } from "./git/CopyButton";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
 
@@ -44,7 +44,7 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
                 >
                     <Space>
                         <ShowGitRepoDrawer repo={repo} />
-                        <CopyGitCloneCommandButton repo={repo} />
+                        <CopyGitRepoUrlButton repo={repo} />
                     </Space>
                 </ProCard>
             </div>

@@ -1,7 +1,7 @@
 import { Button, Drawer } from "antd";
 import { useState } from "react";
 import { Repository } from "../../../cloudapi-client";
-import { CopyGitCloneCommandButton } from "./CopyGitCloneCommandButton";
+import { CopyGitCloneCommandButton } from "./CopyButton";
 
 interface ShowGitRepoDrawerProps {
     repo: Repository,
