@@ -10,11 +10,16 @@ import { imageBuilderClient } from "../../lib/kube/cloudrun";
 import { createOrUpdate } from "../../lib/kube/objects";
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Builder[]>
+    req: NextApiRequest,
+    res: NextApiResponse<Builder[]>
 ) {
     const user = await whoami(req)
-    const projectName = req.body.projectName ? req.body.projectName as string : null
+    let projectName = ''
+    if (req.method === 'POST') {
+        projectName = req.body.projectName as string
+    } else if (req.method === 'GET') {
+        projectName = req.query.projectName as string
+    }
     if (!user || !projectName) {
         res.status(401).end('Unauthorized')
         return
@@ -28,7 +33,8 @@ export default async function handler(
     const { method } = req;
     switch (method) {
         case 'GET':
-            res.status(200).json([])
+            const builders = await (imageBuilderClient.list(projectName))
+            res.status(200).json(builders)
             break
 
         case 'POST':
@@ -36,7 +42,7 @@ export default async function handler(
             const builderList = await createImageBuilder(body);
             res.status(200).json(builderList)
             break
-            
+
         default:
             res.setHeader('Allow', ['GET', 'POST'])
             res.status(405).end(`Method ${method} Not Allowed`)
@@ -44,10 +50,10 @@ export default async function handler(
     }
 }
 
-const createImageBuilder = async(req: CreateImageBuilderRequest) => {
+const createImageBuilder = async (req: CreateImageBuilderRequest) => {
     const builderName = `builder-${randomString(15)}`
     const destination = `${imageBuilder.imageRegistry}/${req.projectName}/${req.imageMeta.name}:${req.imageMeta.tag}`
-    
+
     // make sure the push secret exist in the target namespace
     const secret: k8s.V1Secret = {
         metadata: {
