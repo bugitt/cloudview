@@ -4,15 +4,17 @@ import 'reactflow/dist/style.css';
 import { Space } from "antd";
 import { useState } from "react";
 import { RiGitRepositoryLine } from "react-icons/ri";
+import { FaDocker } from "react-icons/fa";
 import { useRequest } from "ahooks";
 import { notificationError } from "../../utils/notification";
 import ButtonGroup from "antd/es/button/button-group";
 import { AddGitRepoForm } from "./git/AddGitRepoForm";
 import { ProCard } from "@ant-design/pro-components";
 import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
-import { CopyGitCloneCommandButton, CopyGitRepoUrlButton } from "./git/CopyButton";
-import { cloudapiClient } from "../../utils/cloudapi";
+import { CopyGitRepoUrlButton } from "./git/CopyButton";
+import { cloudapiClient, viewApiClient } from "../../utils/cloudapi";
 import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
+import { Builder, getImageMeta } from "../../models/builder";
 
 interface ProjectFlowProps {
     project: Project,
@@ -20,6 +22,38 @@ interface ProjectFlowProps {
 
 interface GitRepoNodeProps {
     repo: Repository,
+}
+
+interface BuilderNodeProps {
+    builder: Builder
+}
+
+const BuilderNode: React.FC<NodeProps<BuilderNodeProps>> = (props) => {
+    const { builder } = props.data
+    const imageMeta = getImageMeta(builder)
+    return (
+        <>
+            <div>
+                <ProCard
+                    title={(
+                        <>
+                            <FaDocker />
+                            &nbsp;
+                            {imageMeta.name}{imageMeta.tag ? `:${imageMeta.tag}` : ''}
+                        </>
+                    )}
+                    style={{
+                        width: 400,
+                        height: 100,
+                    }}
+                    bordered
+                    boxShadow
+                >
+
+                </ProCard>
+            </div>
+        </>
+    )
 }
 
 const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
@@ -55,6 +89,7 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
 
 export function ProjectFlow(props: ProjectFlowProps) {
     const { project } = props
+
     const [gitRepos, setGitRepos] = useState<Repository[]>([])
     const gitRepoReq = useRequest(() => cloudapiClient.getProjectProjectIdRepos(String(project.id)), {
         onSuccess: (data) => {
@@ -64,6 +99,17 @@ export function ProjectFlow(props: ProjectFlowProps) {
             notificationError('获取代码仓库列表失败')
         },
     })
+
+    const [builders, setBuilders] = useState<Builder[]>([])
+    const buildersReq = useRequest(() => viewApiClient.listImageBuilders(project.name), {
+        onSuccess: (data) => {
+            setBuilders(data)
+        },
+        onError: (err) => {
+            notificationError('获取镜像构建任务列表失败')
+        },
+    })
+
     const nodes: Node<any>[] = []
     const gitNodes: Node<GitRepoNodeProps>[] = gitRepos.map((repo, i) => {
         return {
@@ -74,9 +120,18 @@ export function ProjectFlow(props: ProjectFlowProps) {
         }
     })
     gitNodes.forEach(it => nodes.push(it))
-    nodes.concat(gitNodes)
+
+    const builderNodes: Node<BuilderNodeProps>[] = builders.map((builder, i) => {
+        return {
+            id: `builder-${i}`,
+            type: 'builderNode',
+            position: { x: 500, y: i * (100 + 25) + 25 },
+            data: { builder: builder },
+        }
+    })
+    builderNodes.forEach(it => nodes.push(it))
+
     const addGitRepoClick = () => {
-        console.log('addGitRepoClick')
         gitRepoReq.run()
     }
     const edges: Edge<any>[] = [
@@ -92,10 +147,11 @@ export function ProjectFlow(props: ProjectFlowProps) {
             <div style={{ height: 3000 }}>
                 <ButtonGroup>
                     <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
-                    <AddImageBuilderForm project={project} hook={() => { }} />
+                    <AddImageBuilderForm project={project} hook={() => { buildersReq.run() }} />
                 </ButtonGroup>
                 <ReactFlow nodes={nodes} edges={edges} nodeTypes={{
-                    gitRepoNode: GitRepoNode
+                    gitRepoNode: GitRepoNode,
+                    builderNode: BuilderNode
                 }}>
                     <Background />
                     <Controls />
