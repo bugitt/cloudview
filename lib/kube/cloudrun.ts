@@ -18,6 +18,6 @@ export const imageBuilderClient = {
     },
 
     createOrUpdate: async (builder: Builder) => {
-        return (await createOrUpdate(builder)) as Builder
+        return await createOrUpdate(builder, undefined, undefined, undefined, undefined, true)
     }
 }
