@@ -1,6 +1,6 @@
 /* tslint:disable */
 import * as k8s from '@kubernetes/client-node';
-import { BaseCRDStatus } from './crd';
+import { BaseCRDStatus, crdDisplayStatus } from './crd';
 
 export const crdBuilderKind = "Builder";
 
@@ -52,8 +52,30 @@ export function getImageMeta(builder: Builder) {
   }
 }
 
+export function getBuilderImageUri(builder: Builder) {
+  const imageMeta = getImageMeta(builder);
+  return `scs.buaa.edu.cn:8081/${imageMeta.owner}/${imageMeta.name}:${imageMeta.tag}`
+}
+
 export function builderDisplayName(builder: Builder) {
   const imageMeta = getImageMeta(builder);
   const tag = imageMeta?.tag ? `:${imageMeta.tag}` : "";
   return `${imageMeta.name}${tag}`
+}
+
+export function builderDisplayStatus(builder: Builder): crdDisplayStatus {
+  switch (builder.status?.base?.status?.toLocaleLowerCase()) {
+    case "undo":
+      return '未调度';
+    case "pending":
+      return "排队中";
+    case "doing":
+      return "进行中";
+    case "done":
+      return "成功完成";
+    case "failed":
+      return "任务失败";
+    default:
+      return "未知状态";
+  }
 }

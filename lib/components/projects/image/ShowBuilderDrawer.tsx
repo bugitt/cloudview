@@ -1,25 +1,48 @@
-import { Button, Drawer } from "antd";
+import { Button, Descriptions, Drawer, Spin } from "antd";
 import { useState } from "react";
-import { Builder, builderDisplayName } from "../../../models/builder"
-import { CopyGitCloneCommandButton } from "../git/CopyButton";
+import { Builder, builderDisplayName, builderDisplayStatus, getBuilderImageUri, getImageMeta } from "../../../models/builder"
 import { FaDocker } from "react-icons/fa";
+import { useRequest } from "ahooks";
+import { viewApiClient } from "../../../utils/cloudapi";
+import { CopyOutlined } from "@ant-design/icons";
+import { copyToClipboard } from "../../../utils/clipboard";
+import { crdStatusTag } from "../../../utils/tag";
+import { removeAuthFromUrl } from "../../../utils/url";
+import { ProField } from '@ant-design/pro-components';
 
 interface ShowBuilderDrawerProps {
     builder: Builder
 }
 
 export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
+    const [builder, setBuilder] = useState<Builder>(props.builder)
+    const builderReq = useRequest(() => viewApiClient.getImageBuilder(builder.metadata?.name || "", builder.metadata?.namespace || ""), {
+        manual: true,
+        onSuccess: (data) => {
+            setBuilder(data)
+        },
+        onError: (error) => {
+            // do nothing
+        }
+    })
+
     const [open, setOpen] = useState(false);
 
-    const { builder } = props
-
     const showDrawer = () => {
+        builderReq.mutate()
         setOpen(true);
     };
 
     const onClose = () => {
         setOpen(false);
     };
+
+    const imageMeta = getImageMeta(builder)
+    const builderSpec = builder.spec
+    const gitContext = builder.spec.context.git
+    const s3Context = builder.spec.context.s3
+    const raw = builder.spec.context.raw
+
 
     return (
         <>
@@ -31,6 +54,13 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
                     <FaDocker />
                     &nbsp;&nbsp;
                     {`镜像构建任务 - ${builderDisplayName(builder)}`}
+
+                    &nbsp;&nbsp;
+                    <Button type="primary" onClick={() => {
+                        builderReq.run()
+                    }}>
+                        刷新
+                    </Button>
                 </>
             )}
                 placement="right"
@@ -38,7 +68,59 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
                 width="50%"
                 open={open}
             >
-
+                <Spin spinning={builderReq.loading}>
+                    <Descriptions title="当前任务信息">
+                        <Descriptions.Item label="镜像名称">{imageMeta.name}</Descriptions.Item>
+                        {imageMeta.tag ? <Descriptions.Item label="镜像标签">
+                            {imageMeta.tag}
+                        </Descriptions.Item> : null}
+                        {imageMeta.tag ? <Descriptions.Item label="复制镜像拉取命令">
+                            <a onClick={() => {
+                                copyToClipboard(`docker pull ${getBuilderImageUri(builder)}`, '镜像拉取命令')
+                            }}>
+                                <CopyOutlined />
+                            </a>
+                        </Descriptions.Item> : null}
+                        <Descriptions.Item label="任务状态">
+                            {crdStatusTag(builderDisplayStatus(builder))}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="构建方式">
+                            {
+                                gitContext ? '从Git仓库构建' :
+                                    s3Context ? '从压缩包构建' :
+                                        '直接从Dockerfile构建'
+                            }
+                        </Descriptions.Item>
+                        {gitContext ? (<>
+                            <Descriptions.Item label="Git仓库地址">
+                                <a href={gitContext.urlWithAuth}>
+                                    {removeAuthFromUrl(gitContext.urlWithAuth)}
+                                </a>
+                            </Descriptions.Item>
+                            {
+                                gitContext.ref ?
+                                    <Descriptions.Item label="Git仓库分支/Tag/Commit">
+                                        {gitContext.ref}
+                                    </Descriptions.Item> : null
+                            }
+                        </>) : null}
+                        {builderSpec.workspacePath ?
+                            <Descriptions.Item label="上下文路径">
+                                {builderSpec.workspacePath}
+                            </Descriptions.Item> : null}
+                        {builderSpec.dockerfilePath ?
+                            <Descriptions.Item label="Dockerfile路径">
+                                {builderSpec.dockerfilePath}
+                            </Descriptions.Item> : null}
+                        {raw ? <Descriptions.Item label="Dockerfile内容">
+                            <ProField
+                                valueType="code"
+                                text={raw}
+                                mode="read"
+                            />
+                        </Descriptions.Item> : null}
+                    </Descriptions>
+                </Spin>
             </Drawer>
         </>
     );
