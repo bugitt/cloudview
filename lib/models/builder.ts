@@ -40,3 +40,14 @@ export interface Builder extends k8s.KubernetesObject {
    */
   status?: BaseCRDStatus
 }
+
+export interface BuilderList extends k8s.KubernetesListObject<Builder> { }
+
+export function getImageMeta(builder: Builder) {
+  const labels = builder.metadata?.labels ?? {};
+  return {
+    owner: labels["image.owner"],
+    name: labels["image.name"],
+    tag: labels["image.tag"],
+  }
+}
