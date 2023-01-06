@@ -55,4 +55,8 @@ export const viewApiClient = {
     listImageBuilders: async (projectName: string) => {
         return (await cloudviewAxios.get(`/imageBuilders?projectName=${projectName}`, viewApiClientConfig())).data as Builder[]
     },
+
+    getImageBuilder: async (name: string, projectName: string) => {
+        return (await cloudviewAxios.get(`/imageBuilder/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Builder
+    }
 }
