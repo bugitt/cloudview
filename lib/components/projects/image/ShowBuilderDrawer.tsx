@@ -8,7 +8,8 @@ import { CopyOutlined } from "@ant-design/icons";
 import { copyToClipboard } from "../../../utils/clipboard";
 import { crdStatusTag } from "../../../utils/tag";
 import { removeAuthFromUrl } from "../../../utils/url";
-import { ProField } from '@ant-design/pro-components';
+import { RerunImageBuilderButton } from "./RerunImageBuilderButton";
+import { ProField } from "@ant-design/pro-components";
 
 interface ShowBuilderDrawerProps {
     builder: Builder
@@ -61,6 +62,14 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
                     }}>
                         刷新
                     </Button>
+
+                    &nbsp;&nbsp;
+                    <RerunImageBuilderButton
+                        builderName={builder.metadata?.name || ""}
+                        projectName={imageMeta.owner || ""}
+                        tag={imageMeta.tag}
+                        hook={() => { builderReq.run() }}
+                    />
                 </>
             )}
                 placement="right"
