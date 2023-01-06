@@ -51,3 +51,9 @@ export function getImageMeta(builder: Builder) {
     tag: labels["image.tag"],
   }
 }
+
+export function builderDisplayName(builder: Builder) {
+  const imageMeta = getImageMeta(builder);
+  const tag = imageMeta?.tag ? `:${imageMeta.tag}` : "";
+  return `${imageMeta.name}${tag}`
+}

@@ -14,7 +14,8 @@ import { ShowGitRepoDrawer } from "./git/ShowGitRepoDrawer";
 import { CopyGitRepoUrlButton } from "./git/CopyButton";
 import { cloudapiClient, viewApiClient } from "../../utils/cloudapi";
 import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
-import { Builder, getImageMeta } from "../../models/builder";
+import { Builder, builderDisplayName, getImageMeta } from "../../models/builder";
+import { ShowBuilderDrawer } from "./image/ShowBuilderDrawer";
 
 interface ProjectFlowProps {
     project: Project,
@@ -39,7 +40,7 @@ const BuilderNode: React.FC<NodeProps<BuilderNodeProps>> = (props) => {
                         <>
                             <FaDocker />
                             &nbsp;
-                            {imageMeta.name}{imageMeta.tag ? `:${imageMeta.tag}` : ''}
+                            {builderDisplayName(builder)}
                         </>
                     )}
                     style={{
@@ -49,7 +50,7 @@ const BuilderNode: React.FC<NodeProps<BuilderNodeProps>> = (props) => {
                     bordered
                     boxShadow
                 >
-
+                    <ShowBuilderDrawer builder={builder} />
                 </ProCard>
             </div>
         </>
