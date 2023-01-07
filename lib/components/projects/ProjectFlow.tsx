@@ -35,10 +35,11 @@ interface BuilderNodeProps {
 
 interface DeployerNodeProps {
     deployer: Deployer
+    project: Project
 }
 
 const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
-    const { deployer } = props.data
+    const { deployer, project } = props.data
     return (
         <>
             <div>
@@ -57,7 +58,7 @@ const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
                     bordered
                     boxShadow
                 >
-                    <ShowDeployerDrawer deployer={deployer} />
+                    <ShowDeployerDrawer deployer={deployer} project={project} />
                 </ProCard>
             </div>
         </>
@@ -182,7 +183,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
             id: `deployer-${i}`,
             type: 'deployerNode',
             position: { x: 1000, y: i * (100 + 25) + 25 },
-            data: { deployer: deployer },
+            data: { deployer: deployer, project: project },
         }
     })
     nodes.push(...deployerNodes)

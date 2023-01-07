@@ -77,8 +77,8 @@ export const viewApiClient = {
         return (await cloudviewAxios.get(`/deployer/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Deployer
     },
 
-    rerunDeployer: async (name: string, projectName: string, tag?: string) => {
-        return (await cloudviewAxios.post(`/deployer/${name}/rerun?projectName=${projectName}&tag=${tag}`, undefined, viewApiClientConfig())).data as Deployer
+    rerunDeployer: async (name: string, projectName: string, resourcePool?: string, image?: string) => {
+        return (await cloudviewAxios.post(`/deployer/${name}/rerun?projectName=${projectName}&resourcePool=${resourcePool}&image=${image}`, undefined, viewApiClientConfig())).data as Deployer
     },
 
     getServiceStatus: async (name: string, projectName: string) => {

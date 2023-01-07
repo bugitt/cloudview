@@ -34,7 +34,7 @@ interface FormDataType {
     resourcePool?: string
 }
 
-function getResourcePoolListObj(resourcePoolList: ResourcePool[]) {
+export function getResourcePoolListObj(resourcePoolList: ResourcePool[]) {
     const resourcePoolOptionsObj: ProSchemaValueEnumObj = {}
     resourcePoolList.forEach(pool => {
         resourcePoolOptionsObj[pool.metadata?.name!!] = (

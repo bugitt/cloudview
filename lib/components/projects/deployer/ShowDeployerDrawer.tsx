@@ -3,13 +3,16 @@ import { useRequest } from "ahooks";
 import { Button, Descriptions, Drawer, Modal, Space, Spin, Tag } from "antd";
 import { useState } from "react";
 import { SiAiohttp, SiOpencontainersinitiative } from "react-icons/si";
+import { Project } from "../../../cloudapi-client";
 import { BaseCRDHistory, crdDisplayStatus } from "../../../models/crd";
 import { Deployer, deployerDisplayStatus, deployerHistoryList, DeployerSpec, getDeployerDisplayName, ServicePort, ServiceStatus } from "../../../models/deployer";
 import { viewApiClient } from "../../../utils/cloudapi";
 import { formatTimeStamp } from "../../../utils/date";
 import { crdStatusTag } from "../../../utils/tag";
+import { RerunDeployerButton } from "./RerunDeployerButton";
 
 interface ShowDeployerDrawerProps {
+    project: Project
     deployer: Deployer
 }
 
@@ -52,6 +55,7 @@ function DeployerDescription({ deployerSpec, currentRound, status, startTime, en
 
 export const ShowDeployerDrawer = (props: ShowDeployerDrawerProps) => {
     const [deployer, setDeployer] = useState<Deployer>(props.deployer)
+    const { project } = props
     const deployerReq = useRequest(() => viewApiClient.getDeployer(deployer.metadata?.name || "", deployer.metadata?.namespace || ""), {
         manual: true,
         onSuccess: (data) => {
@@ -107,12 +111,13 @@ export const ShowDeployerDrawer = (props: ShowDeployerDrawerProps) => {
                     </Button>
 
                     &nbsp;&nbsp;
-                    {/* <RerunImageBuilderButton
-                        builderName={builder.metadata?.name || ""}
-                        projectName={imageMeta.owner || ""}
-                        tag={imageMeta.tag}
-                        hook={() => { builderReq.run() }}
-                    /> */}
+                    <RerunDeployerButton
+                        deployerName={deployer.metadata?.name || ""}
+                        projectName={project.name}
+                        projectId={project.id}
+                        hook={() => { deployerReq.run() }}
+                        image={deployer.spec.containers[0].image}
+                    />
                 </>
             )}
                 placement="right"
