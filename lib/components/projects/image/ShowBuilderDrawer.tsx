@@ -10,6 +10,7 @@ import { crdStatusTag } from "../../../utils/tag";
 import { removeAuthFromUrl } from "../../../utils/url";
 import { RerunImageBuilderButton } from "./RerunImageBuilderButton";
 import { ProField } from "@ant-design/pro-components";
+import { formatTimeStamp } from "../../../utils/date";
 
 interface ShowBuilderDrawerProps {
     builder: Builder
@@ -43,7 +44,8 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
     const gitContext = builder.spec.context.git
     const s3Context = builder.spec.context.s3
     const raw = builder.spec.context.raw
-
+    const baseStatus = builder.status?.base
+    const currentRound = baseStatus?.currentRound || 0
 
     return (
         <>
@@ -78,7 +80,7 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
                 open={open}
             >
                 <Spin spinning={builderReq.loading}>
-                    <Descriptions title="当前任务信息">
+                    <Descriptions title={`当前任务状态 - #${currentRound}`}>
                         <Descriptions.Item label="镜像名称">{imageMeta.name}</Descriptions.Item>
                         {imageMeta.tag ? <Descriptions.Item label="镜像标签">
                             {imageMeta.tag}
@@ -93,6 +95,12 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
                         <Descriptions.Item label="任务状态">
                             {crdStatusTag(builderDisplayStatus(builder))}
                         </Descriptions.Item>
+                        {baseStatus?.startTime && baseStatus?.startTime > 0 ? <Descriptions.Item label="开始时间">
+                            {formatTimeStamp(baseStatus?.startTime * 1000)}
+                        </Descriptions.Item> : null}
+                        {baseStatus?.endTime && baseStatus?.endTime > 0 ? <Descriptions.Item label="结束时间">
+                            {formatTimeStamp(baseStatus?.endTime * 1000)}
+                        </Descriptions.Item> : null}
                         <Descriptions.Item label="构建方式">
                             {
                                 gitContext ? '从Git仓库构建' :

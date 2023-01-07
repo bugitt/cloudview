@@ -14,6 +14,8 @@ export interface BaseCRDStatus {
      */
     message?: string;
     status: string;
+    startTime?: number
+    endTime?: number
   };
 }
 
