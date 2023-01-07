@@ -12,7 +12,7 @@ export interface Deployer extends k8s.KubernetesObject {
     /**
      * DeployerStatus defines the observed state of Deployer
      */
-    status?: BaseCRDStatus
+    status?: DeployerStatus
 }
 
 export interface DeployerList extends k8s.KubernetesListObject<Deployer> { }
@@ -21,6 +21,11 @@ export interface DeployerSpec {
     containers: DeployerContainer[]
     round?: number
     type: "job" | "service"
+    resourcePool: string
+}
+
+export interface DeployerStatus extends BaseCRDStatus {
+    resourcePool: string
 }
 
 export interface DeployerContainer {
