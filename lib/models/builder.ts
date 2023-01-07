@@ -11,34 +11,36 @@ export interface Builder extends k8s.KubernetesObject {
   /**
    * BuilderSpec defines the desired state of Builder
    */
-  spec: {
-    context: {
-      git?: {
-        urlWithAuth: string;
-        ref?: string;
-      };
-      raw?: string;
-      s3?: {
-        accessKeyID: string;
-        accessSecretKey: string;
-        bucket: string;
-        endpoint?: string;
-        fileType?: "tar" | "tar.gz" | "zip" | "rar" | "dir";
-        objectKey: string;
-        region: string;
-        scheme?: "http" | "https";
-      };
-    };
-    destination: string;
-    dockerfilePath?: string;
-    pushSecretName?: string;
-    round?: number;
-    workspacePath?: string;
-  };
+  spec: BuilderSpec
   /**
    * BuilderStatus defines the observed state of Builder
    */
   status?: BaseCRDStatus
+}
+
+export interface BuilderSpec {
+  context: {
+    git?: {
+      urlWithAuth: string;
+      ref?: string;
+    };
+    raw?: string;
+    s3?: {
+      accessKeyID: string;
+      accessSecretKey: string;
+      bucket: string;
+      endpoint?: string;
+      fileType?: "tar" | "tar.gz" | "zip" | "rar" | "dir";
+      objectKey: string;
+      region: string;
+      scheme?: "http" | "https";
+    };
+  };
+  destination: string;
+  dockerfilePath?: string;
+  pushSecretName?: string;
+  round?: number;
+  workspacePath?: string;
 }
 
 export interface BuilderList extends k8s.KubernetesListObject<Builder> { }
