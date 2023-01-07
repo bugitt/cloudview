@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const ports: ServicePort[] = []
     const services = await listServices(deployer.metadata?.namespace!!, selector)
     const service = services[0]
-    service.spec?.ports?.forEach(p => {
+    service?.spec?.ports?.forEach(p => {
         const port: ServicePort = {
             name: p.name!!,
             port: p.targetPort as number,

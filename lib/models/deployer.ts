@@ -1,5 +1,6 @@
 import * as k8s from '@kubernetes/client-node';
-import { BaseCRDStatus } from './crd';
+import { BuilderSpec } from './builder';
+import { BaseCRDHistory, BaseCRDStatus, crdDisplayStatus } from './crd';
 
 /**
  * Deployer is the Schema for the deployers API
@@ -73,4 +74,33 @@ export interface ServicePort {
 
 export function getDeployerDisplayName(deployer: Deployer) {
     return deployer.metadata?.labels?.displayName || deployer.metadata?.name || ''
+}
+
+const convertStatus = (status: string) => {
+    switch (status.toLocaleLowerCase()) {
+        case "undo":
+            return '未调度';
+        case "pending":
+            return "排队中";
+        case "doing":
+            return "运行中";
+        case "done":
+            return "成功完成";
+        case "failed":
+            return "任务失败";
+        default:
+            return "未知状态";
+    }
+}
+
+export function deployerDisplayStatus(builder: Deployer): crdDisplayStatus {
+    return convertStatus(builder.status?.base?.status ?? "undo");
+}
+
+export function deployerHistoryList(deployer: Deployer) {
+    return (deployer.status?.base?.historyList ?? ([] as string[])).map(str => {
+        const obj = JSON.parse(str)
+        obj.status = convertStatus(obj.status ?? obj.Status ?? 'undo')
+        return obj as BaseCRDHistory<DeployerSpec>
+    }).sort((a, b) => b.round - a.round)
 }

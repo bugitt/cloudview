@@ -19,6 +19,7 @@ import { Builder, builderDisplayName, getImageMeta } from "../../models/builder"
 import { ShowBuilderDrawer } from "./image/ShowBuilderDrawer";
 import { AddDeployerForm } from "./deployer/AddDeployerForm";
 import { Deployer, getDeployerDisplayName } from "../../models/deployer";
+import { ShowDeployerDrawer } from "./deployer/ShowDeployerDrawer";
 
 interface ProjectFlowProps {
     project: Project,
@@ -56,7 +57,7 @@ const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
                     bordered
                     boxShadow
                 >
-                    {/* <ShowBuilderDrawer builder={builder} /> */}
+                    <ShowDeployerDrawer deployer={deployer} />
                 </ProCard>
             </div>
         </>

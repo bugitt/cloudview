@@ -103,7 +103,7 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
     const [open, setOpen] = useState(false);
 
     const showDrawer = () => {
-        builderReq.mutate()
+        builderReq.run()
         setOpen(true);
     };
 
