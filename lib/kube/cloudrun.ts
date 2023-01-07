@@ -1,10 +1,12 @@
 import { Builder, BuilderList } from "../models/builder"
+import { ResourcePool } from "../models/resource"
 import { k8sCustomObjectsApi } from "./client"
 import { createOrUpdate } from "./objects"
 
 const group = "cloudapi.scs.buaa.edu.cn"
 const apiVersion = "v1alpha1"
 const builderPlural = "builders"
+const resourcePoolPlural = "resourcepools"
 
 export const imageBuilderClient = {
 
@@ -19,5 +21,15 @@ export const imageBuilderClient = {
 
     createOrUpdate: async (builder: Builder) => {
         return await createOrUpdate(builder, undefined, undefined, undefined, undefined, true)
+    }
+}
+
+export const resourcePoolsClient = {
+    get: async (name: string) => {
+        return (await k8sCustomObjectsApi.getClusterCustomObject(group, apiVersion, resourcePoolPlural, name)).body as ResourcePool
+    },
+
+    createOrUpdate: async (resourcePool: ResourcePool) => {
+        return await createOrUpdate(resourcePool, undefined, undefined, undefined, undefined, true)
     }
 }

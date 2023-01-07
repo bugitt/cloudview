@@ -62,4 +62,8 @@ export const viewApiClient = {
     rerunImageBuilder: async (name: string, projectName: string, tag?: string) => {
         return (await cloudviewAxios.post(`/imageBuilder/${name}/rerun?projectName=${projectName}&tag=${tag}`, undefined, viewApiClientConfig())).data as Builder
     },
+
+    getProjectResourcePools: async (projectId: number) => {
+        return (await cloudviewAxios.get(`/resourcePools?projectId=${projectId}`, viewApiClientConfig())).data as ResourcePool[]
+    }
 }
