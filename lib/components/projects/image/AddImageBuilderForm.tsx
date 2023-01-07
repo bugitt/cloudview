@@ -2,7 +2,7 @@ import { ProForm, ProFormInstance, ProFormItem, ProFormRadio, ProFormSwitch, Pro
 import { Button, Drawer } from "antd";
 import { useRef, useState } from "react";
 import { Project } from "../../../cloudapi-client";
-import { CreateImageBuilderRequest } from "../../../models/createImageBuilderRequest";
+import { CreateImageBuilderRequest } from "../../../models/builder";
 import { viewApiClient } from "../../../utils/cloudapi";
 import { messageInfo, notificationError } from "../../../utils/notification";
 

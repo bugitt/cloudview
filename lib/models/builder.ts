@@ -52,6 +52,26 @@ export interface ImageMeta {
   tag: string;
 }
 
+export interface CreateImageBuilderRequest {
+  projectName: string
+  imageMeta: {
+    name: string
+    tag: string
+  }
+  context: {
+    git?: {
+      urlWithAuth: string
+      ref?: string
+    }
+    s3?: {
+      objectKey: string
+    }
+    raw?: string
+  }
+  dockerfilePath?: string
+  workspacePath?: string
+}
+
 export function getImageMeta(builder: Builder): ImageMeta {
   const labels = builder.metadata?.labels ?? {};
   return {

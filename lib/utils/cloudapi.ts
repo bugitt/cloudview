@@ -1,8 +1,7 @@
 import globalAxios from 'axios'
 import { Configuration, DefaultApiFactory } from '../cloudapi-client'
 import { cloudapi } from '../config/env'
-import { Builder } from '../models/builder'
-import { CreateImageBuilderRequest } from '../models/createImageBuilderRequest'
+import { Builder, CreateImageBuilderRequest } from '../models/builder'
 import { notificationError } from './notification'
 import { getToken } from './token'
 

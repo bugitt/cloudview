@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Builder, crdBuilderKind } from "../../lib/models/builder";
-import { CreateImageBuilderRequest } from "../../lib/models/createImageBuilderRequest";
+import { Builder, crdBuilderKind, CreateImageBuilderRequest } from "../../lib/models/builder";
 import { whoami } from "../../lib/utils/server";
 import * as k8s from '@kubernetes/client-node';
 import { crdApiVersion } from "../../lib/models/crd";
