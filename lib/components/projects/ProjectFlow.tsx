@@ -5,6 +5,7 @@ import { Space } from "antd";
 import { useState } from "react";
 import { RiGitRepositoryLine } from "react-icons/ri";
 import { FaDocker } from "react-icons/fa";
+import { SiOpencontainersinitiative } from "react-icons/si";
 import { useRequest } from "ahooks";
 import { notificationError } from "../../utils/notification";
 import ButtonGroup from "antd/es/button/button-group";
@@ -17,6 +18,7 @@ import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
 import { Builder, builderDisplayName, getImageMeta } from "../../models/builder";
 import { ShowBuilderDrawer } from "./image/ShowBuilderDrawer";
 import { AddDeployerForm } from "./deployer/AddDeployerForm";
+import { Deployer, getDeployerDisplayName } from "../../models/deployer";
 
 interface ProjectFlowProps {
     project: Project,
@@ -28,6 +30,37 @@ interface GitRepoNodeProps {
 
 interface BuilderNodeProps {
     builder: Builder
+}
+
+interface DeployerNodeProps {
+    deployer: Deployer
+}
+
+const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
+    const { deployer } = props.data
+    return (
+        <>
+            <div>
+                <ProCard
+                    title={(
+                        <>
+                            <SiOpencontainersinitiative />
+                            &nbsp;
+                            {getDeployerDisplayName(deployer)}
+                        </>
+                    )}
+                    style={{
+                        width: 400,
+                        height: 100,
+                    }}
+                    bordered
+                    boxShadow
+                >
+                    {/* <ShowBuilderDrawer builder={builder} /> */}
+                </ProCard>
+            </div>
+        </>
+    )
 }
 
 const BuilderNode: React.FC<NodeProps<BuilderNodeProps>> = (props) => {
@@ -107,8 +140,18 @@ export function ProjectFlow(props: ProjectFlowProps) {
         onSuccess: (data) => {
             setBuilders(data)
         },
-        onError: (err) => {
+        onError: (_) => {
             notificationError('获取镜像构建任务列表失败')
+        },
+    })
+
+    const [deployers, setDeployers] = useState<Deployer[]>([])
+    const deployerReq = useRequest(() => viewApiClient.listDeployers(project.name), {
+        onSuccess: (data) => {
+            setDeployers(data)
+        },
+        onError: (_) => {
+            notificationError('获取容器部署任务列表失败')
         },
     })
 
@@ -121,7 +164,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
             data: { repo: repo },
         }
     })
-    gitNodes.forEach(it => nodes.push(it))
+    nodes.push(...gitNodes)
 
     const builderNodes: Node<BuilderNodeProps>[] = builders.map((builder, i) => {
         return {
@@ -131,7 +174,17 @@ export function ProjectFlow(props: ProjectFlowProps) {
             data: { builder: builder },
         }
     })
-    builderNodes.forEach(it => nodes.push(it))
+    nodes.push(...builderNodes)
+
+    const deployerNodes: Node<DeployerNodeProps>[] = deployers.map((deployer, i) => {
+        return {
+            id: `deployer-${i}`,
+            type: 'deployerNode',
+            position: { x: 1000, y: i * (100 + 25) + 25 },
+            data: { deployer: deployer },
+        }
+    })
+    nodes.push(...deployerNodes)
 
     const addGitRepoClick = () => {
         gitRepoReq.run()
@@ -154,7 +207,8 @@ export function ProjectFlow(props: ProjectFlowProps) {
                 </ButtonGroup>
                 <ReactFlow nodes={nodes} edges={edges} nodeTypes={{
                     gitRepoNode: GitRepoNode,
-                    builderNode: BuilderNode
+                    builderNode: BuilderNode,
+                    deployerNode: DeployerNode,
                 }}>
                     <Background />
                     <Controls />
