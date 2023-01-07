@@ -14,6 +14,7 @@ interface AddDeployerFormProps {
 }
 
 interface FormDataType {
+    name: string
     image: string
     cpu: number
     memory: number
@@ -76,6 +77,7 @@ export function AddDeployerForm(props: AddDeployerFormProps) {
             initial: false,
         }
         const req: CreateDeployerRequest = {
+            name: values.name,
             projectName: project.name,
             containers: [container],
             type: 'service',
@@ -111,6 +113,11 @@ export function AddDeployerForm(props: AddDeployerFormProps) {
             layout="vertical"
             trigger={<Button type="primary">添加部署任务</Button>}
         >
+            <ProFormText
+                label="任务名称"
+                name="name"
+                required
+            />
             <ProFormText
                 label="镜像"
                 name="image"

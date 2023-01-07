@@ -55,6 +55,9 @@ const createDeployer = async (req: CreateDeployerRequest) => {
         metadata: {
             name: deployerName,
             namespace: req.projectName,
+            labels: {
+                "displayName": req.name,
+            }
         },
         spec: {
             containers: req.containers,

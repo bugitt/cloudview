@@ -51,6 +51,7 @@ export interface DeployerContainer {
 
 export interface CreateDeployerRequest {
     projectName: string
+    name: string
     containers: DeployerContainer[]
     type: "job" | "service"
     resourcePool: string
