@@ -16,6 +16,7 @@ import { cloudapiClient, viewApiClient } from "../../utils/cloudapi";
 import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
 import { Builder, builderDisplayName, getImageMeta } from "../../models/builder";
 import { ShowBuilderDrawer } from "./image/ShowBuilderDrawer";
+import { AddDeployerForm } from "./deployer/AddDeployerForm";
 
 interface ProjectFlowProps {
     project: Project,
@@ -149,6 +150,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
                 <ButtonGroup>
                     <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
                     <AddImageBuilderForm project={project} hook={() => { buildersReq.run() }} />
+                    <AddDeployerForm project={project} hook={() => { }} />
                 </ButtonGroup>
                 <ReactFlow nodes={nodes} edges={edges} nodeTypes={{
                     gitRepoNode: GitRepoNode,

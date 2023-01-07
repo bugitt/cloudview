@@ -42,15 +42,17 @@ export interface DeployerContainer {
         port: number
         protocol?: "tcp" | "udp" | "sctp"
     }[]
+    workingDir?: string
     resource: {
         cpu: number
         memory: number
     }
 }
 
-export interface createDeployerRequest {
+export interface CreateDeployerRequest {
     projectName: string
     containers: DeployerContainer[]
     type: "job" | "service"
     resourcePool: string
+    setup?: boolean
 }

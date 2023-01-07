@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { deployerClient } from "../../lib/kube/cloudrun"
 import { crdApiVersion } from "../../lib/models/crd"
-import { createDeployerRequest, Deployer } from "../../lib/models/deployer"
+import { CreateDeployerRequest, Deployer } from "../../lib/models/deployer"
 import { randomString } from "../../lib/utils/random"
 import { whoami } from "../../lib/utils/server"
 
@@ -34,7 +34,7 @@ export default async function handler(
             break
 
         case 'POST':
-            const body = req.body as createDeployerRequest;
+            const body = req.body as CreateDeployerRequest;
             const deployerList = await createDeployer(body);
             res.status(200).json(deployerList)
             break
@@ -46,7 +46,7 @@ export default async function handler(
     }
 }
 
-const createDeployer = async (req: createDeployerRequest) => {
+const createDeployer = async (req: CreateDeployerRequest) => {
     const deployerName = `deployer-${randomString(15)}`
 
     const deployer: Deployer = {
@@ -62,6 +62,9 @@ const createDeployer = async (req: createDeployerRequest) => {
             type: 'service',
             resourcePool: req.resourcePool,
         }
+    }
+    if (req.setup) {
+        deployer.spec.round = 1
     }
 
     const createdDeployer = await deployerClient.createOrUpdate(deployer)

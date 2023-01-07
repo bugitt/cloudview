@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { resourcePoolsClient } from "../../lib/kube/cloudrun"
 import { ResourcePool } from "../../lib/models/resource"
-import { cloudapiClient } from "../../lib/utils/cloudapi"
-import { whoami } from "../../lib/utils/server"
+import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
+import { getTokenFromReq } from "../../lib/utils/token"
 
 export default async function handler(
     req: NextApiRequest,
@@ -13,12 +13,8 @@ export default async function handler(
     const { method } = req;
     switch (method) {
         case 'GET':
-            const resourceNames = (await cloudapiClient.getProjectProjectIdResourcePools(projectId as string)).data
-            const resourcePoolList = [] as ResourcePool[]
-            resourceNames.forEach(async (name) => {
-                const resourcePool = await resourcePoolsClient.get(name)
-                resourcePoolList.push(resourcePool)
-            })
+            const resourceNames = (await serverSideCloudapiClient(getTokenFromReq(req)).getProjectProjectIdResourcePools(projectId as string)).data
+            const resourcePoolList = await getResourcePools(resourceNames)
             res.status(200).json(resourcePoolList)
             break
 
@@ -27,4 +23,10 @@ export default async function handler(
             res.status(405).end(`Method ${method} Not Allowed`)
             break
     }
+}
+
+async function getResourcePools(resourcePoolNameList: string[]) {
+    return Promise.all(resourcePoolNameList.map(async (resourcePoolName) => {
+        return await resourcePoolsClient.get(resourcePoolName)
+    }))
 }
