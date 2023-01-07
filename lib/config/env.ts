@@ -22,3 +22,8 @@ export const imageBuilder = {
     pushSecretName: process.env.IMAGE_BUILDER_PUSH_SECRET_NAME ?? "push-secret",
     dockerconfigjson: process.env.IMAGE_BUILDER_DOCKERCONFIGJSON ?? "",
 }
+
+// for deployer
+export const deployerConfig = {
+    externalIp: process.env.DEPLOYER_EXTERNAL_IP,
+}

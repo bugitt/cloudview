@@ -58,6 +58,19 @@ export interface CreateDeployerRequest {
     setup?: boolean
 }
 
+export interface ServiceStatus {
+    healthy: boolean
+    ports: ServicePort[]
+}
+
+export interface ServicePort {
+    name: string
+    port: number
+    nodePort: number
+    ip: string
+    protocol: string
+}
+
 export function getDeployerDisplayName(deployer: Deployer) {
     return deployer.metadata?.labels?.displayName || deployer.metadata?.name || ''
 }
