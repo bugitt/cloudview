@@ -1,6 +1,5 @@
 /* tslint:disable */
 import * as k8s from '@kubernetes/client-node';
-import { Image } from '../cloudapi-client';
 import { BaseCRDHistory, BaseCRDStatus, crdDisplayStatus } from './crd';
 
 export const crdBuilderKind = "Builder";
