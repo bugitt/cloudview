@@ -47,3 +47,10 @@ export interface DeployerContainer {
         memory: number
     }
 }
+
+export interface createDeployerRequest {
+    projectName: string
+    containers: DeployerContainer[]
+    type: "job" | "service"
+    resourcePool: string
+}

@@ -2,6 +2,8 @@ import globalAxios from 'axios'
 import { Configuration, DefaultApiFactory } from '../cloudapi-client'
 import { cloudapi } from '../config/env'
 import { Builder, CreateImageBuilderRequest } from '../models/builder'
+import { createDeployerRequest, Deployer } from '../models/deployer'
+import { ResourcePool } from '../models/resource'
 import { notificationError } from './notification'
 import { getToken } from './token'
 
@@ -61,6 +63,22 @@ export const viewApiClient = {
 
     rerunImageBuilder: async (name: string, projectName: string, tag?: string) => {
         return (await cloudviewAxios.post(`/imageBuilder/${name}/rerun?projectName=${projectName}&tag=${tag}`, undefined, viewApiClientConfig())).data as Builder
+    },
+
+    createDeployer: async (request: createDeployerRequest) => {
+        return (await cloudviewAxios.post('/deployers', request, viewApiClientConfig())).data as Deployer[]
+    },
+
+    listDeployers: async (projectName: string) => {
+        return (await cloudviewAxios.get(`/deployers?projectName=${projectName}`, viewApiClientConfig())).data as Deployer[]
+    },
+
+    getDeployer: async (name: string, projectName: string) => {
+        return (await cloudviewAxios.get(`/deployer/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Deployer
+    },
+
+    rerunDeployer: async (name: string, projectName: string, tag?: string) => {
+        return (await cloudviewAxios.post(`/deployer/${name}/rerun?projectName=${projectName}&tag=${tag}`, undefined, viewApiClientConfig())).data as Deployer
     },
 
     getProjectResourcePools: async (projectId: number) => {
