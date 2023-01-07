@@ -41,6 +41,7 @@ export interface BuilderSpec {
   pushSecretName?: string;
   round?: number;
   workspacePath?: string;
+  deployerHooks?: DeployerHook[];
 }
 
 export interface BuilderList extends k8s.KubernetesListObject<Builder> { }
@@ -69,6 +70,12 @@ export interface CreateImageBuilderRequest {
   }
   dockerfilePath?: string
   workspacePath?: string
+}
+
+export interface DeployerHook {
+  deployerName: string
+  image: string
+  resourcePool: string
 }
 
 export function getImageMeta(builder: Builder): ImageMeta {

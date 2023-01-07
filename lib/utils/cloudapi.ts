@@ -65,6 +65,10 @@ export const viewApiClient = {
         return (await cloudviewAxios.post(`/imageBuilder/${name}/rerun?projectName=${projectName}&tag=${tag}`, undefined, viewApiClientConfig())).data as Builder
     },
 
+    addTriggerDeployer: async (name: string, projectName: string, deployerName: string, image: string, resourcePool: string) => {
+        return (await cloudviewAxios.post(`/imageBuilder/${name}/triggerDeployer?projectName=${projectName}&deployerName=${deployerName}&image=${image}&resourcePool=${resourcePool}`, undefined, viewApiClientConfig())).data as Builder
+    },
+
     createDeployer: async (request: CreateDeployerRequest) => {
         return (await cloudviewAxios.post('/deployers', request, viewApiClientConfig())).data as Deployer[]
     },
