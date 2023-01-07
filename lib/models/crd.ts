@@ -19,4 +19,12 @@ export interface BaseCRDStatus {
   };
 }
 
+export interface BaseCRDHistory<T> {
+  round: number
+  status: crdDisplayStatus
+  spec: T
+  startTime?: number
+  endTime?: number
+}
+
 export type crdDisplayStatus = '未调度' | '排队中' | '进行中' | '成功完成' | '任务失败' | '运行中' | '未知状态';

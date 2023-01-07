@@ -95,7 +95,6 @@ export function AddImageBuilderForm(props: AddImageBuilderFormProps) {
             onClose()
             return true
         } catch (err) {
-            console.log(err)
             notificationError('提交镜像构建任务失败')
             return false
         }

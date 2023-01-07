@@ -1,6 +1,7 @@
 /* tslint:disable */
 import * as k8s from '@kubernetes/client-node';
-import { BaseCRDStatus, crdDisplayStatus } from './crd';
+import { Image } from '../cloudapi-client';
+import { BaseCRDHistory, BaseCRDStatus, crdDisplayStatus } from './crd';
 
 export const crdBuilderKind = "Builder";
 
@@ -45,12 +46,32 @@ export interface BuilderSpec {
 
 export interface BuilderList extends k8s.KubernetesListObject<Builder> { }
 
-export function getImageMeta(builder: Builder) {
+export interface ImageMeta {
+  owner: string;
+  name: string;
+  tag: string;
+}
+
+export function getImageMeta(builder: Builder): ImageMeta {
   const labels = builder.metadata?.labels ?? {};
   return {
     owner: labels["image.owner"],
     name: labels["image.name"],
     tag: labels["image.tag"],
+  }
+}
+
+export function getImageUri(imageMeta: ImageMeta) {
+  return `scs.buaa.edu.cn:8081/${imageMeta.owner}/${imageMeta.name}:${imageMeta.tag}`
+}
+
+export function getImageMetaFromUri(uri: string): ImageMeta {
+  const [owner, nameWithTag] = uri.split("/").slice(1);
+  const [name, tag] = nameWithTag.split(":");
+  return {
+    owner,
+    name,
+    tag,
   }
 }
 
@@ -65,8 +86,8 @@ export function builderDisplayName(builder: Builder) {
   return `${imageMeta.name}${tag}`
 }
 
-export function builderDisplayStatus(builder: Builder): crdDisplayStatus {
-  switch (builder.status?.base?.status?.toLocaleLowerCase()) {
+const convertStatus = (status: string) => {
+  switch (status.toLocaleLowerCase()) {
     case "undo":
       return '未调度';
     case "pending":
@@ -80,4 +101,16 @@ export function builderDisplayStatus(builder: Builder): crdDisplayStatus {
     default:
       return "未知状态";
   }
+}
+
+export function builderDisplayStatus(builder: Builder): crdDisplayStatus {
+  return convertStatus(builder.status?.base?.status ?? "undo");
+}
+
+export function builderHistoryList(builder: Builder): BaseCRDHistory<BuilderSpec>[] {
+  return (builder.status?.base?.historyList ?? ([] as string[])).map(str => {
+    const obj = JSON.parse(str)
+    obj.status = convertStatus(obj.status ?? obj.Status ?? 'undo')
+    return obj as BaseCRDHistory<BuilderSpec>
+  }).sort((a, b) => b.round - a.round)
 }

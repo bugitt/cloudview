@@ -29,9 +29,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const labels = builder.metadata!!.labels!!
         labels['image.tag'] = tag as string
         builder.metadata!!.labels = labels
-
-        console.log(tag)
-        console.log("loheagn builder", builder)
     }
     builder.spec.round = (builder.status?.base?.currentRound || 0) + 1
     const newBuilder = await imageBuilderClient.createOrUpdate(builder)

@@ -49,7 +49,6 @@ export function AddGitRepoForm(props: AddGitRepoFormProps) {
             onClose()
             return true
         } catch (err) {
-            console.log(err)
             notificationError('创建代码仓库失败')
             return false
         }
