@@ -209,6 +209,14 @@ export function ProjectFlow(props: ProjectFlowProps) {
             const builderNodes: Node<BuilderNodeProps>[] = data.map((builder, i) => {
                 const id = builder.metadata?.name!!
                 nodeMap[id] = builder
+
+                const hooks = builder.spec.deployerHooks
+                if (hooks) {
+                    hooks.forEach((hook) => {
+                        addMyEdge(id, hook.deployerName)
+                    })
+                }
+
                 return {
                     id: id,
                     type: 'builderNode',
@@ -244,6 +252,16 @@ export function ProjectFlow(props: ProjectFlowProps) {
             notificationError('获取容器部署任务列表失败')
         },
     })
+
+    const addMyEdge = (source: string, target: string) => {
+        const connection: Connection = {
+            source: source,
+            target: target,
+            sourceHandle: null,
+            targetHandle: null,
+        }
+        setEdges((eds) => addEdge(connection, eds))
+    }
 
     return (
         <>
@@ -282,13 +300,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
                         project={project}
                         hook={() => {
                             setManageDeployerHook((m) => { m.open = false; return m })
-                            const connection: Connection = {
-                                source: manageDeployerHook.builder?.metadata?.name!!,
-                                target: manageDeployerHook.deployer?.metadata?.name!!,
-                                sourceHandle: null,
-                                targetHandle: null,
-                            }
-                            setEdges((eds) => addEdge(connection, eds))
+                            addMyEdge(manageDeployerHook.builder?.metadata?.name!!, manageDeployerHook.deployer?.metadata?.name!!)
                         }}
                         open={manageDeployerHook.open}
                     />
