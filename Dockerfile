@@ -1,6 +1,6 @@
-FROM node:16-alpine
+FROM node:16-bullseye
 
-RUN apk add --no-cache libc6-compat && npm install -g pnpm
+RUN apt update && apt install curl wget vim -y && npm install -g pnpm
 
 WORKDIR /app
 
