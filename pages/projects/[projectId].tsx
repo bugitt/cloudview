@@ -3,6 +3,7 @@ import { Space, Descriptions } from "antd"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project, Repository } from "../../lib/cloudapi-client"
 import { ProjectFlow } from "../../lib/components/projects/ProjectFlow"
+import { ResourceStatCard } from "../../lib/components/projects/resource/stat/ResourceStatCard"
 import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
 import { formatTimeStamp } from "../../lib/utils/date"
 import { setToken, ssrToken, ssrUserId } from "../../lib/utils/token"
@@ -33,9 +34,9 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
                             {formatTimeStamp(project.createdTime)}
                         </Descriptions.Item>
                     </Descriptions>
-                    <ProjectFlow project={project} title="工作流概览" />
                 </Space>
             </PageHeader>
+            <ProjectFlow project={project} title="工作流概览" />
         </>
     )
 }

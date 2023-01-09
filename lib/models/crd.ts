@@ -2,6 +2,11 @@ import * as k8s from '@kubernetes/client-node';
 
 export const crdApiVersion = "cloudapi.scs.buaa.edu.cn/v1alpha1";
 
+export interface NamespacedName {
+  name: string
+  namespace: string
+}
+
 export interface BaseCRDStatus {
   base?: {
     currentRound: number;

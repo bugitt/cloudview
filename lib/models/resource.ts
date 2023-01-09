@@ -1,4 +1,5 @@
 import * as k8s from '@kubernetes/client-node';
+import { NamespacedName } from './crd';
 
 export interface ResourcePool extends k8s.KubernetesObject {
     spec: ResourcePoolSpec
@@ -21,8 +22,5 @@ export interface ResourceUsage {
         apiVersion: string
         kind: string
     }
-    namespacedName: {
-        name: string
-        namespace: string
-    }
+    namespacedName: NamespacedName
 }

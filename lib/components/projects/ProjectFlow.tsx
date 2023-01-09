@@ -22,6 +22,8 @@ import { Deployer, getDeployerDisplayName } from "../../models/deployer";
 import { ShowDeployerDrawer } from "./deployer/ShowDeployerDrawer";
 import { AddDeployerTriggerForm } from "./image/AddDeployerTriggerForm";
 import { ReloadOutlined } from "@ant-design/icons";
+import { ResourceStatCard } from "./resource/stat/ResourceStatCard";
+import { ResourcePool } from "../../models/resource";
 
 interface ProjectFlowProps {
     project: Project,
@@ -160,14 +162,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
     const [builderNodes, setBuilderNodes] = useState<Node<BuilderNodeProps>[]>([]);
     const [deployerNodes, setDeployerNodes] = useState<Node<DeployerNodeProps>[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
-    // const onNodesChange = useCallback(
-    //     (changes: NodeChange[]) => {
-    //         setGitRepoNodes((nds) => applyNodeChanges(changes, nds))
-    //         setBuilderNodes((nds) => applyNodeChanges(changes, nds))
-    //         setDeployerNodes((nds) => applyNodeChanges(changes, nds))
-    //     },
-    //     [setGitRepoNodes, setBuilderNodes, setDeployerNodes]
-    // );
+
     const onEdgesChange = useCallback(
         (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
         [setEdges]
@@ -264,6 +259,16 @@ export function ProjectFlow(props: ProjectFlowProps) {
         setEdges((eds) => addEdge(connection, eds))
     }
 
+    const [resourcePoolList, setResourceList] = useState<ResourcePool[]>([])
+    const resourcePoolReq = useRequest(() => viewApiClient.getProjectResourcePools(project.id), {
+        onSuccess: (data) => {
+            setResourceList(data)
+        },
+        onError: (_) => {
+            notificationError('获取项目资源池列表失败')
+        }
+    })
+
     return (
         <>
             <Descriptions title={title} />
@@ -288,7 +293,6 @@ export function ProjectFlow(props: ProjectFlowProps) {
                 <ReactFlow
                     nodes={(gitRepoNodes as Node[]).concat(builderNodes).concat(deployerNodes)}
                     edges={edges}
-                    // onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     nodeTypes={{
@@ -319,6 +323,8 @@ export function ProjectFlow(props: ProjectFlowProps) {
                         open={manageDeployerHook.open}
                     />
                 </Drawer>
+
+                <ResourceStatCard deployerList={deployerReq.data ?? []} title="项目中各项容器部署任务资源占比" poolList={resourcePoolList} />
             </div>
         </>
     )
