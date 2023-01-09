@@ -1,7 +1,7 @@
 import { Project, Repository } from "../../cloudapi-client";
 import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, Handle, Node, NodeChange, NodeProps, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Descriptions, Drawer, Space } from "antd";
+import { Button, Descriptions, Drawer, Space, Spin } from "antd";
 import { useCallback, useState } from "react";
 import { RiGitRepositoryLine } from "react-icons/ri";
 import { FaDocker } from "react-icons/fa";
@@ -21,6 +21,7 @@ import { AddDeployerForm } from "./deployer/AddDeployerForm";
 import { Deployer, getDeployerDisplayName } from "../../models/deployer";
 import { ShowDeployerDrawer } from "./deployer/ShowDeployerDrawer";
 import { AddDeployerTriggerForm } from "./image/AddDeployerTriggerForm";
+import { ReloadOutlined } from "@ant-design/icons";
 
 interface ProjectFlowProps {
     project: Project,
@@ -268,11 +269,23 @@ export function ProjectFlow(props: ProjectFlowProps) {
         <>
             <Descriptions title={title} />
             <div style={{ height: 700 }}>
-                <ButtonGroup>
-                    <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
-                    <AddImageBuilderForm project={project} hook={() => { buildersReq.run() }} />
-                    <AddDeployerForm project={project} hook={() => { deployerReq.run() }} />
-                </ButtonGroup>
+                <Space>
+                    <ButtonGroup>
+                        <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
+                        <AddImageBuilderForm project={project} hook={() => { buildersReq.run() }} />
+                        <AddDeployerForm project={project} hook={() => { deployerReq.run() }} />
+                    </ButtonGroup>
+
+                    <Button style={{ background: "geekblue" }} onClick={() => {
+                        gitRepoReq.run()
+                        buildersReq.run()
+                        deployerReq.run()
+                    }}>
+                        <ReloadOutlined />
+                        刷新
+                    </Button>
+                    <Spin spinning={gitRepoReq.loading || buildersReq.loading || deployerReq.loading} />
+                </Space>
                 <ReactFlow
                     nodes={(gitRepoNodes as Node<any>[]).concat(builderNodes).concat(deployerNodes)}
                     edges={edges}

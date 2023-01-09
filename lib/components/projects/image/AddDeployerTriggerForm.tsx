@@ -1,6 +1,6 @@
 import { ProForm, ProFormText, ProFormSelect, ProFormSwitch } from "@ant-design/pro-components"
 import { useRequest } from "ahooks"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Project } from "../../../cloudapi-client"
 import { Builder } from "../../../models/builder"
 import { AddDeployerTriggerRequest, Deployer } from "../../../models/deployer"
