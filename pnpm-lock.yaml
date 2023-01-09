@@ -6,6 +6,7 @@ specifiers:
   '@ant-design/pro-components': ^2.3.49
   '@kubernetes/client-node': ^0.18.0
   '@next/font': 13.1.1
+  '@types/filesize': ^5.0.0
   '@types/js-cookie': ^3.0.2
   '@types/md5': ^2.3.2
   '@types/node': 18.11.18
@@ -19,6 +20,7 @@ specifiers:
   echarts-for-react: ^3.0.2
   eslint: 8.30.0
   eslint-config-next: 13.1.1
+  filesize: ^10.0.6
   js-cookie: ^3.0.1
   lodash: ^4.17.21
   md5: ^2.3.0
@@ -38,6 +40,7 @@ dependencies:
   '@ant-design/pro-components': 2.3.49_aklh6uuawwn64a7sisq6vkrdxq
   '@kubernetes/client-node': 0.18.0
   '@next/font': 13.1.1
+  '@types/filesize': 5.0.0
   '@types/js-cookie': 3.0.2
   '@types/md5': 2.3.2
   '@types/node': 18.11.18
@@ -51,6 +54,7 @@ dependencies:
   echarts-for-react: 3.0.2_echarts@5.4.1+react@18.2.0
   eslint: 8.30.0
   eslint-config-next: 13.1.1_lzzuuodtsqwxnvqeq4g4likcqa
+  filesize: 10.0.6
   js-cookie: 3.0.1
   lodash: 4.17.21
   md5: 2.3.0
@@ -967,6 +971,13 @@ packages:
       '@types/d3-timer': 3.0.0
       '@types/d3-transition': 3.0.3
       '@types/d3-zoom': 3.0.2
+    dev: false
+
+  /@types/filesize/5.0.0:
+    resolution: {integrity: sha512-zgn1Kmm6VfqruG9STpwpZiSnpzHjF9hlvHVw+5hhM20xRCOIgjxnXJxOoLuZ/aWS6v/M5d6fvXFbbVQfBe4cMg==}
+    deprecated: This is a stub types definition. filesize provides its own type definitions, so you do not need this installed.
+    dependencies:
+      filesize: 10.0.6
     dev: false
 
   /@types/geojson/7946.0.10:
@@ -2084,6 +2095,11 @@ packages:
     engines: {node: ^10.12.0 || >=12.0.0}
     dependencies:
       flat-cache: 3.0.4
+    dev: false
+
+  /filesize/10.0.6:
+    resolution: {integrity: sha512-rzpOZ4C9vMFDqOa6dNpog92CoLYjD79dnjLk2TYDDtImRIyLTOzqojCb05Opd1WuiWjs+fshhCgTd8cl7y5t+g==}
+    engines: {node: '>= 10.4.0'}
     dev: false
 
   /fill-range/7.0.1:
@@ -4331,7 +4347,7 @@ packages:
     dev: false
 
   github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2:
-    resolution: {commit: 000ac1800e620f770f4eb31b5ae908f6167b0ab2, repo: git+ssh://git@github.com/moment/moment.git, type: git}
+    resolution: {tarball: https://codeload.github.com/moment/moment/tar.gz/000ac1800e620f770f4eb31b5ae908f6167b0ab2}
     name: moment
     version: 2.29.4
     dev: false

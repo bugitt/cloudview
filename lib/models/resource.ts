@@ -23,4 +23,5 @@ export interface ResourceUsage {
         kind: string
     }
     namespacedName: NamespacedName
+    displayName: string
 }

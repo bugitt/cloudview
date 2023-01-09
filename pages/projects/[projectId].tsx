@@ -2,8 +2,9 @@ import { PageHeader } from "@ant-design/pro-components"
 import { Space, Descriptions } from "antd"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project, Repository } from "../../lib/cloudapi-client"
+import { ImageListTable } from "../../lib/components/projects/image/ImageListTable"
 import { ProjectFlow } from "../../lib/components/projects/ProjectFlow"
-import { ResourceStatCard } from "../../lib/components/projects/resource/stat/ResourceStatCard"
+import { ResourceStatCardInProject } from "../../lib/components/projects/resource/stat/ResourceStatCard"
 import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
 import { formatTimeStamp } from "../../lib/utils/date"
 import { setToken, ssrToken, ssrUserId } from "../../lib/utils/token"
@@ -37,6 +38,8 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
                 </Space>
             </PageHeader>
             <ProjectFlow project={project} title="工作流概览" />
+            <ImageListTable project={project} />
+            <ResourceStatCardInProject title="项目中各项容器部署任务资源占比" project={project} />
         </>
     )
 }
