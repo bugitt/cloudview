@@ -1,7 +1,10 @@
+import { PageHeader } from "@ant-design/pro-components"
+import { Space, Descriptions } from "antd"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project, Repository } from "../../lib/cloudapi-client"
 import { ProjectFlow } from "../../lib/components/projects/ProjectFlow"
 import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
+import { formatTimeStamp } from "../../lib/utils/date"
 import { setToken, ssrToken, ssrUserId } from "../../lib/utils/token"
 import { BaseSSRType } from "../../lib/utils/type"
 
@@ -15,10 +18,24 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
     setToken(token, userId)
     return (
         <>
-            <h1>
-                {project.name}
-            </h1>
-            <ProjectFlow project={project} />
+            <PageHeader
+                ghost={false}
+                title={project.displayName}
+                subTitle={project.description}
+                onBack={() => window.history.back()}
+            >
+                <Space direction="vertical" style={{ display: 'flex' }}>
+                    <Descriptions column={3}>
+                        <Descriptions.Item label="所有者">
+                            {project.owner}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="创建时间">
+                            {formatTimeStamp(project.createdTime)}
+                        </Descriptions.Item>
+                    </Descriptions>
+                    <ProjectFlow project={project} title="工作流概览" />
+                </Space>
+            </PageHeader>
         </>
     )
 }

@@ -1,7 +1,7 @@
 import { Project, Repository } from "../../cloudapi-client";
 import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, Handle, Node, NodeChange, NodeProps, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Drawer, Space } from "antd";
+import { Descriptions, Drawer, Space } from "antd";
 import { useCallback, useState } from "react";
 import { RiGitRepositoryLine } from "react-icons/ri";
 import { FaDocker } from "react-icons/fa";
@@ -24,6 +24,7 @@ import { AddDeployerTriggerForm } from "./image/AddDeployerTriggerForm";
 
 interface ProjectFlowProps {
     project: Project,
+    title: string,
 }
 
 interface GitRepoNodeProps {
@@ -146,7 +147,7 @@ interface NodeMapType<T> {
 }
 
 export function ProjectFlow(props: ProjectFlowProps) {
-    const { project } = props
+    const { project, title } = props
 
     const [manageDeployerHook, setManageDeployerHook] = useState<ManageDeployerHook>({ open: false })
 
@@ -265,6 +266,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
 
     return (
         <>
+            <Descriptions title={title} />
             <div style={{ height: 700 }}>
                 <ButtonGroup>
                     <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
