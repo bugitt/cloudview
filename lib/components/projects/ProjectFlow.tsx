@@ -150,12 +150,10 @@ export function ProjectFlow(props: ProjectFlowProps) {
 
     const [manageDeployerHook, setManageDeployerHook] = useState<ManageDeployerHook>({ open: false })
 
-    // const [nodeMap, setNodeMap] = useState<NodeMapType>({})
     const [gitRepoNodeMap, setGitRepoNodeMap] = useState<NodeMapType<Repository>>({})
     const [builderNodeMap, setBuilderNodeMap] = useState<NodeMapType<Builder>>({})
     const [deployerNodeMap, setDeployerNodeMap] = useState<NodeMapType<Deployer>>({})
 
-    // const [nodes, setNodes] = useState<Node[]>([]);
     const [gitRepoNodes, setGitRepoNodes] = useState<Node<GitRepoNodeProps>[]>([]);
     const [builderNodes, setBuilderNodes] = useState<Node<BuilderNodeProps>[]>([]);
     const [deployerNodes, setDeployerNodes] = useState<Node<DeployerNodeProps>[]>([]);
