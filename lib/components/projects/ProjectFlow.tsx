@@ -160,21 +160,20 @@ export function ProjectFlow(props: ProjectFlowProps) {
     const [builderNodes, setBuilderNodes] = useState<Node<BuilderNodeProps>[]>([]);
     const [deployerNodes, setDeployerNodes] = useState<Node<DeployerNodeProps>[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
-    const onNodesChange = useCallback(
-        (changes: NodeChange[]) => {
-            setGitRepoNodes((nds) => applyNodeChanges(changes, nds))
-            setBuilderNodes((nds) => applyNodeChanges(changes, nds))
-            setDeployerNodes((nds) => applyNodeChanges(changes, nds))
-        },
-        [setGitRepoNodes, setBuilderNodes, setDeployerNodes]
-    );
+    // const onNodesChange = useCallback(
+    //     (changes: NodeChange[]) => {
+    //         setGitRepoNodes((nds) => applyNodeChanges(changes, nds))
+    //         setBuilderNodes((nds) => applyNodeChanges(changes, nds))
+    //         setDeployerNodes((nds) => applyNodeChanges(changes, nds))
+    //     },
+    //     [setGitRepoNodes, setBuilderNodes, setDeployerNodes]
+    // );
     const onEdgesChange = useCallback(
         (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
         [setEdges]
     );
     const onConnect = useCallback(
         (connection: Connection) => {
-            console.log(connection)
             if (connection.source?.startsWith('builder-') && connection.target?.startsWith('deployer-')) {
                 const builder = builderNodeMap[connection.source]
                 const deployer = deployerNodeMap[connection.target]
@@ -287,9 +286,9 @@ export function ProjectFlow(props: ProjectFlowProps) {
                     <Spin spinning={gitRepoReq.loading || buildersReq.loading || deployerReq.loading} />
                 </Space>
                 <ReactFlow
-                    nodes={(gitRepoNodes as Node<any>[]).concat(builderNodes).concat(deployerNodes)}
+                    nodes={(gitRepoNodes as Node[]).concat(builderNodes).concat(deployerNodes)}
                     edges={edges}
-                    onNodesChange={onNodesChange}
+                    // onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     nodeTypes={{
@@ -305,7 +304,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
                     title="添加镜像部署任务触发器"
                     placement="right"
                     onClose={() => {
-                        setManageDeployerHook((m) => { m.open = false; return m })
+                        setManageDeployerHook({ open: false })
                     }}
                     open={manageDeployerHook.open}
                 >
