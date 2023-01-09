@@ -12,10 +12,16 @@ const cloudviewAxios = globalAxios
 cloudviewAxios.interceptors.response.use(
     response => response,
     error => {
+        if (!document) {
+            console.error(error)
+        }
         const statusCode = error.response?.status
         if (statusCode === 401 || statusCode === 403) {
             error.message = '登录已过期，请重新登录'
-            notificationError(error, '登录过期')
+            try {
+                notificationError(error, '登录过期')
+            } catch (_) {
+            }
         }
         throw error
     }
