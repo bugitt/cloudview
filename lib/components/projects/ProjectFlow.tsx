@@ -1,8 +1,8 @@
 import { Project, Repository } from "../../cloudapi-client";
-import ReactFlow, { Background, Controls, Edge, Handle, Node, NodeProps, Position } from 'reactflow';
+import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, Handle, Node, NodeChange, NodeProps, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Space } from "antd";
-import { useState } from "react";
+import { Drawer, Space } from "antd";
+import { useCallback, useState } from "react";
 import { RiGitRepositoryLine } from "react-icons/ri";
 import { FaDocker } from "react-icons/fa";
 import { SiOpencontainersinitiative } from "react-icons/si";
@@ -20,6 +20,7 @@ import { ShowBuilderDrawer } from "./image/ShowBuilderDrawer";
 import { AddDeployerForm } from "./deployer/AddDeployerForm";
 import { Deployer, getDeployerDisplayName } from "../../models/deployer";
 import { ShowDeployerDrawer } from "./deployer/ShowDeployerDrawer";
+import { AddDeployerTriggerForm } from "./image/AddDeployerTriggerForm";
 
 interface ProjectFlowProps {
     project: Project,
@@ -43,6 +44,7 @@ const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
     return (
         <>
             <div>
+                <Handle type="target" position={Position.Left} />
                 <ProCard
                     title={(
                         <>
@@ -54,6 +56,8 @@ const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
                     style={{
                         width: 400,
                         height: 100,
+                        marginLeft: 3,
+                        marginRight: 3,
                     }}
                     bordered
                     boxShadow
@@ -70,7 +74,9 @@ const BuilderNode: React.FC<NodeProps<BuilderNodeProps>> = (props) => {
     const imageMeta = getImageMeta(builder)
     return (
         <>
+
             <div>
+                <Handle type="target" position={Position.Left} />
                 <ProCard
                     title={(
                         <>
@@ -82,12 +88,15 @@ const BuilderNode: React.FC<NodeProps<BuilderNodeProps>> = (props) => {
                     style={{
                         width: 400,
                         height: 100,
+                        marginLeft: 3,
+                        marginRight: 3,
                     }}
                     bordered
                     boxShadow
                 >
                     <ShowBuilderDrawer builder={builder} />
                 </ProCard>
+                <Handle type="source" position={Position.Right} />
             </div>
         </>
     )
@@ -98,6 +107,7 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
     return (
         <>
             <div>
+                <Handle type="source" position={Position.Right} />
                 <ProCard
                     title={(
                         <>
@@ -109,6 +119,8 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
                     style={{
                         width: 400,
                         height: 100,
+                        marginLeft: 3,
+                        marginRight: 3,
                     }}
                     bordered
                     boxShadow
@@ -119,102 +131,170 @@ const GitRepoNode: React.FC<NodeProps<GitRepoNodeProps>> = (props) => {
                     </Space>
                 </ProCard>
             </div>
-            <Handle type="source" position={Position.Right} />
         </>
     )
+}
+
+interface ManageDeployerHook {
+    deployer?: Deployer
+    builder?: Builder
+    open: boolean,
+}
+
+interface NodeMapType<T> {
+    [k: string]: T
 }
 
 export function ProjectFlow(props: ProjectFlowProps) {
     const { project } = props
 
-    const [gitRepos, setGitRepos] = useState<Repository[]>([])
+    const [manageDeployerHook, setManageDeployerHook] = useState<ManageDeployerHook>({ open: false })
+
+    // const [nodeMap, setNodeMap] = useState<NodeMapType>({})
+    const [gitRepoNodeMap, setGitRepoNodeMap] = useState<NodeMapType<Repository>>({})
+    const [builderNodeMap, setBuilderNodeMap] = useState<NodeMapType<Builder>>({})
+    const [deployerNodeMap, setDeployerNodeMap] = useState<NodeMapType<Deployer>>({})
+
+    // const [nodes, setNodes] = useState<Node[]>([]);
+    const [gitRepoNodes, setGitRepoNodes] = useState<Node<GitRepoNodeProps>[]>([]);
+    const [builderNodes, setBuilderNodes] = useState<Node<BuilderNodeProps>[]>([]);
+    const [deployerNodes, setDeployerNodes] = useState<Node<DeployerNodeProps>[]>([]);
+    const [edges, setEdges] = useState<Edge[]>([]);
+    const onNodesChange = useCallback(
+        (changes: NodeChange[]) => {
+            setGitRepoNodes((nds) => applyNodeChanges(changes, nds))
+            setBuilderNodes((nds) => applyNodeChanges(changes, nds))
+            setDeployerNodes((nds) => applyNodeChanges(changes, nds))
+        },
+        [setGitRepoNodes, setBuilderNodes, setDeployerNodes]
+    );
+    const onEdgesChange = useCallback(
+        (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+        [setEdges]
+    );
+    const onConnect = useCallback(
+        (connection: Connection) => {
+            console.log(connection)
+            if (connection.source?.startsWith('builder-') && connection.target?.startsWith('deployer-')) {
+                const builder = builderNodeMap[connection.source]
+                const deployer = deployerNodeMap[connection.target]
+                setManageDeployerHook({ open: true, builder, deployer })
+            }
+        },
+        [builderNodeMap, deployerNodeMap]
+    );
+
     const gitRepoReq = useRequest(() => cloudapiClient.getProjectProjectIdRepos(String(project.id)), {
         onSuccess: (data) => {
-            setGitRepos(data.data)
+            const nodeMap: NodeMapType<Repository> = {}
+            const gitNodes: Node<GitRepoNodeProps>[] = data.data.map((repo, i) => {
+                const id = repo.repoName
+                nodeMap[id] = repo
+                return {
+                    id: id,
+                    type: 'gitRepoNode',
+                    position: { x: 0, y: i * (100 + 25) + 25 },
+                    data: { repo: repo },
+                }
+            })
+            setGitRepoNodeMap(nodeMap)
+            setGitRepoNodes(gitNodes)
         },
-        onError: (err) => {
+        onError: (_) => {
             notificationError('获取代码仓库列表失败')
         },
     })
 
-    const [builders, setBuilders] = useState<Builder[]>([])
     const buildersReq = useRequest(() => viewApiClient.listImageBuilders(project.name), {
         onSuccess: (data) => {
-            setBuilders(data)
+            const nodeMap: NodeMapType<Builder> = {}
+            const builderNodes: Node<BuilderNodeProps>[] = data.map((builder, i) => {
+                const id = builder.metadata?.name!!
+                nodeMap[id] = builder
+                return {
+                    id: id,
+                    type: 'builderNode',
+                    position: { x: 500, y: i * (100 + 25) + 25 },
+                    data: { builder: builder },
+                }
+            })
+            setBuilderNodes(builderNodes)
+            setBuilderNodeMap(nodeMap)
         },
         onError: (_) => {
             notificationError('获取镜像构建任务列表失败')
         },
     })
 
-    const [deployers, setDeployers] = useState<Deployer[]>([])
     const deployerReq = useRequest(() => viewApiClient.listDeployers(project.name), {
         onSuccess: (data) => {
-            setDeployers(data)
+            const nodeMap: NodeMapType<Deployer> = {}
+            const deployerNodes: Node<DeployerNodeProps>[] = data.map((deployer, i) => {
+                const id = deployer.metadata?.name!!
+                nodeMap[id] = deployer
+                return {
+                    id: id,
+                    type: 'deployerNode',
+                    position: { x: 1000, y: i * (100 + 25) + 25 },
+                    data: { deployer: deployer, project: project },
+                }
+            })
+            setDeployerNodes(deployerNodes)
+            setDeployerNodeMap(nodeMap)
         },
         onError: (_) => {
             notificationError('获取容器部署任务列表失败')
         },
     })
 
-    const nodes: Node<any>[] = []
-    const gitNodes: Node<GitRepoNodeProps>[] = gitRepos.map((repo, i) => {
-        return {
-            id: `gitRepo-${i}`,
-            type: 'gitRepoNode',
-            position: { x: 0, y: i * (100 + 25) + 25 },
-            data: { repo: repo },
-        }
-    })
-    nodes.push(...gitNodes)
-
-    const builderNodes: Node<BuilderNodeProps>[] = builders.map((builder, i) => {
-        return {
-            id: `builder-${i}`,
-            type: 'builderNode',
-            position: { x: 500, y: i * (100 + 25) + 25 },
-            data: { builder: builder },
-        }
-    })
-    nodes.push(...builderNodes)
-
-    const deployerNodes: Node<DeployerNodeProps>[] = deployers.map((deployer, i) => {
-        return {
-            id: `deployer-${i}`,
-            type: 'deployerNode',
-            position: { x: 1000, y: i * (100 + 25) + 25 },
-            data: { deployer: deployer, project: project },
-        }
-    })
-    nodes.push(...deployerNodes)
-
-    const addGitRepoClick = () => {
-        gitRepoReq.run()
-    }
-    const edges: Edge<any>[] = [
-        {
-            id: 'e1-2',
-            source: '1',
-            target: '2',
-            label: 'This is an edge label',
-        },
-    ]
     return (
         <>
-            <div style={{ height: 3000 }}>
+            <div style={{ height: 700 }}>
                 <ButtonGroup>
                     <AddGitRepoForm project={project} hook={() => { gitRepoReq.run() }} />
                     <AddImageBuilderForm project={project} hook={() => { buildersReq.run() }} />
-                    <AddDeployerForm project={project} hook={() => { }} />
+                    <AddDeployerForm project={project} hook={() => { deployerReq.run() }} />
                 </ButtonGroup>
-                <ReactFlow nodes={nodes} edges={edges} nodeTypes={{
-                    gitRepoNode: GitRepoNode,
-                    builderNode: BuilderNode,
-                    deployerNode: DeployerNode,
-                }}>
+                <ReactFlow
+                    nodes={(gitRepoNodes as Node<any>[]).concat(builderNodes).concat(deployerNodes)}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    nodeTypes={{
+                        gitRepoNode: GitRepoNode,
+                        builderNode: BuilderNode,
+                        deployerNode: DeployerNode,
+                    }}
+                >
                     <Background />
                     <Controls />
                 </ReactFlow>
+                <Drawer
+                    title="添加镜像部署任务触发器"
+                    placement="right"
+                    onClose={() => {
+                        setManageDeployerHook((m) => { m.open = false; return m })
+                    }}
+                    open={manageDeployerHook.open}
+                >
+                    <AddDeployerTriggerForm
+                        builder={manageDeployerHook.builder}
+                        deployer={manageDeployerHook.deployer}
+                        project={project}
+                        hook={() => {
+                            setManageDeployerHook((m) => { m.open = false; return m })
+                            const connection: Connection = {
+                                source: manageDeployerHook.builder?.metadata?.name!!,
+                                target: manageDeployerHook.deployer?.metadata?.name!!,
+                                sourceHandle: null,
+                                targetHandle: null,
+                            }
+                            setEdges((eds) => addEdge(connection, eds))
+                        }}
+                        open={manageDeployerHook.open}
+                    />
+                </Drawer>
             </div>
         </>
     )
