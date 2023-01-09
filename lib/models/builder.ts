@@ -74,7 +74,8 @@ export interface CreateImageBuilderRequest {
 
 export interface DeployerHook {
   deployerName: string
-  image: string
+  image?: string
+  dynamicImage?: boolean
   resourcePool: string
 }
 

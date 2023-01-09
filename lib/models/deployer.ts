@@ -72,6 +72,14 @@ export interface ServicePort {
     protocol: string
 }
 
+export interface AddDeployerTriggerRequest {
+    projectName: string
+    deployerName: string
+    resourcePool: string
+    image?: string
+    dynamicImage?: boolean
+}
+
 export function getDeployerDisplayName(deployer: Deployer) {
     return deployer.metadata?.labels?.displayName || deployer.metadata?.name || ''
 }
