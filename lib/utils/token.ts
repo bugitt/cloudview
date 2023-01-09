@@ -3,16 +3,16 @@ import { GetServerSidePropsContext, NextApiRequest } from 'next'
 
 export function ssrToken(ctx: GetServerSidePropsContext): string {
     const cookies = ctx.req?.cookies
-    return cookies['scs-token'] ??
-        cookies['token'] ??
-        ctx.query?.token as string ?? ''
+    return ctx.query?.token as string ??
+        cookies['scs-token'] ??
+        cookies['token'] ?? ''
 }
 
 export function ssrUserId(ctx: GetServerSidePropsContext): string {
     const cookies = ctx.req?.cookies
-    return cookies['userId'] ??
-        cookies['scs-userId'] ??
-        ctx.query?.userId as string ?? ''
+    return ctx.query?.userId as string ??
+        cookies['userId'] ??
+        cookies['scs-userId'] ?? ''
 }
 
 export function getTokenFromReq(req: NextApiRequest): string {
