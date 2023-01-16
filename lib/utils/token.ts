@@ -1,18 +1,39 @@
 import cookie from 'js-cookie'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
 
-export function ssrToken(ctx: GetServerSidePropsContext): string {
+export interface UserInfo {
+    token: string
+    userId: string
+    role: string
+}
+
+export function ssrUserInfo(ctx: GetServerSidePropsContext): UserInfo {
+    return {
+        token: ssrToken(ctx),
+        userId: ssrUserId(ctx),
+        role: ssrRole(ctx),
+    }
+}
+
+function ssrToken(ctx: GetServerSidePropsContext): string {
     const cookies = ctx.req?.cookies
     return ctx.query?.token as string ??
         cookies['scs-token'] ??
         cookies['token'] ?? ''
 }
 
-export function ssrUserId(ctx: GetServerSidePropsContext): string {
+function ssrUserId(ctx: GetServerSidePropsContext): string {
     const cookies = ctx.req?.cookies
     return ctx.query?.userId as string ??
         cookies['userId'] ??
         cookies['scs-userId'] ?? ''
+}
+
+function ssrRole(ctx: GetServerSidePropsContext): string {
+    const cookies = ctx.req?.cookies
+    return ctx.query?.role as string ??
+        cookies['role'] ??
+        cookies['scs-role'] ?? ''
 }
 
 export function getTokenFromReq(req: NextApiRequest): string {
@@ -30,12 +51,11 @@ export const getUserId = () =>
     // new URLSearchParams(window.location.search).get('userId') ??
     ''
 
-export const setToken = (token?: string, userId?: string) => {
+export const setUserInfo = (userInfo: UserInfo) => {
     const options = {
         expires: 365,
     }
-    const finalToken = token ? token : getToken()
-    const finalUserId = userId ? userId : getUserId()
-    cookie.set('scs-token', finalToken, options)
-    cookie.set('scs-userId', finalUserId, options)
+    cookie.set('scs-token', userInfo.token, options)
+    cookie.set('scs-userId', userInfo.userId, options)
+    cookie.set('scs-role', userInfo.role)
 }

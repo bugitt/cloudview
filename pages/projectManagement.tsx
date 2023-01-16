@@ -2,7 +2,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project } from "../lib/cloudapi-client"
 import { ProjectTable } from "../lib/components/projects/ProjectTable"
 import { serverSideCloudapiClient } from "../lib/utils/cloudapi"
-import { setToken, ssrToken, ssrUserId } from "../lib/utils/token"
+import { setUserInfo, ssrUserInfo } from "../lib/utils/token"
 import { BaseSSRType } from "../lib/utils/type"
 
 interface ProjectsProps extends BaseSSRType {
@@ -10,8 +10,8 @@ interface ProjectsProps extends BaseSSRType {
 }
 
 export default function Projects(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { projectList, token, userId } = props
-    setToken(token, userId)
+    const { projectList, userInfo } = props
+    setUserInfo(userInfo)
     return (
         <>
             <ProjectTable projectList={projectList} />
@@ -20,13 +20,12 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
 }
 
 export const getServerSideProps: GetServerSideProps<ProjectsProps> = async (ctx) => {
-    const token = ssrToken(ctx)
-    const client = serverSideCloudapiClient(token)
+    const userInfo = ssrUserInfo(ctx)
+    const client = serverSideCloudapiClient(userInfo.token)
     const data = (await client.getProjects()).data
     return {
         props: {
-            token: token,
-            userId: ssrUserId(ctx),
+            userInfo: userInfo,
             projectList: data,
         },
     }

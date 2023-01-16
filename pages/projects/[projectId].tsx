@@ -7,7 +7,7 @@ import { ProjectFlow } from "../../lib/components/projects/ProjectFlow"
 import { ResourceStatCardInProject } from "../../lib/components/projects/resource/stat/ResourceStatCard"
 import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
 import { formatTimeStamp } from "../../lib/utils/date"
-import { setToken, ssrToken, ssrUserId } from "../../lib/utils/token"
+import { setUserInfo, ssrUserInfo } from "../../lib/utils/token"
 import { BaseSSRType } from "../../lib/utils/type"
 
 interface ProjectProps extends BaseSSRType {
@@ -16,8 +16,8 @@ interface ProjectProps extends BaseSSRType {
 }
 
 export default function SingleProjectPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { project, token, userId } = props
-    setToken(token, userId)
+    const { project, userInfo } = props
+    setUserInfo(userInfo)
     return (
         <>
             <PageHeader
@@ -45,15 +45,14 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
 }
 
 export const getServerSideProps: GetServerSideProps<ProjectProps> = async (ctx) => {
-    const token = ssrToken(ctx)
-    const client = serverSideCloudapiClient(token)
+    const userInfo = ssrUserInfo(ctx)
+    const client = serverSideCloudapiClient(userInfo.token)
     const projectId = Number(ctx.query.projectId)
     const project = (await client.getProjectProjectId(projectId)).data
     const gitRepos = (await client.getProjectProjectIdRepos(String(projectId))).data
     return {
         props: {
-            token: ssrToken(ctx),
-            userId: ssrUserId(ctx),
+            userInfo: userInfo,
             project: project,
             gitRepos: gitRepos,
         },

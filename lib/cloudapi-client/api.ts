@@ -665,7 +665,7 @@ export interface CourseResponse {
      * @type {number}
      * @memberof CourseResponse
      */
-    'studentCnt': number;
+    'studentCnt'?: number;
 }
 /**
  * 
@@ -1769,6 +1769,12 @@ export interface LoginUserResponse {
      * @memberof LoginUserResponse
      */
     'projects'?: Array<string>;
+    /**
+     * 
+     * @type {Array<SimpleCourse>}
+     * @memberof LoginUserResponse
+     */
+    'adminCourses': Array<SimpleCourse>;
 }
 /**
  * 
@@ -2392,6 +2398,25 @@ export interface S3Config {
      * @memberof S3Config
      */
     'region': string;
+}
+/**
+ * 
+ * @export
+ * @interface SimpleCourse
+ */
+export interface SimpleCourse {
+    /**
+     * 
+     * @type {number}
+     * @memberof SimpleCourse
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SimpleCourse
+     */
+    'name': string;
 }
 /**
  * 
@@ -3438,6 +3463,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 获取一项实验（作业）详情
+         * @summary 获取一项实验（作业）
+         * @param {number} experimentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getExperimentExperimentId: async (experimentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'experimentId' is not null or undefined
+            assertParamExists('getExperimentExperimentId', 'experimentId', experimentId)
+            const localVarPath = `/experiment/{experimentId}`
+                .replace(`{${"experimentId"}}`, encodeURIComponent(String(experimentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
          * @summary 获取实验（作业）下学生提交的作业信息
          * @param {number} experimentId 
@@ -3586,43 +3648,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (courseId !== undefined) {
                 localVarQueryParameter['courseId'] = courseId;
             }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 获取一项实验（作业）详情
-         * @summary 获取一项实验（作业）
-         * @param {number} experimentId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getExperimnetExperimentId: async (experimentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'experimentId' is not null or undefined
-            assertParamExists('getExperimnetExperimentId', 'experimentId', experimentId)
-            const localVarPath = `/experimnet/{experimentId}`
-                .replace(`{${"experimentId"}}`, encodeURIComponent(String(experimentId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Authorization required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -5844,7 +5869,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         putExperimnetExperimentId: async (experimentId: number, putExperimentRequest?: PutExperimentRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'experimentId' is not null or undefined
             assertParamExists('putExperimnetExperimentId', 'experimentId', experimentId)
-            const localVarPath = `/experimnet/{experimentId}`
+            const localVarPath = `/experiment/{experimentId}`
                 .replace(`{${"experimentId"}}`, encodeURIComponent(String(experimentId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6039,6 +6064,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取一项实验（作业）详情
+         * @summary 获取一项实验（作业）
+         * @param {number} experimentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getExperimentExperimentId(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentId(experimentId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
          * @summary 获取实验（作业）下学生提交的作业信息
          * @param {number} experimentId 
@@ -6083,17 +6119,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getExperimentsNames(courseId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentsNames(courseId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 获取一项实验（作业）详情
-         * @summary 获取一项实验（作业）
-         * @param {number} experimentId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getExperimnetExperimentId(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimnetExperimentId(experimentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6890,6 +6915,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getCourseList(options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取一项实验（作业）详情
+         * @summary 获取一项实验（作业）
+         * @param {number} experimentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getExperimentExperimentId(experimentId: number, options?: any): AxiosPromise<ExperimentResponse> {
+            return localVarFp.getExperimentExperimentId(experimentId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
          * @summary 获取实验（作业）下学生提交的作业信息
          * @param {number} experimentId 
@@ -6931,16 +6966,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getExperimentsNames(courseId?: number, options?: any): AxiosPromise<Array<string>> {
             return localVarFp.getExperimentsNames(courseId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 获取一项实验（作业）详情
-         * @summary 获取一项实验（作业）
-         * @param {number} experimentId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getExperimnetExperimentId(experimentId: number, options?: any): AxiosPromise<ExperimentResponse> {
-            return localVarFp.getExperimnetExperimentId(experimentId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取文件的元信息
@@ -7708,6 +7733,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 获取一项实验（作业）详情
+     * @summary 获取一项实验（作业）
+     * @param {number} experimentId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getExperimentExperimentId(experimentId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getExperimentExperimentId(experimentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
      * @summary 获取实验（作业）下学生提交的作业信息
      * @param {number} experimentId 
@@ -7756,18 +7793,6 @@ export class DefaultApi extends BaseAPI {
      */
     public getExperimentsNames(courseId?: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getExperimentsNames(courseId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 获取一项实验（作业）详情
-     * @summary 获取一项实验（作业）
-     * @param {number} experimentId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getExperimnetExperimentId(experimentId: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getExperimnetExperimentId(experimentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
