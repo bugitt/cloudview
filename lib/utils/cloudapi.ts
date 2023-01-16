@@ -12,7 +12,7 @@ const cloudviewAxios = globalAxios
 cloudviewAxios.interceptors.response.use(
     response => response,
     error => {
-        if (!document) {
+        if (typeof window === 'undefined') {
             console.error(error)
         }
         const statusCode = error.response?.status
