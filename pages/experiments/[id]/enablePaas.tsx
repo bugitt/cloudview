@@ -3,11 +3,10 @@ import { ExperimentResponse } from "../../../lib/cloudapi-client"
 import { serverSideCloudapiClient, viewApiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
-import { ProForm, ProFormCheckbox, ProFormDependency, ProFormGroup, ProFormInstance, ProFormList, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components"
+import { ProForm, ProFormCheckbox, ProFormDigit, ProFormGroup, ProFormInstance, ProFormList, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components"
 import { useRef, useState } from "react"
 import { useRequest } from "ahooks"
 import { WorkflowTemplate } from "../../../lib/models/workflow"
-import { filepathJoin } from "../../../lib/utils/filepath"
 
 interface ExperimentProps extends BaseSSRType {
     experiment: ExperimentResponse
@@ -18,8 +17,9 @@ export default function EnablePaasForm(props: InferGetServerSidePropsType<typeof
     setUserInfo(userInfo)
 
     const [workflowTemplate, setWorkflowTemplate] = useState<WorkflowTemplate | undefined>(undefined)
-    const [needCompile, setNeedCompile] = useState<boolean>(false)
-    const [changeEnv, setChangeEnv] = useState<boolean>(false)
+
+    const [customBaseImage, setCustomBaseImage] = useState<boolean>(false)
+    const [baseImage, setBaseImage] = useState<string>("")
 
     const { data: workflowTemplates } = useRequest(() => viewApiClient.getWorkflowTemplates())
 
@@ -60,110 +60,71 @@ export default function EnablePaasForm(props: InferGetServerSidePropsType<typeof
                 />
 
                 <ProFormSelect
-                    name="workflowTemplate"
-                    label="工作流模板"
-                    valueEnum={new Map(workflowTemplates?.map((template) => [template.name, template.name]) ?? [])}
+                    name="baseEnv"
+                    label="基础环境"
+                    valueEnum={(new Map(workflowTemplates?.map((template) => [template.name, template.name]) ?? [])).set("custom", "自定义")}
                     fieldProps={{
                         onChange: (value) => {
+                            if (value === 'custom') {
+                                setCustomBaseImage(true)
+                            } else {
+                                setCustomBaseImage(false)
+                            }
                             const template = workflowTemplates?.find((template) => template.name === value)
                             setWorkflowTemplate(workflowTemplates?.find((template) => template.name === value))
-                            const needCompile = !!template?.buildSpec
-                            setNeedCompile(needCompile)
-                            setChangeEnv(template?.deploySpec.changeEnv ?? false)
+                            setBaseImage(template?.buildSpec?.baseImage ?? "")
                             formRef.current?.setFieldsValue({
-                                needCompile: needCompile,
-                                compileBaseImage: template?.buildSpec?.baseImage,
-                                compileWorkingDir: template?.buildSpec?.workingDir,
+                                baseImage: template?.buildSpec?.baseImage,
+                                cpu: template?.resource.cpu,
+                                memory: template?.resource.memory,
                                 compileCommand: template?.buildSpec?.command,
-                                changeEnv: template?.deploySpec.changeEnv,
-                                deployBaseImage: template?.deploySpec.baseImage,
-                                deployFilePairSource: template?.deploySpec?.filePair?.source,
-                                deployFilePairTarget: template?.deploySpec?.filePair?.target,
                                 deployCommand: template?.deploySpec?.command,
                                 ports: template?.deploySpec?.ports,
                             })
                         }
                     }}
+                    tooltip={"请选择编译和运行所提交的源代码所需要使用的基础环境。"}
+                    extra={baseImage && baseImage !== '' ? `当前使用的镜像为 ${baseImage}。` : ''}
                     showSearch
                 />
 
-                <ProFormSwitch
-                    name="needCompile"
-                    label="是否需要编译"
-                    checkedChildren="是"
-                    unCheckedChildren="否"
-                    fieldProps={{
-                        onChange: (value) => {
-                            setNeedCompile(value)
-                        }
-                    }}
-                    required
-                />
-
-                {needCompile &&
-                    <>
-                        <ProFormText
-                            name="compileBaseImage"
-                            label="编译所用的镜像环境"
-                            required
-                        />
-
-                        <ProFormText
-                            name="compileWorkingDir"
-                            label="编译时的工作路径"
-                            tooltip="该工作路径为相对于提交的作业（压缩包或Git仓库）的相对路径，为执行编译命令时的工作路径。"
-                        />
-
-                        <ProFormDependency name={['compileWorkingDir']}>
-                            {({ compileWorkingDir }) => {
-                                return (
-                                    <ProFormTextArea
-                                        name={"compileCommand"}
-                                        label="编译命令"
-                                        tooltip="请给出编译所提交的源代码所需要使用的编译命令"
-                                        extra={`请注意，所提交的作业的根目录在编译所在机器上的绝对路径为 /workspace , 执行该编译命令所位于的绝对路径为 ${filepathJoin(['/workspace', compileWorkingDir])}`}
-                                        required
-                                    />
-                                );
-                            }}
-                        </ProFormDependency>
-                    </>
-                }
-
-                <ProFormSwitch
-                    name="changeEnv"
-                    label="是否使用新的环境进行部署"
-                    tooltip="你可以选择在编译完成后，将编译产物提取出来，使用新的环境进行部署。如果该选项为否，那么将继续使用上述编译环境进行部署和运行。"
-                    checkedChildren="是"
-                    unCheckedChildren="否"
-                    fieldProps={{
-                        onChange: (value) => {
-                            setChangeEnv(value)
-                        }
-                    }}
-                    required
-                />
-
                 {
-                    changeEnv && <>
+                    customBaseImage && <>
                         <ProFormText
-                            name="deployBaseImage"
-                            label="部署所用的镜像环境"
-                            required
-                        />
-                        <ProFormText
-                            name="deployFilePairSource"
-                            label="编译产物在编译环境中的绝对路径"
-                            tooltip="在部署前，会将该路径下的文件拷贝到部署环境中的下面“编译产物在部署环境中的绝对路径”所指定的路径下。"
-                        />
-                        <ProFormText
-                            name="deployFilePairTarget"
-                            label="编译产物在部署环境中的绝对路径"
+                            name={"baseImage"}
+                            label="自定义基础镜像"
+                            tooltip={"请给出编译和运行所提交的源代码所需要使用的基础镜像。"}
                         />
                     </>
+
                 }
 
-                <ProFormTextArea
+                <ProFormGroup title="资源限额">
+                    <ProFormDigit
+                        name="cpu"
+                        label="CPU限额"
+                        min={1}
+                        addonAfter="mCore"
+                        extra="1 核 = 1000 mCore"
+                        rules={[{ required: true }]}
+                    />
+                    <ProFormDigit
+                        name="memory"
+                        label="内存限额"
+                        min={1}
+                        addonAfter="MB"
+                        rules={[{ required: true }]}
+                    />
+                </ProFormGroup>
+
+                <ProFormText
+                    name={"compileCommand"}
+                    label="编译命令"
+                    tooltip={"请给出编译所提交的源代码所需要使用的编译命令。如果命令较复杂，建议在提交的作业中提供编译脚本，并在此直接填写编译脚本的执行命令。\n请注意，该编译命令将会在所提交作业（压缩包或Git仓库）的根目录执行。"}
+                    extra="请注意，该编译命令将会在所提交作业（压缩包或Git仓库）的根目录执行。"
+                />
+
+                <ProFormText
                     name={"deployCommand"}
                     label="启动命令"
                     tooltip="请给出部署时所使用的命令。如果没有给出，将使用默认基础镜像的默认启动命令。"
@@ -220,6 +181,41 @@ export default function EnablePaasForm(props: InferGetServerSidePropsType<typeof
                         />
                     </ProFormGroup>
                 </ProFormList>
+
+                <ProFormGroup title="请配置学生可自定义的选项">
+                    <ProFormSwitch
+                        name="allowCustomBaseImage"
+                        label="是否允许学生自定义基础镜像"
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        initialValue={false}
+                        required
+                    />
+                    <ProFormSwitch
+                        name="allowCustomCompileCommand"
+                        label="是否允许学生自定义编译命令"
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        initialValue={false}
+                        required
+                    />
+                    <ProFormSwitch
+                        name="allowCustomDeployCommand"
+                        label="是否允许学生自定义运行/启动命令"
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        initialValue={false}
+                        required
+                    />
+                    <ProFormSwitch
+                        name="allowCustomPorts"
+                        label="是否允许学生自定义端口信息"
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        initialValue={false}
+                        required
+                    />
+                </ProFormGroup>
 
             </ProForm>
         </>

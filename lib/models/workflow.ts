@@ -1,14 +1,15 @@
 import { DeployerContainerPort } from "./deployer"
+import { Resource } from "./resource"
 
 export interface WorkflowTemplate {
     name: string
+    resource: Resource
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
 }
 
 export interface WorkflowBuildSpec {
     baseImage: string
-    workingDir: string
     command: string
 }
 
@@ -25,19 +26,29 @@ export interface FilePair {
     target: string
 }
 
-export interface EnableExperimentPaasRequest {
+export interface ExperimentWorkflowConfiguration {
     experimentId: number
+    resource: Resource
     workflowTemplateName: string
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
+    customOptions: {
+        baseImage: boolean
+        compileCommand: boolean
+        deployCommand: boolean
+        ports: boolean
+    }
 }
 
 export const workflowTemplates: WorkflowTemplate[] = [
     {
         name: '静态网站（Nginx）',
+        resource: {
+            cpu: 10,
+            memory: 100,
+        },
         buildSpec: {
             baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',
-            workingDir: './',
             command: `copy -r ./* /usr/share/nginx/html/`,
         },
         deploySpec: {
@@ -48,9 +59,12 @@ export const workflowTemplates: WorkflowTemplate[] = [
     },
     {
         name: `静态网站（Nginx）（change env）`,
+        resource: {
+            cpu: 10,
+            memory: 100,
+        },
         buildSpec: {
             baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',
-            workingDir: './',
             command: `copy -r ./* /usr/share/nginx/html/`,
         },
         deploySpec: {
@@ -66,6 +80,10 @@ export const workflowTemplates: WorkflowTemplate[] = [
     },
     {
         name: `静态网站（Nginx）（don't need compile）`,
+        resource: {
+            cpu: 10,
+            memory: 100,
+        },
         deploySpec: {
             changeEnv: true,
             baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',

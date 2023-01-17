@@ -51,7 +51,7 @@ const viewApiClientConfig = () => {
         headers: {
             Authorization: token,
         },
-        baseURL: "https://scs.buaa.edu.cn/view/v2/api",
+        baseURL: "http://localhost:3000/view/v2/api",
     }
 }
 
