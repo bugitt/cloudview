@@ -55,7 +55,7 @@ export const setUserInfo = (userInfo: UserInfo) => {
     const options = {
         expires: 365,
     }
-    cookie.set('scs-token', userInfo.token, options)
-    cookie.set('scs-userId', userInfo.userId, options)
-    cookie.set('scs-role', userInfo.role)
+    userInfo.token !== '' && cookie.set('scs-token', userInfo.token, options)
+    userInfo.userId !== '' && cookie.set('scs-userId', userInfo.userId, options)
+    userInfo.role !== '' && cookie.set('scs-role', userInfo.role)
 }

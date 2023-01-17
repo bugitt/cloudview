@@ -29,6 +29,12 @@ export interface DeployerStatus extends BaseCRDStatus {
     resourcePool: string
 }
 
+export interface DeployerContainerPort {
+    export?: boolean
+    port: number
+    protocol?: "tcp" | "udp" | "sctp"
+}
+
 export interface DeployerContainer {
     args?: string[]
     command?: string[]
@@ -38,11 +44,7 @@ export interface DeployerContainer {
     image: string
     initial?: boolean
     name: string
-    ports?: {
-        export?: boolean
-        port: number
-        protocol?: "tcp" | "udp" | "sctp"
-    }[]
+    ports?: DeployerContainerPort[]
     workingDir?: string
     resource: {
         cpu: number

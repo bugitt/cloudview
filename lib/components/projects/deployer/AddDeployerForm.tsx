@@ -191,7 +191,7 @@ export function AddDeployerForm(props: AddDeployerFormProps) {
                     <ProFormText
                         name="port"
                         label="端口号"
-                        extra="各个容器暴露的端口号互相之间不能重复"
+                        extra="各个端口号互相之间不能重复"
                         placeholder="请输入端口号"
                         rules={[
                             { required: true },

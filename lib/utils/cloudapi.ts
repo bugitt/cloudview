@@ -4,6 +4,7 @@ import { cloudapi } from '../config/env'
 import { Builder, CreateImageBuilderRequest } from '../models/builder'
 import { AddDeployerTriggerRequest, CreateDeployerRequest, Deployer, ServiceStatus } from '../models/deployer'
 import { ResourcePool } from '../models/resource'
+import { WorkflowTemplate } from '../models/workflow'
 import { notificationError } from './notification'
 import { getToken } from './token'
 
@@ -97,5 +98,9 @@ export const viewApiClient = {
 
     getProjectResourcePools: async (projectId: number) => {
         return (await cloudviewAxios.get(`/resourcePools?projectId=${projectId}`, viewApiClientConfig())).data as ResourcePool[]
+    },
+
+    getWorkflowTemplates: async () => {
+        return (await cloudviewAxios.get(`/workflows/templates`, viewApiClientConfig())).data as WorkflowTemplate[]
     }
 }
