@@ -34,7 +34,7 @@ export const ResourceStatCardInProject = (props: {
     })
 
     resourcePoolList.forEach((pool) => {
-        pool.spec.usage.forEach(usage => {
+        pool.status.usage.forEach(usage => {
             if (usage.namespacedName.namespace === project.name) {
                 cpuData.push({
                     name: usage.displayName,

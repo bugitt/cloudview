@@ -8,11 +8,11 @@ export interface ResourcePool extends k8s.KubernetesObject {
 
 export interface ResourcePoolSpec {
     capacity: Resource
-    usage: ResourceUsage[]
 }
 
 export interface ResourcePoolStatus {
     free: Resource
+    usage: ResourceUsage[]
 }
 
 export interface Resource {
