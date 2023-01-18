@@ -3,12 +3,16 @@ import { NamespacedName } from './crd';
 
 export interface ResourcePool extends k8s.KubernetesObject {
     spec: ResourcePoolSpec
+    status: ResourcePoolStatus
 }
 
 export interface ResourcePoolSpec {
     capacity: Resource
-    free: Resource
     usage: ResourceUsage[]
+}
+
+export interface ResourcePoolStatus {
+    free: Resource
 }
 
 export interface Resource {

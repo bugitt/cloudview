@@ -6,7 +6,8 @@ interface ResourcePoolProgressProps {
 }
 
 export const ResourcePoolProgress = ({ resourcePool }: ResourcePoolProgressProps) => {
-    const { capacity, free } = resourcePool.spec
+    const { capacity } = resourcePool.spec
+    const { free } = resourcePool.status
     const used: Resource = {
         cpu: capacity.cpu - free.cpu,
         memory: capacity.memory - free.memory,
