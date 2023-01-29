@@ -3920,11 +3920,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 获取某项实验的Workflow配置
          * @summary 获取某项实验的Workflow配置
-         * @param {string} experimentId 
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getExperimentExperimentIdWorkflowConfiguration: async (experimentId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getExperimentExperimentIdWorkflowConfiguration: async (experimentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'experimentId' is not null or undefined
             assertParamExists('getExperimentExperimentIdWorkflowConfiguration', 'experimentId', experimentId)
             const localVarPath = `/experiment/{experimentId}/workflowConfiguration`
@@ -5634,12 +5634,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 创建某项实验的Workflow配置
          * @summary 创建某项实验的Workflow配置
-         * @param {string} experimentId 
+         * @param {number} experimentId 
          * @param {ExperimentWorkflowConfigurationRequest} [experimentWorkflowConfigurationRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postExperimentExperimentIdWorkflowConfiguration: async (experimentId: string, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        postExperimentExperimentIdWorkflowConfiguration: async (experimentId: number, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'experimentId' is not null or undefined
             assertParamExists('postExperimentExperimentIdWorkflowConfiguration', 'experimentId', experimentId)
             const localVarPath = `/experiment/{experimentId}/workflowConfiguration`
@@ -6562,11 +6562,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 获取某项实验的Workflow配置
          * @summary 获取某项实验的Workflow配置
-         * @param {string} experimentId 
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getExperimentExperimentIdWorkflowConfiguration(experimentId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentWorkflowConfigurationResponse>> {
+        async getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentWorkflowConfigurationResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentIdWorkflowConfiguration(experimentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7059,12 +7059,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 创建某项实验的Workflow配置
          * @summary 创建某项实验的Workflow配置
-         * @param {string} experimentId 
+         * @param {number} experimentId 
          * @param {ExperimentWorkflowConfigurationRequest} [experimentWorkflowConfigurationRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postExperimentExperimentIdWorkflowConfiguration(experimentId: string, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentWorkflowConfigurationResponse>> {
+        async postExperimentExperimentIdWorkflowConfiguration(experimentId: number, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentWorkflowConfigurationResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postExperimentExperimentIdWorkflowConfiguration(experimentId, experimentWorkflowConfigurationRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7445,11 +7445,11 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 获取某项实验的Workflow配置
          * @summary 获取某项实验的Workflow配置
-         * @param {string} experimentId 
+         * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getExperimentExperimentIdWorkflowConfiguration(experimentId: string, options?: any): AxiosPromise<ExperimentWorkflowConfigurationResponse> {
+        getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: any): AxiosPromise<ExperimentWorkflowConfigurationResponse> {
             return localVarFp.getExperimentExperimentIdWorkflowConfiguration(experimentId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -7898,12 +7898,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 创建某项实验的Workflow配置
          * @summary 创建某项实验的Workflow配置
-         * @param {string} experimentId 
+         * @param {number} experimentId 
          * @param {ExperimentWorkflowConfigurationRequest} [experimentWorkflowConfigurationRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postExperimentExperimentIdWorkflowConfiguration(experimentId: string, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options?: any): AxiosPromise<ExperimentWorkflowConfigurationResponse> {
+        postExperimentExperimentIdWorkflowConfiguration(experimentId: number, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options?: any): AxiosPromise<ExperimentWorkflowConfigurationResponse> {
             return localVarFp.postExperimentExperimentIdWorkflowConfiguration(experimentId, experimentWorkflowConfigurationRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -8301,12 +8301,12 @@ export class DefaultApi extends BaseAPI {
     /**
      * 获取某项实验的Workflow配置
      * @summary 获取某项实验的Workflow配置
-     * @param {string} experimentId 
+     * @param {number} experimentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getExperimentExperimentIdWorkflowConfiguration(experimentId: string, options?: AxiosRequestConfig) {
+    public getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getExperimentExperimentIdWorkflowConfiguration(experimentId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -8842,13 +8842,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 创建某项实验的Workflow配置
      * @summary 创建某项实验的Workflow配置
-     * @param {string} experimentId 
+     * @param {number} experimentId 
      * @param {ExperimentWorkflowConfigurationRequest} [experimentWorkflowConfigurationRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public postExperimentExperimentIdWorkflowConfiguration(experimentId: string, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options?: AxiosRequestConfig) {
+    public postExperimentExperimentIdWorkflowConfiguration(experimentId: number, experimentWorkflowConfigurationRequest?: ExperimentWorkflowConfigurationRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).postExperimentExperimentIdWorkflowConfiguration(experimentId, experimentWorkflowConfigurationRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
