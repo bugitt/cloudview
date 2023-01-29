@@ -26,8 +26,20 @@ export interface FilePair {
     target: string
 }
 
+export type SubmitType = 'zip' | 'git'
+
+export function displaySubmitType(submitType: SubmitType): string {
+    switch (submitType) {
+        case 'zip':
+            return '压缩包'
+        case 'git':
+            return 'Git'
+    }
+}
+
 export interface ExperimentWorkflowConfiguration {
     experimentId: number
+    submitOptions: SubmitType[]
     resource: Resource
     workflowTemplateName: string
     buildSpec?: WorkflowBuildSpec
