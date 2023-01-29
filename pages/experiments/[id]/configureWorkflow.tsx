@@ -5,11 +5,11 @@ import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
 import { ConfigureExperimentWorkflowForm } from "../../../lib/components/experiments/ConfigureExperimentWorkflowForm"
 
-interface ExperimentProps extends BaseSSRType {
+interface Props extends BaseSSRType {
     experiment: ExperimentResponse
 }
 
-export default function EnablePaasForm(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { experiment, userInfo } = props
     setUserInfo(userInfo)
 
@@ -20,7 +20,7 @@ export default function EnablePaasForm(props: InferGetServerSidePropsType<typeof
     )
 }
 
-export const getServerSideProps: GetServerSideProps<ExperimentProps> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const userInfo = ssrUserInfo(ctx)
     const client = serverSideCloudapiClient(userInfo.token)
     const loginUser = (await client.getWhoami()).data
