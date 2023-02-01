@@ -1180,12 +1180,6 @@ export interface ExperimentWorkflowConfigurationRequest {
      * @type {number}
      * @memberof ExperimentWorkflowConfigurationRequest
      */
-    'id': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ExperimentWorkflowConfigurationRequest
-     */
     'expId': number;
     /**
      * 

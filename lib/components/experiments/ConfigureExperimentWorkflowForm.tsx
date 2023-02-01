@@ -1,19 +1,35 @@
 import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, ProFormGroup, ProFormDigit, ProFormList, ProFormSwitch } from "@ant-design/pro-components"
 import { useRequest } from "ahooks"
 import { useState, useRef } from "react"
-import { ExperimentResponse } from "../../cloudapi-client"
-import { WorkflowTemplate } from "../../models/workflow"
-import { viewApiClient } from "../../utils/cloudapi"
+import { ExperimentResponse, ExperimentWorkflowConfigurationRequest } from "../../cloudapi-client"
+import { ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
+import { cloudapiClient, viewApiClient } from "../../utils/cloudapi"
+import { messageInfo, notificationError } from "../../utils/notification"
 
 interface Props {
     experiment: ExperimentResponse
 }
 
+interface FormDataType {
+    submitOptions: SubmitType[]
+    baseEnv: string
+    baseImage?: string
+    cpu: number
+    memory: number
+    compileCommand?: string
+    deployCommand?: string
+    ports?: {
+        port: string
+        protocol: string
+    }[]
+    allowCustomBaseImage: boolean
+    allowCustomCompileCommand: boolean
+    allowCustomDeployCommand: boolean
+    allowCustomPorts: boolean
+}
+
 export function ConfigureExperimentWorkflowForm(props: Props) {
     const { experiment } = props
-
-    const [workflowTemplate, setWorkflowTemplate] = useState<WorkflowTemplate | undefined>(undefined)
-
     const [customBaseImage, setCustomBaseImage] = useState<boolean>(false)
     const [baseImage, setBaseImage] = useState<string>("")
 
@@ -21,14 +37,62 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
 
     const formRef = useRef<ProFormInstance>()
 
-    const onFinish = async (values: any) => {
-        console.log(values.submitOptions)
+    const onFinish = async (values: FormDataType) => {
+        console.log(values)
+        const finalBaseImage = values.baseImage ?? baseImage
+        if (!finalBaseImage) {
+            notificationError("请填写基础镜像")
+            return false
+        }
+        const configuration: ExperimentWorkflowConfiguration = {
+            experimentId: experiment.id,
+            submitOptions: values.submitOptions,
+            resource: {
+                cpu: values.cpu,
+                memory: values.memory,
+            },
+            workflowTemplateName: values.baseEnv,
+            baseImage: finalBaseImage,
+            buildSpec: values.compileCommand ? {
+                command: values.compileCommand,
+            } : undefined,
+            deploySpec: {
+                changeEnv: false,
+                command: values.deployCommand,
+                ports: values.ports?.map((port) => {
+                    return {
+                        export: true,
+                        port: parseInt(port.port),
+                        protocol: port.protocol.toLowerCase() as ('tcp' | 'udp' | 'sctp'),
+                    }
+                }),
+            },
+            customOptions: {
+                baseImage: values.allowCustomBaseImage,
+                compileCommand: values.allowCustomCompileCommand,
+                deployCommand: values.allowCustomDeployCommand,
+                ports: values.allowCustomPorts,
+            }
+        }
+        const req: ExperimentWorkflowConfigurationRequest = {
+            expId: experiment.id,
+            resource: configuration.resource,
+            configuration: JSON.stringify(configuration),
+        }
+        try {
+            await cloudapiClient.postExperimentExperimentIdWorkflowConfiguration(experiment.id, req)
+            messageInfo("配置PaaS工作流成功")
+            return true
+        } catch (e) {
+            notificationError("配置PaaS工作流失败")
+            return false
+        }
     }
 
     return (
         <>
-            <ProForm
-                name="enablePassForm"
+            <ProForm<FormDataType>
+                name="configureExperimentWorkflow"
                 onFinish={onFinish}
                 formRef={formRef}
                 layout="vertical"
@@ -67,10 +131,9 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                                 setCustomBaseImage(false)
                             }
                             const template = workflowTemplates?.find((template) => template.name === value)
-                            setWorkflowTemplate(workflowTemplates?.find((template) => template.name === value))
-                            setBaseImage(template?.buildSpec?.baseImage ?? "")
+                            setBaseImage(template?.baseImage ?? "")
                             formRef.current?.setFieldsValue({
-                                baseImage: template?.buildSpec?.baseImage,
+                                baseImage: template?.baseImage,
                                 cpu: template?.resource.cpu,
                                 memory: template?.resource.memory,
                                 compileCommand: template?.buildSpec?.command,
