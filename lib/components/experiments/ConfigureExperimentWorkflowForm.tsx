@@ -1,6 +1,6 @@
 import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, ProFormGroup, ProFormDigit, ProFormList, ProFormSwitch } from "@ant-design/pro-components"
 import { useRequest } from "ahooks"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationRequest } from "../../cloudapi-client"
 import { ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
 import { cloudapiClient, viewApiClient } from "../../utils/cloudapi"
@@ -8,6 +8,7 @@ import { messageInfo, notificationError } from "../../utils/notification"
 
 interface Props {
     experiment: ExperimentResponse
+    mode: "create" | "update" | "view"
     onSuccessHook: () => void
     onFailedHook: () => void
 }
@@ -31,7 +32,7 @@ interface FormDataType {
 }
 
 export function ConfigureExperimentWorkflowForm(props: Props) {
-    const { experiment, onSuccessHook, onFailedHook } = props
+    const { experiment, onSuccessHook, onFailedHook, mode } = props
     const [customBaseImage, setCustomBaseImage] = useState<boolean>(false)
     const [baseImage, setBaseImage] = useState<string>("")
 
@@ -92,6 +93,30 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
         }
     }
 
+    useEffect(() => {
+        if (mode === "view") {
+            const wfConfigJson = experiment.workflowExperimentConfiguration!!
+            const wfConfig = JSON.parse(wfConfigJson.configuration) as ExperimentWorkflowConfiguration
+            setBaseImage(wfConfig.baseImage)
+            setCustomBaseImage(!wfConfig.workflowTemplateName || wfConfig.workflowTemplateName === 'custom')
+
+            formRef.current?.setFieldsValue({
+                submitOptions: wfConfig.submitOptions,
+                cpu: wfConfig.resource.cpu,
+                memory: wfConfig.resource.memory,
+                baseEnv: wfConfig.workflowTemplateName,
+                baseImage: wfConfig.baseImage,
+                compileCommand: wfConfig.buildSpec?.command,
+                deployCommand: wfConfig.deploySpec.command,
+                ports: wfConfig.deploySpec.ports,
+                allowCustomBaseImage: wfConfig.customOptions.baseImage,
+                allowCustomCompileCommand: wfConfig.customOptions.compileCommand,
+                allowCustomDeployCommand: wfConfig.customOptions.deployCommand,
+                allowCustomPorts: wfConfig.customOptions.ports,
+            })
+        }
+    }, [mode, experiment])
+
     return (
         <>
             <ProForm<FormDataType>
@@ -99,6 +124,8 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 onFinish={onFinish}
                 formRef={formRef}
                 layout="vertical"
+                submitter={mode === 'view' ? false : undefined}
+                disabled={props.mode === "view"}
             >
                 <ProFormCheckbox.Group
                     name="submitOptions"

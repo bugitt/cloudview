@@ -1,11 +1,13 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../../lib/cloudapi-client"
-import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
+import { cloudapiClient, serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
 import { ConfigureExperimentWorkflowForm } from "../../../lib/components/experiments/ConfigureExperimentWorkflowForm"
-import { Card, Drawer, Switch } from "antd"
+import { Card, Drawer, Switch, Tabs, TabsProps } from "antd"
 import { useState } from "react"
+import { useRequest } from "ahooks"
+import { notificationError } from "../../../lib/utils/notification"
 
 interface Props extends BaseSSRType {
     experiment: ExperimentResponse
@@ -13,11 +15,36 @@ interface Props extends BaseSSRType {
 }
 
 export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { experiment, expWfResp, userInfo } = props
-    setUserInfo(userInfo)
-
+    const { expWfResp, userInfo } = props
+    const [experiment, setExperiment] = useState(props.experiment)
     const [enablePaasWorkflow, setEnablePaasWorkflow] = useState(!!expWfResp)
     const [configFormDrawerOpen, setConfigFormDrawerOpen] = useState(false)
+    const experimentReq = useRequest(() => cloudapiClient.getExperimentExperimentId(props.experiment.id, true), {
+        manual: true,
+        onSuccess: (resp) => {
+            setExperiment(resp.data)
+            setEnablePaasWorkflow(!!resp.data.workflowExperimentConfiguration)
+        },
+        onError: () => {
+            notificationError("获取课程实验信息失败")
+        }
+    })
+    setUserInfo(userInfo)
+
+    const items: TabsProps['items'] = [
+        {
+            key: '1',
+            label: 'PaaS工作流配置',
+            children: (<>
+                <ConfigureExperimentWorkflowForm
+                    experiment={experiment}
+                    mode="view"
+                    onSuccessHook={() => { }}
+                    onFailedHook={() => { }}
+                />
+            </>),
+        },
+    ];
 
     return (
         <>
@@ -46,16 +73,20 @@ export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typ
                 >
                     <ConfigureExperimentWorkflowForm
                         experiment={experiment}
+                        mode="create"
                         onSuccessHook={() => {
+                            experimentReq.run()
                             setConfigFormDrawerOpen(false)
-                            setEnablePaasWorkflow(true)
                         }}
                         onFailedHook={() => {
+                            experimentReq.run()
                             setConfigFormDrawerOpen(true)
                             setEnablePaasWorkflow(false)
                         }}
                     />
                 </Drawer>
+
+                {enablePaasWorkflow && <Tabs items={items} />}
             </Card>
         </>
     )
