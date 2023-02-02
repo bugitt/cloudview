@@ -1,4 +1,5 @@
-import { ProForm, ProFormInstance, ProFormRadio } from "@ant-design/pro-components"
+import { ModalForm, ProFormInstance, ProFormRadio } from "@ant-design/pro-components"
+import { Button } from "antd"
 import { useRef, useState } from "react"
 import { ExperimentResponse } from "../../cloudapi-client"
 import { displaySubmitType, ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
@@ -21,10 +22,11 @@ export function SubmitExperimentWorkflowForm(props: Props) {
 
     return (
         <>
-            <ProForm
+            <ModalForm
                 name="submitExperimentWorkflow"
                 onFinish={onFinish}
                 formRef={formRef}
+                trigger={(<Button type='primary'>提交新的任务</Button>)}
                 layout="vertical"
             >
                 <ProFormRadio.Group
@@ -41,7 +43,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                 />
 
 
-            </ProForm>
+            </ModalForm>
         </>
     )
 }

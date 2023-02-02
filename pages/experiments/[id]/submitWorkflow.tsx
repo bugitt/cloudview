@@ -1,29 +1,31 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
-import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../../lib/cloudapi-client"
+import { ExperimentResponse } from "../../../lib/cloudapi-client"
 import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
-import { SubmitExperimentWorkflowForm } from "../../../lib/components/experiments/SubmitExperimentWorkflowForm"
-import { ExperimentWorkflowConfiguration } from "../../../lib/models/workflow"
+import { SingleStudentWorkflowTaskList } from "../../../lib/components/experiments/SingleStudentWorkflowTaskList"
+import { Card } from "antd"
 
 interface Props extends BaseSSRType {
     experiment: ExperimentResponse
-    workflowConfigurationResp: ExperimentWorkflowConfigurationResponse
 }
 
 export default function SubmitWorkflow(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { experiment, userInfo, workflowConfigurationResp } = props
+    const { experiment, userInfo } = props
     setUserInfo(userInfo)
 
-    const wfConfig: ExperimentWorkflowConfiguration = JSON.parse(workflowConfigurationResp.configuration)
+    const wfConfResp = experiment.workflowExperimentConfiguration
 
     return (
         <>
-            <SubmitExperimentWorkflowForm
-                experiment={experiment}
-                resourcePool={workflowConfigurationResp.resourcePool}
-                wfConfig={wfConfig}
-            />
+            <Card title="PaaS工作流" bordered={false}>
+                {wfConfResp &&
+                    <SingleStudentWorkflowTaskList
+                        experiment={experiment}
+                        wfConfResp={wfConfResp}
+                    />
+                }
+            </Card>
         </>
     )
 }
@@ -32,13 +34,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const userInfo = ssrUserInfo(ctx)
     const client = serverSideCloudapiClient(userInfo.token)
     const experimentId = Number(ctx.query.id)
-    const experiment = (await client.getExperimentExperimentId(experimentId)).data
-    const workflowConfigurationResp = (await client.getExperimentExperimentIdWorkflowConfiguration(experimentId)).data
+    const experiment = (await client.getExperimentExperimentId(experimentId, true)).data
+
     return {
         props: {
             userInfo: userInfo,
             experiment: experiment,
-            workflowConfigurationResp: workflowConfigurationResp,
         },
     }
 }
