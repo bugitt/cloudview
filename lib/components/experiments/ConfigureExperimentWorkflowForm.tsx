@@ -8,6 +8,8 @@ import { messageInfo, notificationError } from "../../utils/notification"
 
 interface Props {
     experiment: ExperimentResponse
+    onSuccessHook: () => void
+    onFailedHook: () => void
 }
 
 interface FormDataType {
@@ -29,7 +31,7 @@ interface FormDataType {
 }
 
 export function ConfigureExperimentWorkflowForm(props: Props) {
-    const { experiment } = props
+    const { experiment, onSuccessHook, onFailedHook } = props
     const [customBaseImage, setCustomBaseImage] = useState<boolean>(false)
     const [baseImage, setBaseImage] = useState<string>("")
 
@@ -38,7 +40,6 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
     const formRef = useRef<ProFormInstance>()
 
     const onFinish = async (values: FormDataType) => {
-        console.log(values)
         const finalBaseImage = values.baseImage ?? baseImage
         if (!finalBaseImage) {
             notificationError("请填写基础镜像")
@@ -81,10 +82,12 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
         }
         try {
             await cloudapiClient.postExperimentExperimentIdWorkflowConfiguration(experiment.id, req)
+            onSuccessHook()
             messageInfo("配置PaaS工作流成功")
             return true
         } catch (e) {
             notificationError("配置PaaS工作流失败")
+            onFailedHook()
             return false
         }
     }
