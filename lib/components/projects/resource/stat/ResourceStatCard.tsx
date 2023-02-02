@@ -2,8 +2,6 @@ import { ProCard, StatisticCard } from "@ant-design/pro-components"
 import { useRequest } from "ahooks"
 import { useState } from "react"
 import { Project } from "../../../../cloudapi-client"
-import { NamespacedName } from "../../../../models/crd"
-import { Deployer, getDeployerDisplayName } from "../../../../models/deployer"
 import { ResourcePool } from "../../../../models/resource"
 import { viewApiClient } from "../../../../utils/cloudapi"
 import { notificationError } from "../../../../utils/notification"
@@ -34,18 +32,20 @@ export const ResourceStatCardInProject = (props: {
     })
 
     resourcePoolList.forEach((pool) => {
-        pool.status.usage.forEach(usage => {
-            if (usage.namespacedName.namespace === project.name) {
-                cpuData.push({
-                    name: usage.displayName,
-                    value: usage.resource.cpu
-                })
-                memoryData.push({
-                    name: usage.displayName,
-                    value: usage.resource.memory
-                })
-            }
-        })
+        if (pool.status.usage) {
+            pool.status.usage.forEach(usage => {
+                if (usage.namespacedName.namespace === project.name) {
+                    cpuData.push({
+                        name: usage.displayName,
+                        value: usage.resource.cpu
+                    })
+                    memoryData.push({
+                        name: usage.displayName,
+                        value: usage.resource.memory
+                    })
+                }
+            })
+        }
     })
 
     return (
