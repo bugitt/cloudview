@@ -12,4 +12,4 @@ image:
 push:
 	docker push $(IMAGE)
 
-all: build image push
+all: image push
