@@ -36,14 +36,20 @@ export const cloudapiClient = DefaultApiFactory(
     cloudviewAxios
 )
 
-export const serverSideCloudapiClient = (token: string) => DefaultApiFactory(
+export const serverSideCloudapiClient = (token?: string, req?: NextApiRequest) => {
+    let finalToken = token
+    if (!finalToken && req) {
+        finalToken = getTokenFromReq(req)
+    }
+    return DefaultApiFactory(
     new Configuration({
-        apiKey: token,
+            apiKey: finalToken,
         basePath: cloudapi.serverSideEndpoint + "/api/v2"
     }),
     undefined,
     cloudviewAxios
 )
+}
 
 const viewApiClientConfig = () => {
     const token = getToken()
