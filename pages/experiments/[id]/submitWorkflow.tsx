@@ -3,8 +3,8 @@ import { ExperimentResponse } from "../../../lib/cloudapi-client"
 import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
-import { SingleStudentWorkflowTaskList } from "../../../lib/components/experiments/SingleStudentWorkflowTaskList"
 import { Card } from "antd"
+import SingleStudentWorkflowTaskList from "../../../lib/components/experiments/SingleStudentWorkflowTaskList"
 
 interface Props extends BaseSSRType {
     experiment: ExperimentResponse

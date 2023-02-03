@@ -1,6 +1,7 @@
 import { Builder, BuilderList } from "../models/builder"
 import { Deployer, DeployerList } from "../models/deployer"
 import { ResourcePool } from "../models/resource"
+import { Workflow, WorkflowList } from "../models/workflow"
 import { k8sCustomObjectsApi } from "./client"
 import { createOrUpdate } from "./objects"
 
@@ -9,6 +10,7 @@ const apiVersion = "v1alpha1"
 const builderPlural = "builders"
 const resourcePoolPlural = "resourcepools"
 const deployerPlural = "deployers"
+const workflowPlural = "workflows"
 
 export const imageBuilderClient = {
 
@@ -39,6 +41,21 @@ export const deployerClient = {
     createOrUpdate: async (deployer: Deployer) => {
         return await createOrUpdate(deployer, undefined, undefined, undefined, undefined, true)
     },
+}
+
+export const workflowClient = {
+    get: async (name: string, namespace: string) => {
+        return (await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, workflowPlural, name)).body as Workflow
+    },
+
+    list: async (namespace: string) => {
+        const data = (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, workflowPlural)).body as WorkflowList
+        return data.items
+    },
+
+    createOrUpdate: async (workflow: Workflow) => {
+        return await createOrUpdate(workflow, undefined, undefined, undefined, undefined, true)
+    }
 }
 
 export const resourcePoolsClient = {

@@ -1,5 +1,62 @@
+import * as k8s from '@kubernetes/client-node';
+import { BuilderContext } from './builder';
+import { BaseCRDStatus } from './crd';
 import { DeployerContainerPort } from "./deployer"
 import { Resource } from "./resource"
+
+export const crdWorkflowKind = "Workflow";
+
+export interface Workflow extends k8s.KubernetesObject {
+    /**
+     * BuilderSpec defines the desired state of Builder
+     */
+    spec: WorkflowSpec
+    /**
+     * BuilderStatus defines the observed state of Builder
+     */
+    status?: WorkflowStatus
+}
+
+export interface WorkflowList extends k8s.KubernetesListObject<Workflow> { }
+
+export interface WorkflowStatus extends BaseCRDStatus {
+    stage?: 'Pending' | 'Building' | 'Deploying' | 'Serving'
+}
+
+export interface WorkflowSpec {
+    build?: {
+        baseImage: string
+        command?: string
+        context: BuilderContext
+        pushSecretName?: string
+        registryLocation: string
+        workingDir?: string
+    }
+    deploy: {
+        baseImage?: string
+        changeEnv?: boolean
+        command?: string
+        filePair?: {
+            source: string
+            target: string
+        }
+        ports?: DeployerContainerPort[]
+        resource: Resource
+        resourcePool: string
+        type: "job" | "service"
+        workingDir?: string
+    }
+    round?: number
+}
+
+export interface CreateWorkflowRequest {
+    expId: number
+    context: BuilderContext
+    baseImage: string
+    compileCommand?: string
+    deployCommand?: string
+    ports?: DeployerContainerPort[]
+}
 
 export interface WorkflowTemplate {
     name: string

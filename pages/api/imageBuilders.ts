@@ -7,6 +7,7 @@ import { randomString } from "../../lib/utils/random";
 import { imageBuilder } from "../../lib/config/env";
 import { imageBuilderClient } from "../../lib/kube/cloudrun";
 import { createOrUpdate } from "../../lib/kube/objects";
+import { ensurePushSecret } from "../../lib/utils/secret";
 
 export default async function handler(
     req: NextApiRequest,
@@ -54,17 +55,7 @@ const createImageBuilder = async (req: CreateImageBuilderRequest) => {
     const destination = `${imageBuilder.imageRegistry}/${req.projectName}/${req.imageMeta.name}:${req.imageMeta.tag}`
 
     // make sure the push secret exist in the target namespace
-    const secret: k8s.V1Secret = {
-        metadata: {
-            name: imageBuilder.pushSecretName,
-            namespace: req.projectName,
-        },
-        type: "kubernetes.io/dockerconfigjson",
-        data: {
-            ".dockerconfigjson": imageBuilder.dockerconfigjson
-        },
-    }
-    await createOrUpdate(secret, "v1", "Secret")
+    await ensurePushSecret(req.projectName)
 
     const builder: Builder = {
         apiVersion: crdApiVersion,

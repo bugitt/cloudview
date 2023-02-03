@@ -18,24 +18,29 @@ export interface Builder extends k8s.KubernetesObject {
   status?: BaseCRDStatus
 }
 
-export interface BuilderSpec {
-  context: {
-    git?: {
-      urlWithAuth: string;
-      ref?: string;
-    };
-    raw?: string;
-    s3?: {
-      accessKeyID: string;
-      accessSecretKey: string;
-      bucket: string;
-      endpoint?: string;
-      fileType?: "tar" | "tar.gz" | "zip" | "rar" | "dir";
-      objectKey: string;
-      region: string;
-      scheme?: "http" | "https";
-    };
+export interface BuilderContext {
+  git?: {
+    urlWithAuth: string;
+    ref?: string;
   };
+  raw?: string;
+  s3?: {
+    accessKeyID: string;
+    accessSecretKey: string;
+    bucket: string;
+    endpoint?: string;
+    fileType?: "tar" | "tar.gz" | "zip" | "rar" | "dir";
+    objectKey: string;
+    region: string;
+    scheme?: "http" | "https";
+  };
+  http?: {
+    url: string;
+  };
+}
+
+export interface BuilderSpec {
+  context: BuilderContext;
   destination: string;
   dockerfilePath?: string;
   pushSecretName?: string;

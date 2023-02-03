@@ -1,14 +1,17 @@
 import globalAxios from 'axios'
+import { NextApiRequest } from 'next'
 import { Configuration, DefaultApiFactory } from '../cloudapi-client'
 import { cloudapi } from '../config/env'
 import { Builder, CreateImageBuilderRequest } from '../models/builder'
 import { AddDeployerTriggerRequest, CreateDeployerRequest, Deployer, ServiceStatus } from '../models/deployer'
 import { ResourcePool } from '../models/resource'
-import { WorkflowTemplate } from '../models/workflow'
+import { CreateWorkflowRequest, Workflow, WorkflowTemplate } from '../models/workflow'
 import { notificationError } from './notification'
-import { getToken } from './token'
+import { getToken, getTokenFromReq } from './token'
 
 const cloudviewAxios = globalAxios
+
+export type CloudapiClientType = ReturnType<typeof DefaultApiFactory>
 
 cloudviewAxios.interceptors.response.use(
     response => response,
@@ -42,13 +45,13 @@ export const serverSideCloudapiClient = (token?: string, req?: NextApiRequest) =
         finalToken = getTokenFromReq(req)
     }
     return DefaultApiFactory(
-    new Configuration({
+        new Configuration({
             apiKey: finalToken,
-        basePath: cloudapi.serverSideEndpoint + "/api/v2"
-    }),
-    undefined,
-    cloudviewAxios
-)
+            basePath: cloudapi.serverSideEndpoint + "/api/v2"
+        }),
+        undefined,
+        cloudviewAxios
+    )
 }
 
 const viewApiClientConfig = () => {
@@ -108,5 +111,17 @@ export const viewApiClient = {
 
     getWorkflowTemplates: async () => {
         return (await cloudviewAxios.get(`/workflows/templates`, viewApiClientConfig())).data as WorkflowTemplate[]
-    }
+    },
+
+    createWorkflow: async (request: CreateWorkflowRequest) => {
+        return (await cloudviewAxios.post('/workflows', request, viewApiClientConfig())).data as Workflow[]
+    },
+
+    listWorkflows: async (projectName: string) => {
+        return (await cloudviewAxios.get(`/workflows?projectName=${projectName}`, viewApiClientConfig())).data as Workflow[]
+    },
+
+    getWorkflow: async (name: string, projectName: string) => {
+        return (await cloudviewAxios.get(`/workflow/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Workflow
+    },
 }

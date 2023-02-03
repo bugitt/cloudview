@@ -18,7 +18,7 @@ export const imageBuilder = {
         bucket: process.env.IMAGE_BUILDER_S3_BUCKET,
         region: process.env.IMAGE_BUILDER_S3_REGION,
     },
-    imageRegistry: process.env.IMAGE_BUILDER_IMAGE_REGISTRY,
+    imageRegistry: process.env.IMAGE_BUILDER_IMAGE_REGISTRY!!,
     pushSecretName: process.env.IMAGE_BUILDER_PUSH_SECRET_NAME ?? "push-secret",
     dockerconfigjson: process.env.IMAGE_BUILDER_DOCKERCONFIGJSON ?? "",
 }

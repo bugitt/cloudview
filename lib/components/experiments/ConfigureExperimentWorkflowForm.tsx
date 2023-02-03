@@ -33,7 +33,6 @@ interface FormDataType {
 
 export function ConfigureExperimentWorkflowForm(props: Props) {
     const { experiment, onSuccessHook, onFailedHook, mode } = props
-    const [customBaseImage, setCustomBaseImage] = useState<boolean>(false)
     const [baseImage, setBaseImage] = useState<string>("")
 
     const { data: workflowTemplates } = useRequest(() => viewApiClient.getWorkflowTemplates())
@@ -98,7 +97,6 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
             const wfConfigJson = experiment.workflowExperimentConfiguration!!
             const wfConfig = JSON.parse(wfConfigJson.configuration) as ExperimentWorkflowConfiguration
             setBaseImage(wfConfig.baseImage)
-            setCustomBaseImage(!wfConfig.workflowTemplateName || wfConfig.workflowTemplateName === 'custom')
 
             formRef.current?.setFieldsValue({
                 submitOptions: wfConfig.submitOptions,
@@ -155,11 +153,6 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     valueEnum={(new Map(workflowTemplates?.map((template) => [template.name, template.name]) ?? [])).set("custom", "自定义")}
                     fieldProps={{
                         onChange: (value) => {
-                            if (value === 'custom') {
-                                setCustomBaseImage(true)
-                            } else {
-                                setCustomBaseImage(false)
-                            }
                             const template = workflowTemplates?.find((template) => template.name === value)
                             setBaseImage(template?.baseImage ?? "")
                             formRef.current?.setFieldsValue({
@@ -177,16 +170,11 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     showSearch
                 />
 
-                {
-                    customBaseImage && <>
-                        <ProFormText
-                            name={"baseImage"}
-                            label="自定义基础镜像"
-                            tooltip={"请给出编译和运行所提交的源代码所需要使用的基础镜像。"}
-                        />
-                    </>
-
-                }
+                <ProFormText
+                    name={"baseImage"}
+                    label="自定义基础镜像"
+                    tooltip={"请给出编译和运行所提交的源代码所需要使用的基础镜像。"}
+                />
 
                 <ProFormGroup title="资源限额">
                     <ProFormDigit

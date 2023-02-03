@@ -8,7 +8,7 @@ interface Props {
     wfConfResp: ExperimentWorkflowConfigurationResponse
 }
 
-export function SingleStudentWorkflowTaskList(props: Props) {
+export default function SingleStudentWorkflowTaskList(props: Props) {
     const { experiment, wfConfResp } = props
     return (
         <>
