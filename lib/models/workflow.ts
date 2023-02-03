@@ -19,8 +19,10 @@ export interface Workflow extends k8s.KubernetesObject {
 
 export interface WorkflowList extends k8s.KubernetesListObject<Workflow> { }
 
+export type WorkflowStage = 'Pending' | 'Building' | 'Deploying' | 'Serving' | 'Unknown'
+
 export interface WorkflowStatus extends BaseCRDStatus {
-    stage?: 'Pending' | 'Building' | 'Deploying' | 'Serving'
+    stage?: WorkflowStage
 }
 
 export interface WorkflowSpec {
