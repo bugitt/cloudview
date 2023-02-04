@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const user = await whoami(req)
     let projectName = ''
-    if (req.method === 'POST') {
+    if (req.method === 'PATCH') {
         projectName = req.body.projectName as string
     } else if (req.method === 'GET') {
         projectName = req.query.projectName as string
@@ -31,8 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const workflow = await workflowClient.get(name as string, projectName)
             res.status(200).json(workflow)
             break
+        case 'PATCH':
+
+
         default:
-            res.setHeader('Allow', ['GET'])
+            res.setHeader('Allow', ['GET', 'PATCH'])
             res.status(405).end(`Method ${method} Not Allowed`)
     }
 }

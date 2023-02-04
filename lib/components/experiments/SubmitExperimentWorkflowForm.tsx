@@ -2,7 +2,7 @@ import { ModalForm, ProFormDigit, ProFormGroup, ProFormInstance, ProFormList, Pr
 import { Button } from "antd"
 import { useEffect, useRef, useState } from "react"
 import { ExperimentResponse } from "../../cloudapi-client"
-import { CreateWorkflowRequest, displaySubmitType, ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
+import { CreateWorkflowRequest, displaySubmitType, ExperimentWorkflowConfiguration, SubmitType, UpdateWorkflowRequest, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi"
 import { AntdUploadResponse } from "../../utils/file"
 import { messageSuccess, notificationError } from "../../utils/notification"
@@ -11,7 +11,8 @@ import { getToken, getUserId } from "../../utils/token"
 interface Props {
     experiment: ExperimentResponse
     resourcePool: string    // name of resource pool
-    wfConfig: ExperimentWorkflowConfiguration
+    wfConfig: ExperimentWorkflowConfiguration,
+    oldWorkflow?: Workflow
 }
 
 interface FormDataType {
@@ -159,6 +160,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                 }
         }
         const req: CreateWorkflowRequest = {
+            tag: 'submit',
             expId: experiment.id,
             context: context,
             baseImage: values.baseImage,
@@ -174,7 +176,15 @@ export function SubmitExperimentWorkflowForm(props: Props) {
         }
 
         try {
-            await viewApiClient.createWorkflow(req)
+            if (props.oldWorkflow) {
+                const updateReq: UpdateWorkflowRequest = {
+                    workflowName: props.oldWorkflow?.metadata?.name!!,
+                    ...req
+                }
+                await viewApiClient.updateWorkflow(updateReq)
+            } else {
+                await viewApiClient.createWorkflow(req)
+            }
             messageSuccess('提交成功')
             return true
         } catch (_) {

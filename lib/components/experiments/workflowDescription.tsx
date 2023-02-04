@@ -1,13 +1,18 @@
-import { FileZipOutlined } from "@ant-design/icons";
+import { FileZipOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ProDescriptions } from "@ant-design/pro-components";
-import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client";
+import { useRequest } from "ahooks";
+import { Button, Spin } from "antd";
+import { useState } from "react";
+import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, Project } from "../../cloudapi-client";
 import { ExperimentWorkflowConfiguration, Workflow } from "../../models/workflow"
+import { viewApiClient } from "../../utils/cloudapi";
+import { notificationError } from "../../utils/notification";
 import { SubmitExperimentWorkflowForm } from "./SubmitExperimentWorkflowForm";
 
 interface Props {
     experiment: ExperimentResponse
     wfConfResp: ExperimentWorkflowConfigurationResponse
-    workflow: Workflow
+    project: Project
 }
 
 export const workflowStageEnumObj = {
@@ -34,10 +39,26 @@ export const workflowStageEnumObj = {
 }
 
 export function WorkflowDescription(props: Props) {
-    const { workflow, experiment, wfConfResp } = props
-    console.log(workflow)
-    const gitContext = workflow.spec.build?.context.git
-    const httpContext = workflow.spec.build?.context.http
+    const { experiment, wfConfResp, project } = props
+    const [workflow, setWorkflow] = useState<Workflow>()
+    const workflowReq = useRequest(() => {
+        return viewApiClient.listWorkflows(project.name, 'submit').then(wfList => {
+            if (wfList.length === 0) {
+                return undefined
+            } else {
+                return wfList[0]
+            }
+        })
+    }, {
+        onSuccess: (workflow) => {
+            setWorkflow(workflow)
+        },
+        onError: (_) => {
+            notificationError('获取工作流失败')
+        }
+    })
+    const gitContext = workflow?.spec.build?.context.git
+    const httpContext = workflow?.spec.build?.context.http
     const formatUrl = (url: string) => {
         const urlObj = new URL(url)
         if (urlObj.password) {
@@ -47,65 +68,75 @@ export function WorkflowDescription(props: Props) {
         return urlObj.href
     }
     return (
-        <ProDescriptions column={3} title="当前工作流详情">
-            <ProDescriptions.Item valueType="option">
-                <SubmitExperimentWorkflowForm
-                    experiment={experiment}
-                    resourcePool={wfConfResp.resourcePool}
-                    wfConfig={JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration}
-                    key="submit"
-                />
-            </ProDescriptions.Item>
-            <ProDescriptions.Item
-                label="状态"
-                valueEnum={workflowStageEnumObj}
-            >
-                {workflow.status?.stage || 'Unknown'}
-            </ProDescriptions.Item>
-            <ProDescriptions.Item
-                valueType="text"
-                label="基础环境"
-                copyable
-            >
-                {workflow.spec.build?.baseImage}
-            </ProDescriptions.Item>
-            {gitContext && <ProDescriptions.Item label="Git仓库地址" valueType='text'>
-                <a href={gitContext.urlWithAuth} target='_blank' rel='noreferrer'>{formatUrl(gitContext.urlWithAuth)}</a>
-            </ProDescriptions.Item>}
-            {gitContext?.ref && <ProDescriptions.Item label="Git分支/commit/tag" valueType='text' copyable>
-                {gitContext.ref}
-            </ProDescriptions.Item>}
-            {httpContext && <ProDescriptions.Item label="源文件压缩包" valueType='text'>
-                <a href={httpContext.url} target='_blank' rel='noreferrer'><FileZipOutlined /></a>
-            </ProDescriptions.Item>}
-            <ProDescriptions.Item label="CPU限额" valueType='text'>
-                {workflow.spec.deploy.resource.cpu} mCore
-            </ProDescriptions.Item>
-            <ProDescriptions.Item label="内存限额" valueType='text'>
-                {workflow.spec.deploy.resource.memory} MB
-            </ProDescriptions.Item>
-            <ProDescriptions.Item label="编译命令" valueType="code">
-                {workflow.spec.build?.command}
-            </ProDescriptions.Item>
-            <ProDescriptions.Item label="部署命令" valueType="code">
-                {workflow.spec.deploy?.command}
-            </ProDescriptions.Item>
-            <ProDescriptions.Item label="端口号配置">
-                {
-                    workflow.spec.deploy?.ports?.map((port, index) => {
-                        return (
-                            <ProDescriptions key={index}>
-                                <ProDescriptions.Item label="端口号" valueType='text'>
-                                    {port.port}
-                                </ProDescriptions.Item>
-                                <ProDescriptions.Item label="协议" valueType='text'>
-                                    {port.protocol}
-                                </ProDescriptions.Item>
-                            </ProDescriptions>
-                        )
-                    })
-                }
-            </ProDescriptions.Item>
-        </ProDescriptions >
+        <Spin spinning={workflowReq.loading}>
+            <ProDescriptions column={3} title="当前工作流详情">
+                <ProDescriptions.Item valueType="option">
+                    <Button
+                        onClick={() => {
+                            workflowReq.run()
+                        }}
+                    >
+                        <ReloadOutlined />
+                    </Button>
+                    <SubmitExperimentWorkflowForm
+                        experiment={experiment}
+                        resourcePool={wfConfResp.resourcePool}
+                        wfConfig={JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration}
+                        oldWorkflow={workflow}
+                        key="submit"
+                    />
+                </ProDescriptions.Item>
+                <ProDescriptions.Item
+                    label="状态"
+                    valueEnum={workflowStageEnumObj}
+                >
+                    {workflow?.status?.stage || 'Unknown'}
+                </ProDescriptions.Item>
+                <ProDescriptions.Item
+                    valueType="text"
+                    label="基础环境"
+                    copyable
+                >
+                    {workflow?.spec.build?.baseImage}
+                </ProDescriptions.Item>
+                {gitContext && <ProDescriptions.Item label="Git仓库地址" valueType='text'>
+                    <a href={gitContext.urlWithAuth} target='_blank' rel='noreferrer'>{formatUrl(gitContext.urlWithAuth)}</a>
+                </ProDescriptions.Item>}
+                {gitContext?.ref && <ProDescriptions.Item label="Git分支/commit/tag" valueType='text' copyable>
+                    {gitContext.ref}
+                </ProDescriptions.Item>}
+                {httpContext && <ProDescriptions.Item label="源文件压缩包" valueType='text'>
+                    <a href={httpContext.url} target='_blank' rel='noreferrer'><FileZipOutlined /></a>
+                </ProDescriptions.Item>}
+                <ProDescriptions.Item label="CPU限额" valueType='text'>
+                    {workflow?.spec.deploy.resource.cpu} mCore
+                </ProDescriptions.Item>
+                <ProDescriptions.Item label="内存限额" valueType='text'>
+                    {workflow?.spec.deploy.resource.memory} MB
+                </ProDescriptions.Item>
+                <ProDescriptions.Item label="编译命令" valueType="code">
+                    {workflow?.spec.build?.command}
+                </ProDescriptions.Item>
+                <ProDescriptions.Item label="部署命令" valueType="code">
+                    {workflow?.spec.deploy?.command}
+                </ProDescriptions.Item>
+                <ProDescriptions.Item label="端口号配置">
+                    {
+                        workflow?.spec.deploy?.ports?.map((port, index) => {
+                            return (
+                                <ProDescriptions key={index}>
+                                    <ProDescriptions.Item label="端口号" valueType='text'>
+                                        {port.port}
+                                    </ProDescriptions.Item>
+                                    <ProDescriptions.Item label="协议" valueType='text'>
+                                        {port.protocol}
+                                    </ProDescriptions.Item>
+                                </ProDescriptions>
+                            )
+                        })
+                    }
+                </ProDescriptions.Item>
+            </ProDescriptions >
+        </Spin>
     );
 }

@@ -52,12 +52,17 @@ export interface WorkflowSpec {
 }
 
 export interface CreateWorkflowRequest {
+    tag: string
     expId: number
     context: BuilderContext
     baseImage: string
     compileCommand?: string
     deployCommand?: string
     ports?: DeployerContainerPort[]
+}
+
+export interface UpdateWorkflowRequest extends CreateWorkflowRequest {
+    workflowName: string
 }
 
 export interface WorkflowTemplate {

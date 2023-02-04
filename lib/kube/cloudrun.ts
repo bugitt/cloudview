@@ -48,8 +48,12 @@ export const workflowClient = {
         return (await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, workflowPlural, name)).body as Workflow
     },
 
-    list: async (namespace: string) => {
-        const data = (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, workflowPlural)).body as WorkflowList
+    list: async (namespace: string, selector?: { [key: string]: string; }) => {
+        let selectorStr: string | undefined = undefined
+        if (selector) {
+            selectorStr = Object.keys(selector).map(key => `${key}=${selector[key]}`).join(',')
+        }
+        const data = (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, workflowPlural, undefined, undefined, undefined, undefined, selectorStr)).body as WorkflowList
         return data.items
     },
 

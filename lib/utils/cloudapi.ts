@@ -5,7 +5,7 @@ import { cloudapi } from '../config/env'
 import { Builder, CreateImageBuilderRequest } from '../models/builder'
 import { AddDeployerTriggerRequest, CreateDeployerRequest, Deployer, ServiceStatus } from '../models/deployer'
 import { ResourcePool } from '../models/resource'
-import { CreateWorkflowRequest, Workflow, WorkflowTemplate } from '../models/workflow'
+import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowTemplate } from '../models/workflow'
 import { notificationError } from './notification'
 import { getToken, getTokenFromReq } from './token'
 
@@ -117,8 +117,17 @@ export const viewApiClient = {
         return (await cloudviewAxios.post('/workflows', request, viewApiClientConfig())).data as Workflow[]
     },
 
-    listWorkflows: async (projectName: string) => {
-        return (await cloudviewAxios.get(`/workflows?projectName=${projectName}`, viewApiClientConfig())).data as Workflow[]
+    updateWorkflow: async (request: UpdateWorkflowRequest) => {
+        return (await cloudviewAxios.patch('/workflows', request, viewApiClientConfig())).data as Workflow[]
+    },
+
+    listWorkflows: async (projectName: string, tag?: string) => {
+        const params = new URLSearchParams()
+        params.append('projectName', projectName)
+        if (tag) {
+            params.append('tag', tag)
+        }
+        return (await cloudviewAxios.get(`/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
     },
 
     getWorkflow: async (name: string, projectName: string) => {
