@@ -1,7 +1,7 @@
-import { FileZipOutlined, ReloadOutlined } from "@ant-design/icons";
+import { FileZipOutlined, RedoOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ProDescriptions } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Spin } from "antd";
+import { Button, Popconfirm, Spin } from "antd";
 import { useState } from "react";
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, Project } from "../../cloudapi-client";
 import { ExperimentWorkflowConfiguration, Workflow } from "../../models/workflow"
@@ -78,6 +78,26 @@ export function WorkflowDescription(props: Props) {
                     >
                         <ReloadOutlined />
                     </Button>
+                    <Popconfirm
+                        title="重新运行"
+                        description="确定要重新运行当前任务吗？"
+                        onConfirm={async () => {
+                            const wfName = workflow?.metadata?.name
+                            if (wfName) {
+                                try {
+                                    viewApiClient.rerunWorkflow(wfName, project.name)
+                                } catch (_) {
+                                    notificationError('重新运行当前任务失败')
+                                }
+                            }
+                        }}
+                        okText="确定"
+                        cancelText="取消"
+                    >
+                        <Button>
+                            <RedoOutlined /> 重新运行当前任务
+                        </Button>
+                    </Popconfirm>
                     <SubmitExperimentWorkflowForm
                         experiment={experiment}
                         resourcePool={wfConfResp.resourcePool}
@@ -137,6 +157,6 @@ export function WorkflowDescription(props: Props) {
                     }
                 </ProDescriptions.Item>
             </ProDescriptions >
-        </Spin>
+        </Spin >
     );
 }

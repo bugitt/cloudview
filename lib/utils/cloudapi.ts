@@ -133,4 +133,8 @@ export const viewApiClient = {
     getWorkflow: async (name: string, projectName: string) => {
         return (await cloudviewAxios.get(`/workflow/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Workflow
     },
+
+    rerunWorkflow: async (name: string, projectName: string) => {
+        return (await cloudviewAxios.post(`/workflow/${name}/rerun?projectName=${projectName}`, undefined, viewApiClientConfig())).data as Workflow
+    },
 }
