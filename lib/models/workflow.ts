@@ -51,6 +51,12 @@ export interface WorkflowSpec {
     round?: number
 }
 
+export interface WorkflowDisplayStatus {
+    display: String // 友好易读的状态描述
+    stage: 'Pending' | 'Building' | 'Deploying' | 'Serving' | 'Doing' | 'Done' | 'Unknown' // 当前处于什么阶段
+    status: 'Process' | 'Success' | 'Error'  // 当前该阶段的状态
+}
+
 export interface CreateWorkflowRequest {
     tag: string
     expId: number

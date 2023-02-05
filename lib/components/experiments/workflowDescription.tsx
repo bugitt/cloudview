@@ -1,10 +1,10 @@
-import { FileZipOutlined, RedoOutlined, ReloadOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, ClockCircleFilled, CloseCircleFilled, FileZipOutlined, RedoOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ProDescriptions } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Popconfirm, Spin } from "antd";
-import { useState } from "react";
+import { Button, Popconfirm, Space, Spin } from "antd";
+import React, { useState } from "react";
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, Project } from "../../cloudapi-client";
-import { ExperimentWorkflowConfiguration, Workflow } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
 import { SubmitExperimentWorkflowForm } from "./SubmitExperimentWorkflowForm";
@@ -38,9 +38,42 @@ export const workflowStageEnumObj = {
     },
 }
 
+function getWorkflowDisplayStatusIcon(status?: WorkflowDisplayStatus): React.ReactNode {
+    if (!status) return <></>
+    switch (status.display) {
+        case '部署完成':
+        case '执行完成':
+            return <CheckCircleFilled style={{
+                color: 'green',
+            }} />
+
+        case '部署失败':
+        case '执行失败':
+            return <CloseCircleFilled style={{
+                color: 'red',
+            }} />
+
+        default:
+            return <ClockCircleFilled style={{
+                color: 'geekblue',
+            }} />
+    }
+}
 export function WorkflowDescription(props: Props) {
     const { experiment, wfConfResp, project } = props
     const [workflow, setWorkflow] = useState<Workflow>()
+    const [workflowDisplayStatus, setWorkflowDisplayStatus] = useState<WorkflowDisplayStatus>()
+    const workflowDisplayStatusReq = useRequest((workflow?: Workflow) => {
+        return workflow ? viewApiClient.getWorkflowDisplayStatus(workflow.metadata?.name!!, project.name) : Promise.resolve(undefined)
+    }, {
+        manual: true,
+        onSuccess: (data) => {
+            setWorkflowDisplayStatus(data)
+        },
+        onError: (_) => {
+            notificationError('获取工作流状态失败')
+        }
+    })
     const workflowReq = useRequest(() => {
         return viewApiClient.listWorkflows(project.name, 'submit').then(wfList => {
             if (wfList.length === 0) {
@@ -52,6 +85,7 @@ export function WorkflowDescription(props: Props) {
     }, {
         onSuccess: (workflow) => {
             setWorkflow(workflow)
+            workflowDisplayStatusReq.run(workflow)
         },
         onError: (_) => {
             notificationError('获取工作流失败')
@@ -108,9 +142,14 @@ export function WorkflowDescription(props: Props) {
                 </ProDescriptions.Item>
                 <ProDescriptions.Item
                     label="状态"
-                    valueEnum={workflowStageEnumObj}
+                    valueType='text'
                 >
-                    {workflow?.status?.stage || 'Unknown'}
+                    {(<>
+                        <Space>
+                            {getWorkflowDisplayStatusIcon(workflowDisplayStatus)}
+                            <span>{workflowDisplayStatus?.display}</span>
+                        </Space>
+                    </>)}
                 </ProDescriptions.Item>
                 <ProDescriptions.Item
                     valueType="text"

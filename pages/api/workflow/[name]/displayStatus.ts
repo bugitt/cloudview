@@ -1,0 +1,110 @@
+import { NextApiRequest, NextApiResponse } from "next";
+import { deployerClient, imageBuilderClient, workflowClient } from "../../../../lib/kube/cloudrun";
+import { Workflow, WorkflowDisplayStatus } from "../../../../lib/models/workflow";
+import { whoami } from "../../../../lib/utils/server";
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<WorkflowDisplayStatus>) {
+    const name = req.query.name as string
+    const projectName = req.query.projectName as string
+    const user = await whoami(req)
+
+    if (!user || !projectName) {
+        res.status(401).end('Unauthorized')
+        return
+    }
+
+    if (user.projects?.indexOf(projectName) === -1) {
+        res.status(403).end('Forbidden')
+        return
+    }
+
+    const workflow = await workflowClient.get(name, projectName)
+    const currentRound = workflow.status?.base?.currentRound || 0
+    let builder = (await imageBuilderClient.list(projectName)).find(b => b.metadata?.name === name)
+    if (builder && builder.status?.base?.currentRound !== currentRound) {
+        builder = undefined
+    }
+    let deployer = (await deployerClient.list(projectName)).find(d => d.metadata?.name === name)
+    if (deployer && deployer.status?.base?.currentRound !== currentRound) {
+        deployer = undefined
+    }
+    const status: WorkflowDisplayStatus = {
+        display: '未知状态',
+        stage: 'Unknown',
+        status: 'Process',
+    }
+    if (
+        workflow.status?.base?.currentRound === 0
+        || !builder
+    ) {
+        status.display = '未调度'
+        status.stage = 'Pending'
+        status.status = 'Process'
+    }
+    if (builder) {
+        status.stage = 'Building'
+        switch (builder.status?.base?.status) {
+            case 'UNDO':
+                status.display = '准备构建镜像'
+                break
+            case 'Pending':
+                status.display = '准备构建镜像'
+                break
+            case 'Doing':
+                status.display = '正在构建镜像'
+                break
+            case 'Done':
+                status.display = '镜像构建完成'
+                status.status = 'Success'
+                break
+            case 'Failed':
+                status.display = '镜像构建失败'
+                status.status = 'Error'
+                break
+        }
+    }
+    if (deployer) {
+        const type = deployer.spec?.type
+        switch (deployer.status?.base?.status) {
+            case 'UNDO':
+                status.display = type === 'service' ? '准备部署' : '准备执行'
+                if (type === 'service') {
+                    status.stage = 'Deploying'
+                } else {
+                    status.stage = 'Doing'
+                }
+                break
+            case 'Pending':
+                status.display = type === 'service' ? '部署中' : '准备执行'
+                if (type === 'service') {
+                    status.stage = 'Deploying'
+                } else {
+                    status.stage = 'Doing'
+                }
+                break
+            case 'Doing':
+                status.display = type === 'service' ? '部署完成' : '执行中'
+                if (type === 'service') {
+                    status.status = 'Success'
+                    status.stage = 'Serving'
+                } else {
+                    status.stage = 'Doing'
+                }
+                break
+            case 'Done':
+                status.display = '执行完成'
+                status.status = 'Success'
+                if (type === 'service') {
+                    status.stage = 'Serving'
+                } else {
+                    status.stage = 'Done'
+                }
+                break
+            case 'Failed':
+                status.display = type === 'service' ? '部署失败' : '执行失败'
+                status.status = 'Error'
+                break
+        }
+    }
+    res.status(200).json(status)
+}

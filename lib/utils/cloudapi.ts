@@ -5,7 +5,7 @@ import { cloudapi } from '../config/env'
 import { Builder, CreateImageBuilderRequest } from '../models/builder'
 import { AddDeployerTriggerRequest, CreateDeployerRequest, Deployer, ServiceStatus } from '../models/deployer'
 import { ResourcePool } from '../models/resource'
-import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowTemplate } from '../models/workflow'
+import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus, WorkflowTemplate } from '../models/workflow'
 import { notificationError } from './notification'
 import { getToken, getTokenFromReq } from './token'
 
@@ -136,5 +136,9 @@ export const viewApiClient = {
 
     rerunWorkflow: async (name: string, projectName: string) => {
         return (await cloudviewAxios.post(`/workflow/${name}/rerun?projectName=${projectName}`, undefined, viewApiClientConfig())).data as Workflow
+    },
+
+    getWorkflowDisplayStatus: async (name: string, projectName: string) => {
+        return (await cloudviewAxios.get(`/workflow/${name}/displayStatus?projectName=${projectName}`, viewApiClientConfig())).data as WorkflowDisplayStatus
     },
 }

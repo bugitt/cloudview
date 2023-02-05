@@ -18,7 +18,7 @@ export interface BaseCRDStatus {
      * Message is mainly used to store the error message when the CRD is failed.
      */
     message?: string;
-    status: string;
+    status: 'UNDO' | 'Pending' | 'Doing' | 'Done' | 'Failed' | 'Unknown';
     startTime?: number
     endTime?: number
   };
