@@ -4,7 +4,7 @@ import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
 import { Card } from "antd"
-import { WorkflowDescription } from "../../../lib/components/experiments/workflowDescription"
+import { WorkflowDescription } from "../../../lib/components/experiments/WorkflowDescription"
 
 interface Props extends BaseSSRType {
     experiment: ExperimentResponse
