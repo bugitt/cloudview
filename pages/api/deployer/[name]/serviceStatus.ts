@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const deployer = await deployerClient.get(name as string, projectName as string)
-    const selector = `app=${deployer.metadata?.name},round=${deployer.status?.base?.currentRound}`
+    const selector = `owner.name=${deployer.metadata?.name},round=${deployer.status?.base?.currentRound}`
     const pods = await listPods(deployer.metadata?.namespace!!, selector)
     let healthy = false
     pods.forEach(p => {
