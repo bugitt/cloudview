@@ -53,10 +53,18 @@ export function ExperimentWorkflowTable(props: Props) {
         <ProTable<DataType>
             columns={columns}
             request={async (params, sort, filter) => {
+                let thisStudentList = studentList
+                if (params.studentName) {
+                    thisStudentList = thisStudentList.filter(stu => stu.name.includes(params.studentName))
+                }
+                if (params.studentId) {
+                    thisStudentList = thisStudentList.filter(stu => stu.id.includes(params.studentId))
+                }
+                const workflowList = (await viewApiClient.listWorkflowsByExperiment(experiment.id, tag))
+
                 const currentPage = params.current || 1
                 const pageSize = params.pageSize || defaultPageSize
-                const workflowList = (await viewApiClient.listWorkflowsByExperiment(experiment.id, tag)).slice((currentPage - 1) * pageSize, currentPage * pageSize)
-                const dataList: DataType[] = studentList
+                const dataList: DataType[] = thisStudentList
                     .slice((currentPage - 1) * pageSize, currentPage * pageSize)
                     .map((student, index) => {
                         const workflow = workflowList.find(wf => wf.metadata?.labels?.owner === student.id)
@@ -72,13 +80,13 @@ export function ExperimentWorkflowTable(props: Props) {
                 return {
                     data: dataList,
                     success: true,
-                    total: studentList.length,
+                    total: thisStudentList.length,
                     page: currentPage,
                 }
             }}
             rowKey="studentId"
             search={{
-                labelWidth: 'auto',
+                filterType: 'light',
             }}
             pagination={{
                 pageSize: defaultPageSize,
