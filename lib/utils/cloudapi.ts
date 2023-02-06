@@ -130,6 +130,14 @@ export const viewApiClient = {
         return (await cloudviewAxios.get(`/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
     },
 
+    listWorkflowsByExperiment: async (expId: number, tag?: string) => {
+        const params = new URLSearchParams()
+        if (tag) {
+            params.append('tag', tag)
+        }
+        return (await cloudviewAxios.get(`/experiment/${expId}/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
+    },
+
     getWorkflow: async (name: string, projectName: string) => {
         return (await cloudviewAxios.get(`/workflow/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Workflow
     },

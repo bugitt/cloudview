@@ -3625,6 +3625,54 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 检查是否有对某一实体的操作权限
+         * @summary 检查是否有对某一实体的操作权限
+         * @param {string} [entityType] 
+         * @param {number} [entityId] 
+         * @param {string} [action] read, write, admin
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCheckPermission: async (entityType?: string, entityId?: number, action?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/checkPermission`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (entityType !== undefined) {
+                localVarQueryParameter['entityType'] = entityType;
+            }
+
+            if (entityId !== undefined) {
+                localVarQueryParameter['entityId'] = entityId;
+            }
+
+            if (action !== undefined) {
+                localVarQueryParameter['action'] = action;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取容器服务模板列表
          * @summary 获取容器服务模板列表
          * @param {*} [options] Override http request option.
@@ -3757,6 +3805,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (type !== undefined) {
                 localVarQueryParameter['type'] = type;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取一门课程的所有学生
+         * @summary 获取一门课程的所有学生
+         * @param {number} courseId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCourseCourseIdSimpleStudents: async (courseId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'courseId' is not null or undefined
+            assertParamExists('getCourseCourseIdSimpleStudents', 'courseId', courseId)
+            const localVarPath = `/course/{courseId}/students`
+                .replace(`{${"courseId"}}`, encodeURIComponent(String(courseId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -6478,6 +6563,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 检查是否有对某一实体的操作权限
+         * @summary 检查是否有对某一实体的操作权限
+         * @param {string} [entityType] 
+         * @param {number} [entityId] 
+         * @param {string} [action] read, write, admin
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<boolean>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCheckPermission(entityType, entityId, action, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取容器服务模板列表
          * @summary 获取容器服务模板列表
          * @param {*} [options] Override http request option.
@@ -6518,6 +6616,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getCourseCourseIdResource(courseId: number, type?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CourseResourceResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCourseCourseIdResource(courseId, type, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取一门课程的所有学生
+         * @summary 获取一门课程的所有学生
+         * @param {number} courseId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCourseCourseIdSimpleStudents(courseId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserModel>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCourseCourseIdSimpleStudents(courseId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7370,6 +7479,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getCaptcha(options).then((request) => request(axios, basePath));
         },
         /**
+         * 检查是否有对某一实体的操作权限
+         * @summary 检查是否有对某一实体的操作权限
+         * @param {string} [entityType] 
+         * @param {number} [entityId] 
+         * @param {string} [action] read, write, admin
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: any): AxiosPromise<boolean> {
+            return localVarFp.getCheckPermission(entityType, entityId, action, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取容器服务模板列表
          * @summary 获取容器服务模板列表
          * @param {*} [options] Override http request option.
@@ -7407,6 +7528,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getCourseCourseIdResource(courseId: number, type?: string, options?: any): AxiosPromise<Array<CourseResourceResponse>> {
             return localVarFp.getCourseCourseIdResource(courseId, type, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取一门课程的所有学生
+         * @summary 获取一门课程的所有学生
+         * @param {number} courseId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCourseCourseIdSimpleStudents(courseId: number, options?: any): AxiosPromise<Array<UserModel>> {
+            return localVarFp.getCourseCourseIdSimpleStudents(courseId, options).then((request) => request(axios, basePath));
         },
         /**
          * 管理员获取所有课程
@@ -8211,6 +8342,20 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 检查是否有对某一实体的操作权限
+     * @summary 检查是否有对某一实体的操作权限
+     * @param {string} [entityType] 
+     * @param {number} [entityId] 
+     * @param {string} [action] read, write, admin
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getCheckPermission(entityType, entityId, action, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取容器服务模板列表
      * @summary 获取容器服务模板列表
      * @param {*} [options] Override http request option.
@@ -8255,6 +8400,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getCourseCourseIdResource(courseId: number, type?: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getCourseCourseIdResource(courseId, type, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取一门课程的所有学生
+     * @summary 获取一门课程的所有学生
+     * @param {number} courseId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getCourseCourseIdSimpleStudents(courseId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getCourseCourseIdSimpleStudents(courseId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

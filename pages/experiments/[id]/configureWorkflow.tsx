@@ -1,21 +1,23 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
-import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../../lib/cloudapi-client"
+import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, UserModel } from "../../../lib/cloudapi-client"
 import { cloudapiClient, serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
 import { ConfigureExperimentWorkflowForm } from "../../../lib/components/experiments/ConfigureExperimentWorkflowForm"
-import { Card, Drawer, Switch, Tabs, TabsProps } from "antd"
+import { Card, Collapse, Drawer, Switch } from "antd"
 import { useState } from "react"
 import { useRequest } from "ahooks"
 import { notificationError } from "../../../lib/utils/notification"
+import { ExperimentWorkflowTable } from "../../../lib/components/experiments/ExperimentWorkflowTable"
 
 interface Props extends BaseSSRType {
     experiment: ExperimentResponse
     expWfResp: ExperimentWorkflowConfigurationResponse | null
+    studentList: UserModel[]
 }
 
 export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { expWfResp, userInfo } = props
+    const { expWfResp, userInfo, studentList } = props
     const [experiment, setExperiment] = useState(props.experiment)
     const [enablePaasWorkflow, setEnablePaasWorkflow] = useState(!!expWfResp)
     const [configFormDrawerOpen, setConfigFormDrawerOpen] = useState(false)
@@ -30,21 +32,6 @@ export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typ
         }
     })
     setUserInfo(userInfo)
-
-    const items: TabsProps['items'] = [
-        {
-            key: '1',
-            label: 'PaaS工作流配置',
-            children: (<>
-                <ConfigureExperimentWorkflowForm
-                    experiment={experiment}
-                    mode="view"
-                    onSuccessHook={() => { }}
-                    onFailedHook={() => { }}
-                />
-            </>),
-        },
-    ];
 
     return (
         <>
@@ -86,7 +73,25 @@ export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typ
                     />
                 </Drawer>
 
-                {enablePaasWorkflow && <Tabs items={items} />}
+                {enablePaasWorkflow &&
+                    <>
+                        <Collapse>
+                            <Collapse.Panel header="工作流配置详情" key="1">
+                                <ConfigureExperimentWorkflowForm
+                                    experiment={experiment}
+                                    mode="view"
+                                    onSuccessHook={() => { }}
+                                    onFailedHook={() => { }}
+                                />
+                            </Collapse.Panel>
+                        </Collapse>
+                        <ExperimentWorkflowTable
+                            experiment={experiment}
+                            tag='submit'
+                            studentList={studentList}
+                        />
+                    </>
+                }
             </Card>
         </>
     )
@@ -102,12 +107,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         ctx.res.statusCode = 403
         throw new Error("You are not allowed to access this page")
     }
+    const studentList = await client.getCourseCourseIdSimpleStudents(experiment.course.id).then((resp) => resp.data)
 
     return {
         props: {
             userInfo: userInfo,
             experiment: experiment,
             expWfResp: experiment.workflowExperimentConfiguration ?? null,
+            studentList: studentList,
         },
     }
 }

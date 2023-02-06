@@ -79,6 +79,7 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                 creator: user.userId,
                 expId: String(experiment.id),
                 tag: req.tag,
+                owner: project.owner,
             }
         },
         spec: {
