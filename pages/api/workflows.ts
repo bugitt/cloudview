@@ -24,7 +24,9 @@ export default async function handler(
     switch (method) {
         case 'GET':
             const projectName = req.query.projectName as string
-            if (user.projects?.indexOf(projectName) === -1) {
+            const project = (await client.getProjects(undefined, projectName)).data[0]
+            const permissionOk = (await client.getCheckPermission('project', project.id, 'read')).data
+            if (!permissionOk) {
                 res.status(403).end('Forbidden')
                 return
             }

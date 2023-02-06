@@ -3,21 +3,17 @@ import { deployerConfig } from "../../../../lib/config/env";
 import { deployerClient } from "../../../../lib/kube/cloudrun";
 import { listPods, listServices } from "../../../../lib/kube/core";
 import { ServicePort, ServiceStatus } from "../../../../lib/models/deployer";
-import { whoami } from "../../../../lib/utils/server";
+import { serverSideCloudapiClient } from "../../../../lib/utils/cloudapi";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ServiceStatus>) {
     const {
         query: { name, projectName },
     } = req;
 
-    const user = await whoami(req)
-
-    if (!user || !projectName) {
-        res.status(401).end('Unauthorized')
-        return
-    }
-
-    if (user.projects?.indexOf(projectName as string) === -1) {
+    const client = serverSideCloudapiClient(undefined, req)
+    const project = (await client.getProjects(undefined, projectName as string)).data[0]
+    const permissionOk = (await client.getCheckPermission('project', project.id, 'read')).data
+    if (!permissionOk) {
         res.status(403).end('Forbidden')
         return
     }

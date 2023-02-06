@@ -89,6 +89,7 @@ export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typ
                             experiment={experiment}
                             tag='submit'
                             studentList={studentList}
+
                         />
                     </>
                 }

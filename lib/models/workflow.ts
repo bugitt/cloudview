@@ -1,4 +1,5 @@
 import * as k8s from '@kubernetes/client-node';
+import { ExperimentResponse } from '../cloudapi-client';
 import { BuilderContext } from './builder';
 import { BaseCRDStatus } from './crd';
 import { DeployerContainerPort } from "./deployer"
@@ -115,12 +116,21 @@ export interface ExperimentWorkflowConfiguration {
     baseImage: string
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
+    isJob?: boolean
     customOptions: {
         baseImage: boolean
         compileCommand: boolean
         deployCommand: boolean
         ports: boolean
     }
+}
+
+export function getWfConfFromExperiment(experiment: ExperimentResponse): ExperimentWorkflowConfiguration | undefined {
+    const confStr = experiment.workflowExperimentConfiguration?.configuration
+    if (confStr) {
+        return JSON.parse(confStr)
+    }
+    return undefined
 }
 
 export const workflowTemplates: WorkflowTemplate[] = [

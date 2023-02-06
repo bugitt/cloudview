@@ -4747,10 +4747,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
+         * @param {string} [name] 项目名称
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects: async (expId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjects: async (expId?: number, name?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/projects`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4768,6 +4769,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             if (expId !== undefined) {
                 localVarQueryParameter['expId'] = expId;
+            }
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
             }
 
 
@@ -6891,11 +6896,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
+         * @param {string} [name] 项目名称
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(expId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Project>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(expId, options);
+        async getProjects(expId?: number, name?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Project>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(expId, name, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7778,11 +7784,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 获取项目列表
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
+         * @param {string} [name] 项目名称
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects(expId?: number, options?: any): AxiosPromise<Array<Project>> {
-            return localVarFp.getProjects(expId, options).then((request) => request(axios, basePath));
+        getProjects(expId?: number, name?: string, options?: any): AxiosPromise<Array<Project>> {
+            return localVarFp.getProjects(expId, name, options).then((request) => request(axios, basePath));
         },
         /**
          * 检查git仓库名称是否重复
@@ -8699,12 +8706,13 @@ export class DefaultApi extends BaseAPI {
      * 获取项目列表
      * @summary 获取项目列表
      * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
+     * @param {string} [name] 项目名称
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getProjects(expId?: number, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getProjects(expId, options).then((request) => request(this.axios, this.basePath));
+    public getProjects(expId?: number, name?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjects(expId, name, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

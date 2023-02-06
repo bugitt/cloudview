@@ -23,7 +23,7 @@ export default function SubmitWorkflow(props: InferGetServerSidePropsType<typeof
                     <WorkflowDescription
                         experiment={experiment}
                         wfConfResp={wfConfResp}
-                        project={project}
+                        projectName={project.name}
                     />
                 }
             </Card>

@@ -8,65 +8,23 @@ import { ServiceStatus } from "../../models/deployer";
 import { ExperimentWorkflowConfiguration, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
+import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent";
 import { SubmitExperimentWorkflowForm } from "./SubmitExperimentWorkflowForm";
 
 interface Props {
     experiment: ExperimentResponse
     wfConfResp: ExperimentWorkflowConfigurationResponse
-    project: Project
+    projectName: string
+    workflow?: Workflow
 }
 
-export const workflowStageEnumObj = {
-    'Pending': {
-        text: '待执行/排队中',
-        status: 'Processing'
-    },
-    'Building': {
-        text: '构建中',
-        status: 'Processing'
-    },
-    'Deploying': {
-        text: '部署中',
-        status: 'Processing'
-    },
-    'Serving': {
-        text: '运行中',
-        status: 'Success'
-    },
-    'Unknown': {
-        text: '未知',
-        status: 'Error'
-    },
-}
-
-function getWorkflowDisplayStatusIcon(status?: WorkflowDisplayStatus): React.ReactNode {
-    if (!status) return <></>
-    switch (status.display) {
-        case '部署完成':
-        case '执行完成':
-            return <CheckCircleFilled style={{
-                color: 'green',
-            }} />
-
-        case '部署失败':
-        case '执行失败':
-            return <CloseCircleFilled style={{
-                color: 'red',
-            }} />
-
-        default:
-            return <ClockCircleFilled style={{
-                color: 'geekblue',
-            }} />
-    }
-}
 export function WorkflowDescription(props: Props) {
-    const { experiment, wfConfResp, project } = props
-    const [workflow, setWorkflow] = useState<Workflow>()
-    const [workflowDisplayStatus, setWorkflowDisplayStatus] = useState<WorkflowDisplayStatus>()
+    const { experiment, wfConfResp, projectName } = props
+    const [workflow, setWorkflow] = useState<Workflow | undefined>(props.workflow)
+
     const [serviceStatus, setServiceStatus] = useState<ServiceStatus>()
     const serviceStatusReq = useRequest((workflow?: Workflow) => {
-        return workflow && workflow.spec.deploy.type === 'service' ? viewApiClient.getServiceStatus(workflow.metadata?.name!!, project.name) : Promise.resolve(undefined)
+        return workflow && workflow.spec.deploy.type === 'service' ? viewApiClient.getServiceStatus(workflow.metadata?.name!!, workflow.metadata?.namespace!!) : Promise.resolve(undefined)
     }, {
         manual: true,
         onSuccess: (data) => {
@@ -76,19 +34,9 @@ export function WorkflowDescription(props: Props) {
             notificationError('获取服务状态失败')
         }
     })
-    const workflowDisplayStatusReq = useRequest((workflow?: Workflow) => {
-        return workflow ? viewApiClient.getWorkflowDisplayStatus(workflow.metadata?.name!!, project.name) : Promise.resolve(undefined)
-    }, {
-        manual: true,
-        onSuccess: (data) => {
-            setWorkflowDisplayStatus(data)
-        },
-        onError: (_) => {
-            notificationError('获取工作流状态失败')
-        }
-    })
+
     const workflowReq = useRequest(() => {
-        return viewApiClient.listWorkflows(project.name, 'submit').then(wfList => {
+        return viewApiClient.listWorkflows(projectName, 'submit').then(wfList => {
             if (wfList.length === 0) {
                 return undefined
             } else {
@@ -98,7 +46,6 @@ export function WorkflowDescription(props: Props) {
     }, {
         onSuccess: (workflow) => {
             setWorkflow(workflow)
-            workflowDisplayStatusReq.run(workflow)
             serviceStatusReq.run(workflow)
         },
         onError: (_) => {
@@ -116,7 +63,7 @@ export function WorkflowDescription(props: Props) {
         return urlObj.href
     }
     return (
-        <Spin spinning={workflowReq.loading || serviceStatusReq.loading || workflowDisplayStatusReq.loading}>
+        <Spin spinning={workflowReq.loading || serviceStatusReq.loading}>
             <ProDescriptions column={3} title="当前工作流详情">
                 <ProDescriptions.Item valueType="option">
                     <Button
@@ -133,7 +80,8 @@ export function WorkflowDescription(props: Props) {
                             const wfName = workflow?.metadata?.name
                             if (wfName) {
                                 try {
-                                    viewApiClient.rerunWorkflow(wfName, project.name)
+                                    await viewApiClient.rerunWorkflow(wfName, workflow.metadata?.namespace!!)
+                                    await workflowReq.run()
                                 } catch (_) {
                                     notificationError('重新运行当前任务失败')
                                 }
@@ -158,12 +106,10 @@ export function WorkflowDescription(props: Props) {
                     label="状态"
                     valueType='text'
                 >
-                    {(<>
-                        <Space>
-                            {getWorkflowDisplayStatusIcon(workflowDisplayStatus)}
-                            <span>{workflowDisplayStatus?.display}</span>
-                        </Space>
-                    </>)}
+                    <WorkflowDisplayStatusComponent
+                        workflow={workflow}
+                        shouldWait={true}
+                    />
                 </ProDescriptions.Item>
                 {serviceStatus && <>
                     <ProDescriptions.Item
