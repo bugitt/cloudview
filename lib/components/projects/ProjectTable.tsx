@@ -131,8 +131,7 @@ export const ProjectTable = (props: ProjectTableProps) => {
             title: '项目名称',
             dataIndex: 'displayName',
             key: 'displayName',
-            // @ts-ignore
-            ...GetColumnSearchProps('displayName', undefined, (_, record) => {
+            ...GetColumnSearchProps<ProjectTableType>('displayName', undefined, (_, record) => {
                 return (
                     <Link href={`/projects/${record.id}`}>
                         {record.displayName}
