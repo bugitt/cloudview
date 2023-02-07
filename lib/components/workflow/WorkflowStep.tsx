@@ -1,4 +1,4 @@
-import { UserOutlined, SolutionOutlined, LoadingOutlined, SmileOutlined, ClockCircleOutlined, ContainerOutlined, CheckOutlined, ReloadOutlined } from "@ant-design/icons"
+import { SolutionOutlined, LoadingOutlined, ContainerOutlined, CheckOutlined, ReloadOutlined } from "@ant-design/icons"
 import { useRequest } from "ahooks"
 import { Button, Card, Space, Spin, StepProps, Steps, Typography } from "antd"
 import TextArea from "antd/es/input/TextArea"
@@ -8,8 +8,6 @@ import { Builder } from "../../models/builder"
 import { Deployer } from "../../models/deployer"
 import { Workflow, WorkflowDisplayStatus } from "../../models/workflow"
 import { cloudapiClient, viewApiClient } from "../../utils/cloudapi"
-import { notificationError } from "../../utils/notification"
-import { PodLogTerminal } from "../logs/PodLogTerminal"
 
 interface Props {
     workflow?: Workflow

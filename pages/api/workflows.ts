@@ -85,7 +85,7 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
             }
         },
         spec: {
-            round: -1,
+            round: 1,
             build: {
                 baseImage: wfConf.baseImage,
                 context: {
