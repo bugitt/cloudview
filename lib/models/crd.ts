@@ -21,6 +21,7 @@ export interface BaseCRDStatus {
     status: 'UNDO' | 'Pending' | 'Doing' | 'Done' | 'Failed' | 'Unknown';
     startTime?: number
     endTime?: number
+    podWorker?: PodWorker
   };
 }
 
@@ -33,3 +34,9 @@ export interface BaseCRDHistory<T> {
 }
 
 export type crdDisplayStatus = '未调度' | '排队中' | '进行中' | '成功完成' | '任务失败' | '运行中' | '未知状态';
+
+export interface PodWorker {
+  name: string
+  containerList: string[]
+  initContainerList: string[]
+}

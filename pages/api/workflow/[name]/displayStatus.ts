@@ -28,6 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         display: '未知状态',
         stage: 'Unknown',
         status: 'Process',
+        builder: builder,
+        deployer: deployer,
     }
     if (
         workflow.status?.base?.currentRound === 0
@@ -39,6 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     if (builder) {
         status.stage = 'Building'
+        status.status = 'Process'
         switch (builder.status?.base?.status) {
             case 'UNDO':
                 status.display = '准备构建镜像'
@@ -61,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     if (deployer) {
         const type = deployer.spec?.type
+        status.status = 'Process'
         switch (deployer.status?.base?.status) {
             case 'UNDO':
                 status.display = type === 'service' ? '准备部署' : '准备执行'

@@ -1,8 +1,8 @@
 import * as k8s from '@kubernetes/client-node';
 import { ExperimentResponse } from '../cloudapi-client';
-import { BuilderContext } from './builder';
+import { Builder, BuilderContext } from './builder';
 import { BaseCRDStatus } from './crd';
-import { DeployerContainerPort } from "./deployer"
+import { Deployer, DeployerContainerPort } from "./deployer"
 import { Resource } from "./resource"
 
 export const crdWorkflowKind = "Workflow";
@@ -56,6 +56,8 @@ export interface WorkflowDisplayStatus {
     display: String // 友好易读的状态描述
     stage: 'Pending' | 'Building' | 'Deploying' | 'Serving' | 'Doing' | 'Done' | 'Unknown' // 当前处于什么阶段
     status: 'Process' | 'Success' | 'Error'  // 当前该阶段的状态
+    builder?: Builder
+    deployer?: Deployer
 }
 
 export interface CreateWorkflowRequest {

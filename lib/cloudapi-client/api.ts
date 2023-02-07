@@ -3673,6 +3673,58 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 获取容器日志
+         * @summary 获取容器日志
+         * @param {string} namespace 
+         * @param {string} podName 
+         * @param {string} [containerName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getContainerLog: async (namespace: string, podName: string, containerName?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'namespace' is not null or undefined
+            assertParamExists('getContainerLog', 'namespace', namespace)
+            // verify required parameter 'podName' is not null or undefined
+            assertParamExists('getContainerLog', 'podName', podName)
+            const localVarPath = `/containerLog`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (namespace !== undefined) {
+                localVarQueryParameter['namespace'] = namespace;
+            }
+
+            if (podName !== undefined) {
+                localVarQueryParameter['podName'] = podName;
+            }
+
+            if (containerName !== undefined) {
+                localVarQueryParameter['containerName'] = containerName;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取容器服务模板列表
          * @summary 获取容器服务模板列表
          * @param {*} [options] Override http request option.
@@ -6581,6 +6633,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取容器日志
+         * @summary 获取容器日志
+         * @param {string} namespace 
+         * @param {string} podName 
+         * @param {string} [containerName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getContainerLog(namespace: string, podName: string, containerName?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getContainerLog(namespace, podName, containerName, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取容器服务模板列表
          * @summary 获取容器服务模板列表
          * @param {*} [options] Override http request option.
@@ -7497,6 +7562,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getCheckPermission(entityType, entityId, action, options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取容器日志
+         * @summary 获取容器日志
+         * @param {string} namespace 
+         * @param {string} podName 
+         * @param {string} [containerName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getContainerLog(namespace: string, podName: string, containerName?: string, options?: any): AxiosPromise<string> {
+            return localVarFp.getContainerLog(namespace, podName, containerName, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取容器服务模板列表
          * @summary 获取容器服务模板列表
          * @param {*} [options] Override http request option.
@@ -8360,6 +8437,20 @@ export class DefaultApi extends BaseAPI {
      */
     public getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getCheckPermission(entityType, entityId, action, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取容器日志
+     * @summary 获取容器日志
+     * @param {string} namespace 
+     * @param {string} podName 
+     * @param {string} [containerName] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getContainerLog(namespace: string, podName: string, containerName?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getContainerLog(namespace, podName, containerName, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

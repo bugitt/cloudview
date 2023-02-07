@@ -46,8 +46,8 @@ export const getToken = () =>
     ''
 
 export const getUserId = () =>
-    cookie.get('userId') ??
     cookie.get('scs-userId') ??
+    cookie.get('userId') ??
     // new URLSearchParams(window.location.search).get('userId') ??
     ''
 

@@ -9,19 +9,18 @@ import { notificationError } from "../../utils/notification"
 interface Props {
     workflow?: Workflow
     shouldWait?: boolean
+    pollingInterval?: number
 }
 
 function getWorkflowDisplayStatusIcon(status?: WorkflowDisplayStatus): React.ReactNode {
     if (!status) return <></>
-    switch (status.display) {
-        case '部署完成':
-        case '执行完成':
+    switch (status.status) {
+        case 'Success':
             return <CheckCircleFilled style={{
                 color: 'green',
             }} />
 
-        case '部署失败':
-        case '执行失败':
+        case 'Error':
             return <CloseCircleFilled style={{
                 color: 'red',
             }} />
@@ -34,17 +33,18 @@ function getWorkflowDisplayStatusIcon(status?: WorkflowDisplayStatus): React.Rea
 }
 
 export function WorkflowDisplayStatusComponent(props: Props) {
-    const { workflow, shouldWait } = props
+    const { workflow, shouldWait, pollingInterval } = props
     const [workflowDisplayStatus, setWorkflowDisplayStatus] = useState<WorkflowDisplayStatus>()
     useRequest(() => {
         return workflow ? viewApiClient.getWorkflowDisplayStatus(workflow.metadata?.name!!, workflow.metadata?.namespace!!) : Promise.resolve(undefined)
     }, {
+        pollingInterval: pollingInterval,
         refreshDeps: [workflow],
         onSuccess: (data) => {
             setWorkflowDisplayStatus(data)
         },
         onError: (_) => {
-            notificationError('获取工作流状态失败')
+            !pollingInterval && notificationError('获取工作流状态失败')
         }
     })
     return (<>
