@@ -64,7 +64,7 @@ export function DeployerDetail({ deployer }: { deployer?: Deployer }) {
         }
     })
     return (
-        <Card title="编译构建详情" extra={[
+        <Card title="运行日志" extra={[
             <Button
                 key="refresh"
                 onClick={() => {

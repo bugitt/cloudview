@@ -1,11 +1,11 @@
-import { CheckCircleFilled, ClockCircleFilled, CloseCircleFilled, FileZipOutlined, RedoOutlined, ReloadOutlined } from "@ant-design/icons";
+import { FileZipOutlined, RedoOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ProDescriptions } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { Button, Collapse, Popconfirm, Space, Spin, Typography } from "antd";
 import React, { useState } from "react";
-import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, Project } from "../../cloudapi-client";
+import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client";
 import { ServiceStatus } from "../../models/deployer";
-import { ExperimentWorkflowConfiguration, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent";
@@ -65,7 +65,14 @@ export function WorkflowDescription(props: Props) {
     }
     return (
         <>
-            {!workflow ? <> <Typography.Title level={4}>当前未提交任何PaaS工作流任务</Typography.Title> </> :
+            {!workflow ? <>
+                <SubmitExperimentWorkflowForm
+                    experiment={experiment}
+                    resourcePool={wfConfResp.resourcePool}
+                    wfConfig={JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration}
+                    oldWorkflow={workflow}
+                    key="submit"
+                /> </> :
                 <Space direction="vertical" style={{ width: '100%' }} size="large">
                     <Spin spinning={workflowReq.loading || serviceStatusReq.loading}>
                         <ProDescriptions column={3} title="当前工作流详情">
