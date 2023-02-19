@@ -1,5 +1,6 @@
 import cookie from 'js-cookie'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
+import { ParsedUrlQuery } from 'querystring'
 
 export interface UserInfo {
     token: string
@@ -12,6 +13,22 @@ export function ssrUserInfo(ctx: GetServerSidePropsContext): UserInfo {
         token: ssrToken(ctx),
         userId: ssrUserId(ctx),
         role: ssrRole(ctx),
+    }
+}
+
+export function staticUserInfo(query: ParsedUrlQuery): UserInfo {
+    return {
+        token: query.token as string ?? getToken(),
+        userId: query.userId as string ?? getUserId(),
+        role: query.role as string ?? getRole(),
+    }
+}
+
+export function staticUserInfoFromQueryParams(query: URLSearchParams): UserInfo {
+    return {
+        token: query.get('token') ?? getToken(),
+        userId: query.get('userId') ?? getUserId(),
+        role: query.get("role") as string ?? getRole(),
     }
 }
 
@@ -48,7 +65,11 @@ export const getToken = () =>
 export const getUserId = () =>
     cookie.get('scs-userId') ??
     cookie.get('userId') ??
-    // new URLSearchParams(window.location.search).get('userId') ??
+    ''
+
+export const getRole = () =>
+    cookie.get('scs-role') ??
+    cookie.get('role') ??
     ''
 
 export const setUserInfo = (userInfo: UserInfo) => {

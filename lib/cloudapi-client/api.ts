@@ -871,22 +871,22 @@ export interface CreateVmApplyResponse {
     'id': string;
     /**
      * 
-     * @type {string}
+     * @type {SimpleUser}
      * @memberof CreateVmApplyResponse
      */
-    'studentId': string;
+    'studentId'?: SimpleUser;
     /**
      * 
-     * @type {string}
+     * @type {SimpleUser}
      * @memberof CreateVmApplyResponse
      */
-    'teacherId': string;
+    'teacherId'?: SimpleUser;
     /**
      * 
-     * @type {string}
+     * @type {SimpleUser}
      * @memberof CreateVmApplyResponse
      */
-    'applicant': string;
+    'applicant': SimpleUser;
     /**
      * 
      * @type {number}
@@ -977,6 +977,12 @@ export interface CreateVmApplyResponse {
      * @memberof CreateVmApplyResponse
      */
     'replyMsg'?: string;
+    /**
+     * 
+     * @type {VmApplyProcess}
+     * @memberof CreateVmApplyResponse
+     */
+    'process': VmApplyProcess;
 }
 /**
  * 
@@ -3054,7 +3060,7 @@ export interface VirtualMachine {
      * @type {string}
      * @memberof VirtualMachine
      */
-    'uuid': string;
+    'uuid'?: string;
     /**
      * 
      * @type {string}
@@ -3078,7 +3084,7 @@ export interface VirtualMachine {
      * @type {string}
      * @memberof VirtualMachine
      */
-    'host': string;
+    'host'?: string;
     /**
      * 
      * @type {string}
@@ -3132,7 +3138,7 @@ export interface VirtualMachine {
      * @type {string}
      * @memberof VirtualMachine
      */
-    'osFullName': string;
+    'osFullName'?: string;
     /**
      * 
      * @type {number}
@@ -3146,23 +3152,29 @@ export interface VirtualMachine {
      */
     'diskSize': number;
     /**
-     * suspended, poweredOn, poweredOff
+     * creating, booting, running, stopped, shuttingdown,deleting
      * @type {string}
      * @memberof VirtualMachine
      */
-    'powerState': string;
+    'state': string;
     /**
      * gray, green, yellow, red
      * @type {string}
      * @memberof VirtualMachine
      */
-    'overallStatus': string;
+    'overallStatus'?: string;
     /**
      * 
      * @type {Array<VmNetInfo>}
      * @memberof VirtualMachine
      */
     'netInfos': Array<VmNetInfo>;
+    /**
+     * 
+     * @type {string}
+     * @memberof VirtualMachine
+     */
+    'id': string;
 }
 /**
  * 
@@ -3264,6 +3276,25 @@ export interface VirtualMachineTemplate {
 /**
  * 
  * @export
+ * @interface VmApplyProcess
+ */
+export interface VmApplyProcess {
+    /**
+     * 
+     * @type {number}
+     * @memberof VmApplyProcess
+     */
+    'wanted': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof VmApplyProcess
+     */
+    'actual': number;
+}
+/**
+ * 
+ * @export
  * @interface VmNetInfo
  */
 export interface VmNetInfo {
@@ -3287,6 +3318,57 @@ export interface VmNetInfo {
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 管理员处理“创建虚拟机的申请”
+         * @summary 管理员处理“创建虚拟机的申请”
+         * @param {string} applyId 
+         * @param {boolean} approve 
+         * @param {string} reply 审批回复信息
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        approveVmsApply: async (applyId: string, approve: boolean, reply: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applyId' is not null or undefined
+            assertParamExists('approveVmsApply', 'applyId', applyId)
+            // verify required parameter 'approve' is not null or undefined
+            assertParamExists('approveVmsApply', 'approve', approve)
+            // verify required parameter 'reply' is not null or undefined
+            assertParamExists('approveVmsApply', 'reply', reply)
+            const localVarPath = `/vms/apply/{applyId}`
+                .replace(`{${"applyId"}}`, encodeURIComponent(String(applyId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (approve !== undefined) {
+                localVarQueryParameter['approve'] = approve;
+            }
+
+            if (reply !== undefined) {
+                localVarQueryParameter['reply'] = reply;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
@@ -3476,6 +3558,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(deleteProjectProjectIdMembersRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 删除当前虚拟机
+         * @summary 删除虚拟机
+         * @param {string} vmId vm uuid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteVmVmId: async (vmId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'vmId' is not null or undefined
+            assertParamExists('deleteVmVmId', 'vmId', vmId)
+            const localVarPath = `/vm/{vmId}`
+                .replace(`{${"vmId"}}`, encodeURIComponent(String(vmId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -5140,6 +5259,84 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 获取实验虚拟机
+         * @summary 获取实验虚拟机
+         * @param {boolean} managed 
+         * @param {number} [experimentId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getVmExperimentVms: async (managed: boolean, experimentId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'managed' is not null or undefined
+            assertParamExists('getVmExperimentVms', 'managed', managed)
+            const localVarPath = `/experimentVms`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (managed !== undefined) {
+                localVarQueryParameter['managed'] = managed;
+            }
+
+            if (experimentId !== undefined) {
+                localVarQueryParameter['experimentId'] = experimentId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取个人虚拟机
+         * @summary 获取个人虚拟机
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getVmPersonalVms: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/personalVms`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 获取当前可用的所有虚拟机模板 返回的是一个数组  该接口已被启用，请使用 GET /vm/templates
          * @summary 获取当前可用的所有虚拟机模板
          * @param {*} [options] Override http request option.
@@ -5294,10 +5491,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 用户查看所有与自己有关的创建虚拟机的申请 ！！！注意，该接口返回的是一个数组！！！
          * @summary 查看“创建虚拟机的申请”
+         * @param {number} [expId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getVmsApply: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getVmsApply: async (expId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/vms/apply`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5312,6 +5510,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (expId !== undefined) {
+                localVarQueryParameter['expId'] = expId;
+            }
 
 
     
@@ -5484,57 +5686,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             if (sync !== undefined) {
                 localVarQueryParameter['sync'] = sync;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 管理员处理“创建虚拟机的申请”
-         * @summary 管理员处理“创建虚拟机的申请”
-         * @param {string} applyId 
-         * @param {boolean} approve 
-         * @param {string} reply 审批回复信息
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        patchVmsApply: async (applyId: string, approve: boolean, reply: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'applyId' is not null or undefined
-            assertParamExists('patchVmsApply', 'applyId', applyId)
-            // verify required parameter 'approve' is not null or undefined
-            assertParamExists('patchVmsApply', 'approve', approve)
-            // verify required parameter 'reply' is not null or undefined
-            assertParamExists('patchVmsApply', 'reply', reply)
-            const localVarPath = `/vms/apply/{applyId}`
-                .replace(`{${"applyId"}}`, encodeURIComponent(String(applyId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Authorization required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-            if (approve !== undefined) {
-                localVarQueryParameter['approve'] = approve;
-            }
-
-            if (reply !== undefined) {
-                localVarQueryParameter['reply'] = reply;
             }
 
 
@@ -6519,6 +6670,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
+         * 管理员处理“创建虚拟机的申请”
+         * @summary 管理员处理“创建虚拟机的申请”
+         * @param {string} applyId 
+         * @param {boolean} approve 
+         * @param {string} reply 审批回复信息
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async approveVmsApply(applyId: string, approve: boolean, reply: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateVmApplyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.approveVmsApply(applyId, approve, reply, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
          * @param {number} [assignmentId] 
@@ -6574,6 +6738,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async deleteProjectProjectIdMembers(projectId: number, deleteProjectProjectIdMembersRequest?: DeleteProjectProjectIdMembersRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectMember>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteProjectProjectIdMembers(projectId, deleteProjectProjectIdMembersRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 删除当前虚拟机
+         * @summary 删除虚拟机
+         * @param {string} vmId vm uuid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteVmVmId(vmId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteVmVmId(vmId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7058,6 +7233,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取实验虚拟机
+         * @summary 获取实验虚拟机
+         * @param {boolean} managed 
+         * @param {number} [experimentId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getVmExperimentVms(managed: boolean, experimentId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<VirtualMachine>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getVmExperimentVms(managed, experimentId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 获取个人虚拟机
+         * @summary 获取个人虚拟机
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getVmPersonalVms(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<VirtualMachine>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getVmPersonalVms(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取当前可用的所有虚拟机模板 返回的是一个数组  该接口已被启用，请使用 GET /vm/templates
          * @summary 获取当前可用的所有虚拟机模板
          * @param {*} [options] Override http request option.
@@ -7105,11 +7302,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 用户查看所有与自己有关的创建虚拟机的申请 ！！！注意，该接口返回的是一个数组！！！
          * @summary 查看“创建虚拟机的申请”
+         * @param {number} [expId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVmsApply(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CreateVmApplyResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getVmsApply(options);
+        async getVmsApply(expId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CreateVmApplyResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getVmsApply(expId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7159,19 +7357,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async patchVmVmIdPower(vmId: string, action: string, sync?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.patchVmVmIdPower(vmId, action, sync, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 管理员处理“创建虚拟机的申请”
-         * @summary 管理员处理“创建虚拟机的申请”
-         * @param {string} applyId 
-         * @param {boolean} approve 
-         * @param {string} reply 审批回复信息
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async patchVmsApply(applyId: string, approve: boolean, reply: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateVmApplyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.patchVmsApply(applyId, approve, reply, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7458,6 +7643,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
+         * 管理员处理“创建虚拟机的申请”
+         * @summary 管理员处理“创建虚拟机的申请”
+         * @param {string} applyId 
+         * @param {boolean} approve 
+         * @param {string} reply 审批回复信息
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        approveVmsApply(applyId: string, approve: boolean, reply: string, options?: any): AxiosPromise<CreateVmApplyResponse> {
+            return localVarFp.approveVmsApply(applyId, approve, reply, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
          * @param {number} [assignmentId] 
@@ -7509,6 +7706,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         deleteProjectProjectIdMembers(projectId: number, deleteProjectProjectIdMembersRequest?: DeleteProjectProjectIdMembersRequest, options?: any): AxiosPromise<ProjectMember> {
             return localVarFp.deleteProjectProjectIdMembers(projectId, deleteProjectProjectIdMembersRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 删除当前虚拟机
+         * @summary 删除虚拟机
+         * @param {string} vmId vm uuid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteVmVmId(vmId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteVmVmId(vmId, options).then((request) => request(axios, basePath));
         },
         /**
          * 删除“虚拟机创建申请”中的虚拟机
@@ -7949,6 +8156,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getVmApply(applyId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取实验虚拟机
+         * @summary 获取实验虚拟机
+         * @param {boolean} managed 
+         * @param {number} [experimentId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getVmExperimentVms(managed: boolean, experimentId?: number, options?: any): AxiosPromise<Array<VirtualMachine>> {
+            return localVarFp.getVmExperimentVms(managed, experimentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 获取个人虚拟机
+         * @summary 获取个人虚拟机
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getVmPersonalVms(options?: any): AxiosPromise<Array<VirtualMachine>> {
+            return localVarFp.getVmPersonalVms(options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取当前可用的所有虚拟机模板 返回的是一个数组  该接口已被启用，请使用 GET /vm/templates
          * @summary 获取当前可用的所有虚拟机模板
          * @param {*} [options] Override http request option.
@@ -7992,11 +8219,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 用户查看所有与自己有关的创建虚拟机的申请 ！！！注意，该接口返回的是一个数组！！！
          * @summary 查看“创建虚拟机的申请”
+         * @param {number} [expId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getVmsApply(options?: any): AxiosPromise<Array<CreateVmApplyResponse>> {
-            return localVarFp.getVmsApply(options).then((request) => request(axios, basePath));
+        getVmsApply(expId?: number, options?: any): AxiosPromise<Array<CreateVmApplyResponse>> {
+            return localVarFp.getVmsApply(expId, options).then((request) => request(axios, basePath));
         },
         /**
          * whoami，通过当前token，得知当前用户的基本信息
@@ -8042,18 +8270,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         patchVmVmIdPower(vmId: string, action: string, sync?: boolean, options?: any): AxiosPromise<void> {
             return localVarFp.patchVmVmIdPower(vmId, action, sync, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 管理员处理“创建虚拟机的申请”
-         * @summary 管理员处理“创建虚拟机的申请”
-         * @param {string} applyId 
-         * @param {boolean} approve 
-         * @param {string} reply 审批回复信息
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        patchVmsApply(applyId: string, approve: boolean, reply: string, options?: any): AxiosPromise<CreateVmApplyResponse> {
-            return localVarFp.patchVmsApply(applyId, approve, reply, options).then((request) => request(axios, basePath));
         },
         /**
          * 修改“虚拟机创建申请”中的虚拟机个数 例如，可以使用此接口为已经审批通过的申请创建添加新的虚拟机，但不可删除
@@ -8316,6 +8532,20 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  */
 export class DefaultApi extends BaseAPI {
     /**
+     * 管理员处理“创建虚拟机的申请”
+     * @summary 管理员处理“创建虚拟机的申请”
+     * @param {string} applyId 
+     * @param {boolean} approve 
+     * @param {string} reply 审批回复信息
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public approveVmsApply(applyId: string, approve: boolean, reply: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).approveVmsApply(applyId, approve, reply, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 删除某个作业的所有评阅记录
      * @summary 删除某个作业的所有评阅记录
      * @param {number} [assignmentId] 
@@ -8376,6 +8606,18 @@ export class DefaultApi extends BaseAPI {
      */
     public deleteProjectProjectIdMembers(projectId: number, deleteProjectProjectIdMembersRequest?: DeleteProjectProjectIdMembersRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).deleteProjectProjectIdMembers(projectId, deleteProjectProjectIdMembersRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 删除当前虚拟机
+     * @summary 删除虚拟机
+     * @param {string} vmId vm uuid
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteVmVmId(vmId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteVmVmId(vmId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8903,6 +9145,30 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 获取实验虚拟机
+     * @summary 获取实验虚拟机
+     * @param {boolean} managed 
+     * @param {number} [experimentId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getVmExperimentVms(managed: boolean, experimentId?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getVmExperimentVms(managed, experimentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取个人虚拟机
+     * @summary 获取个人虚拟机
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getVmPersonalVms(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getVmPersonalVms(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 获取当前可用的所有虚拟机模板 返回的是一个数组  该接口已被启用，请使用 GET /vm/templates
      * @summary 获取当前可用的所有虚拟机模板
      * @param {*} [options] Override http request option.
@@ -8954,12 +9220,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 用户查看所有与自己有关的创建虚拟机的申请 ！！！注意，该接口返回的是一个数组！！！
      * @summary 查看“创建虚拟机的申请”
+     * @param {number} [expId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getVmsApply(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getVmsApply(options).then((request) => request(this.axios, this.basePath));
+    public getVmsApply(expId?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getVmsApply(expId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -9013,20 +9280,6 @@ export class DefaultApi extends BaseAPI {
      */
     public patchVmVmIdPower(vmId: string, action: string, sync?: boolean, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).patchVmVmIdPower(vmId, action, sync, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 管理员处理“创建虚拟机的申请”
-     * @summary 管理员处理“创建虚拟机的申请”
-     * @param {string} applyId 
-     * @param {boolean} approve 
-     * @param {string} reply 审批回复信息
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public patchVmsApply(applyId: string, approve: boolean, reply: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).patchVmsApply(applyId, approve, reply, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -12,6 +12,7 @@
     "@ant-design/cssinjs": "^1.4.0",
     "@ant-design/icons": "^4.8.0",
     "@ant-design/pro-components": "^2.3.49",
+    "@ant-design/pro-provider": "^2.4.3",
     "@kubernetes/client-node": "^0.18.0",
     "@next/font": "13.1.1",
     "@types/filesize": "^5.0.0",
