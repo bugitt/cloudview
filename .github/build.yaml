@@ -1,0 +1,22 @@
+name: 构建并推送镜像
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build and Push Docker Image
+        env:
+          image: ${{ secrets.ALIYUN_DOCKER_NAMESPACE }}/cloudview
+          tags: ${{ github.sha }}
+          registry: ${{ secrets.ALIYUN_DOCKER_REGISTRY }}
+          username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+          password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+        run: |
+          docker login ${registry} -u ${username} -p ${password}
+          docker build -t ${image}:${tags} .
+          docker push ${image}:${tags}
