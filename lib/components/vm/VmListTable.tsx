@@ -31,14 +31,16 @@ interface DataType {
 }
 
 function findValidIp(netInfos: VmNetInfo[]) {
+    let validIp = '-'
     netInfos.forEach(netInfo => {
         netInfo.ipList.forEach(ip => {
             if (ip.startsWith("10.")) {
-                return ip
+                validIp = ip
+                return
             }
         })
     })
-    return undefined
+    return validIp
 }
 
 export function VmListTable(props: Props) {
