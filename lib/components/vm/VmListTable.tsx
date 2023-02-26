@@ -245,7 +245,24 @@ export function VmListTable(props: Props) {
                     experimentId={props.experimentId}
                     existingVmStudentIdList={vmList.map(vm => vm.vm.studentId)}
                     vmApply={vmApply}
-                />
+                />,
+
+                props.experimentId && vmApply && <Popconfirm
+                    title="删除虚拟机"
+                    description={`确定要删除全部虚拟机吗？`}
+                    onConfirm={() => {
+                        Promise.all(vmList.map(async (vm) => {
+                            await cloudapiClient.deleteVmVmId(vm.vm.id)
+                        })).then(() => {
+                            messageInfo('成功提交删除任务')
+                        }).then(() => {
+                            vmListReq.run()
+                        })
+                    }}
+                    okText="是"
+                    cancelText="否"
+                ><Button type="primary" danger={true}>删除全部虚拟机</Button>
+                </Popconfirm>
             ]}
             columns={columns}
             dataSource={vmList}
