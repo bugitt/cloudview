@@ -1,7 +1,7 @@
 import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, ProFormGroup, ProFormDigit, ProFormList, ProFormSwitch } from "@ant-design/pro-components"
 import { useRequest } from "ahooks"
 import { useState, useRef, useEffect } from "react"
-import { ExperimentResponse, ExperimentWorkflowConfigurationRequest } from "../../cloudapi-client"
+import { ExperimentResponse, ExperimentWorkflowConfigurationRequest, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
 import { ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
 import { cloudapiClient, viewApiClient } from "../../utils/cloudapi"
 import { messageInfo, notificationError } from "../../utils/notification"
@@ -9,6 +9,7 @@ import { messageInfo, notificationError } from "../../utils/notification"
 interface Props {
     experiment: ExperimentResponse
     mode: "create" | "update" | "view"
+    wfConfigResp?: ExperimentWorkflowConfigurationResponse
     onSuccessHook: () => void
     onFailedHook: () => void
 }
@@ -94,8 +95,8 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
 
     useEffect(() => {
         if (mode === "view") {
-            const wfConfigJson = experiment.workflowExperimentConfiguration!!
-            const wfConfig = JSON.parse(wfConfigJson.configuration) as ExperimentWorkflowConfiguration
+            const wfConfigResp = props.wfConfigResp!
+            const wfConfig = JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration
             setBaseImage(wfConfig.baseImage)
 
             formRef.current?.setFieldsValue({
@@ -113,7 +114,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 allowCustomPorts: wfConfig.customOptions.ports,
             })
         }
-    }, [mode, experiment])
+    }, [mode, props])
 
     return (
         <>

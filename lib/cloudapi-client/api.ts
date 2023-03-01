@@ -1174,12 +1174,6 @@ export interface ExperimentResponse {
      * @memberof ExperimentResponse
      */
     'vm'?: ExpVmInfo;
-    /**
-     * 
-     * @type {ExperimentWorkflowConfigurationResponse}
-     * @memberof ExperimentResponse
-     */
-    'workflowExperimentConfiguration'?: ExperimentWorkflowConfigurationResponse;
 }
 /**
  * 
@@ -1205,6 +1199,24 @@ export interface ExperimentWorkflowConfigurationRequest {
      * @memberof ExperimentWorkflowConfigurationRequest
      */
     'configuration': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentWorkflowConfigurationRequest
+     */
+    'name': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ExperimentWorkflowConfigurationRequest
+     */
+    'studentIdList': Array<string>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ExperimentWorkflowConfigurationRequest
+     */
+    'needSubmit': boolean;
 }
 /**
  * 
@@ -1236,6 +1248,24 @@ export interface ExperimentWorkflowConfigurationResponse {
      * @memberof ExperimentWorkflowConfigurationResponse
      */
     'configuration': string;
+    /**
+     * 
+     * @type {Array<UserModel>}
+     * @memberof ExperimentWorkflowConfigurationResponse
+     */
+    'studentList': Array<UserModel>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentWorkflowConfigurationResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ExperimentWorkflowConfigurationResponse
+     */
+    'needSubmit': boolean;
 }
 /**
  * fileIdList指定只打包哪些文件。当fileIdList不为空时，仅打包list中指定的文件（但此时list中的fileId必须合法，即必须确定是与对应的实体相关联的）；当其为空时，则打包所有相关文件。
@@ -2767,6 +2797,25 @@ export interface SimpleCourse {
 /**
  * 
  * @export
+ * @interface SimpleEntity
+ */
+export interface SimpleEntity {
+    /**
+     * 
+     * @type {number}
+     * @memberof SimpleEntity
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SimpleEntity
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
  * @interface SimpleUser
  */
 export interface SimpleUser {
@@ -4062,11 +4111,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 获取一项实验（作业）详情
          * @summary 获取一项实验（作业）
          * @param {number} experimentId 
-         * @param {boolean} [getWorkflowConfiguration] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getExperimentExperimentId: async (experimentId: number, getWorkflowConfiguration?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getExperimentExperimentId: async (experimentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'experimentId' is not null or undefined
             assertParamExists('getExperimentExperimentId', 'experimentId', experimentId)
             const localVarPath = `/experiment/{experimentId}`
@@ -4084,10 +4132,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication Authorization required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-            if (getWorkflowConfiguration !== undefined) {
-                localVarQueryParameter['getWorkflowConfiguration'] = getWorkflowConfiguration;
-            }
 
 
     
@@ -4153,6 +4197,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarPath = `/experiment/{experimentId}/assignment/{assignmentId}`
                 .replace(`{${"experimentId"}}`, encodeURIComponent(String(experimentId)))
                 .replace(`{${"assignmentId"}}`, encodeURIComponent(String(assignmentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 获取某个实验中的所有工作流配置（简单回应）
+         * @summary 获取某个实验中的所有工作流配置（简单回应）
+         * @param {number} experimentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getExperimentExperimentIdSimpleWorkflowConfiguration: async (experimentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'experimentId' is not null or undefined
+            assertParamExists('getExperimentExperimentIdSimpleWorkflowConfiguration', 'experimentId', experimentId)
+            const localVarPath = `/experiment/{experimentId}/simpleWorkflowConfiguration`
+                .replace(`{${"experimentId"}}`, encodeURIComponent(String(experimentId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5222,6 +5303,49 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 获取教师和学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+         * @summary 获取教师和学生列表
+         * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+         * @param {number} [limit] -1表示无限制。默认为10
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStuffs: async (search?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/stuffs`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 查看“创建虚拟机的申请”
          * @summary 查看“创建虚拟机的申请”
          * @param {string} applyId 
@@ -5552,6 +5676,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (listProjects !== undefined) {
                 localVarQueryParameter['listProjects'] = listProjects;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 根据ID获取某项实验配置
+         * @summary 获取某项实验配置
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWorkflowConfigurationId: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getWorkflowConfigurationId', 'id', id)
+            const localVarPath = `/experimentWorkflowConfiguration/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -6888,12 +7049,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 获取一项实验（作业）详情
          * @summary 获取一项实验（作业）
          * @param {number} experimentId 
-         * @param {boolean} [getWorkflowConfiguration] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getExperimentExperimentId(experimentId: number, getWorkflowConfiguration?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentId(experimentId, getWorkflowConfiguration, options);
+        async getExperimentExperimentId(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentId(experimentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6920,13 +7080,24 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取某个实验中的所有工作流配置（简单回应）
+         * @summary 获取某个实验中的所有工作流配置（简单回应）
+         * @param {number} experimentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<SimpleEntity>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取某项实验的Workflow配置
          * @summary 获取某项实验的Workflow配置
          * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentWorkflowConfigurationResponse>> {
+        async getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExperimentWorkflowConfigurationResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentIdWorkflowConfiguration(experimentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7222,6 +7393,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 获取教师和学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+         * @summary 获取教师和学生列表
+         * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+         * @param {number} [limit] -1表示无限制。默认为10
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStuffs(search?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserModel>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStuffs(search, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 查看“创建虚拟机的申请”
          * @summary 查看“创建虚拟机的申请”
          * @param {string} applyId 
@@ -7319,6 +7502,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getWhoami(listProjects?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginUserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getWhoami(listProjects, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 根据ID获取某项实验配置
+         * @summary 获取某项实验配置
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getWorkflowConfigurationId(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentWorkflowConfigurationResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowConfigurationId(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7842,12 +8036,11 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 获取一项实验（作业）详情
          * @summary 获取一项实验（作业）
          * @param {number} experimentId 
-         * @param {boolean} [getWorkflowConfiguration] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getExperimentExperimentId(experimentId: number, getWorkflowConfiguration?: boolean, options?: any): AxiosPromise<ExperimentResponse> {
-            return localVarFp.getExperimentExperimentId(experimentId, getWorkflowConfiguration, options).then((request) => request(axios, basePath));
+        getExperimentExperimentId(experimentId: number, options?: any): AxiosPromise<ExperimentResponse> {
+            return localVarFp.getExperimentExperimentId(experimentId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取实验（作业）下学生提交的作业信息  如果是当前课程的教师或助教调用，则返回当前实验的全部作业  否则，仅返回当前学生的作业
@@ -7871,13 +8064,23 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getExperimentExperimentIdAssignmentAssignmentId(experimentId, assignmentId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取某个实验中的所有工作流配置（简单回应）
+         * @summary 获取某个实验中的所有工作流配置（简单回应）
+         * @param {number} experimentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: any): AxiosPromise<Array<SimpleEntity>> {
+            return localVarFp.getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 获取某项实验的Workflow配置
          * @summary 获取某项实验的Workflow配置
          * @param {number} experimentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: any): AxiosPromise<ExperimentWorkflowConfigurationResponse> {
+        getExperimentExperimentIdWorkflowConfiguration(experimentId: number, options?: any): AxiosPromise<Array<ExperimentWorkflowConfigurationResponse>> {
             return localVarFp.getExperimentExperimentIdWorkflowConfiguration(experimentId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -8146,6 +8349,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getStudents(search, limit, options).then((request) => request(axios, basePath));
         },
         /**
+         * 获取教师和学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+         * @summary 获取教师和学生列表
+         * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+         * @param {number} [limit] -1表示无限制。默认为10
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStuffs(search?: string, limit?: number, options?: any): AxiosPromise<Array<UserModel>> {
+            return localVarFp.getStuffs(search, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 查看“创建虚拟机的申请”
          * @summary 查看“创建虚拟机的申请”
          * @param {string} applyId 
@@ -8235,6 +8449,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getWhoami(listProjects?: boolean, options?: any): AxiosPromise<LoginUserResponse> {
             return localVarFp.getWhoami(listProjects, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 根据ID获取某项实验配置
+         * @summary 获取某项实验配置
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWorkflowConfigurationId(id: number, options?: any): AxiosPromise<ExperimentWorkflowConfigurationResponse> {
+            return localVarFp.getWorkflowConfigurationId(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 重复上传作业，直接覆盖之前的作业
@@ -8769,13 +8993,12 @@ export class DefaultApi extends BaseAPI {
      * 获取一项实验（作业）详情
      * @summary 获取一项实验（作业）
      * @param {number} experimentId 
-     * @param {boolean} [getWorkflowConfiguration] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getExperimentExperimentId(experimentId: number, getWorkflowConfiguration?: boolean, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getExperimentExperimentId(experimentId, getWorkflowConfiguration, options).then((request) => request(this.axios, this.basePath));
+    public getExperimentExperimentId(experimentId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getExperimentExperimentId(experimentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8801,6 +9024,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getExperimentExperimentIdAssignmentAssignmentId(experimentId: number, assignmentId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getExperimentExperimentIdAssignmentAssignmentId(experimentId, assignmentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 获取某个实验中的所有工作流配置（简单回应）
+     * @summary 获取某个实验中的所有工作流配置（简单回应）
+     * @param {number} experimentId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -9133,6 +9368,19 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 获取教师和学生列表。仅限管理员、教师调用。 按照学生学号倒序排列（新注册的学生排序靠前）
+     * @summary 获取教师和学生列表
+     * @param {string} [search] 支持按照学号和姓名模糊搜索学生
+     * @param {number} [limit] -1表示无限制。默认为10
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getStuffs(search?: string, limit?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStuffs(search, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 查看“创建虚拟机的申请”
      * @summary 查看“创建虚拟机的申请”
      * @param {string} applyId 
@@ -9239,6 +9487,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getWhoami(listProjects?: boolean, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getWhoami(listProjects, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 根据ID获取某项实验配置
+     * @summary 获取某项实验配置
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getWorkflowConfigurationId(id: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getWorkflowConfigurationId(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
