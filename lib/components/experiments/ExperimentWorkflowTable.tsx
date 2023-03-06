@@ -6,7 +6,7 @@ import { useState } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
 import { BuilderContext } from "../../models/builder"
 import { ServiceStatus } from "../../models/deployer"
-import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, getWorkflowExpId, getWorkflowName, getWorkflowOwner, UpdateWorkflowRequest, Workflow } from "../../models/workflow"
+import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowOwner, UpdateWorkflowRequest, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi"
 import { messageSuccess, notificationError } from "../../utils/notification"
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent"
@@ -80,16 +80,12 @@ function ServiceStatus({ workflow }: { workflow: Workflow }) {
     )
 }
 
-function getTag(wfConfigResp: ExperimentWorkflowConfigurationResponse) {
-    return wfConfigResp.needSubmit ? 'submit' : String(wfConfigResp.id)
-}
-
 async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationResponse, expId: number, ownerId: string, context?: BuilderContext, oldWorkflow?: Workflow) {
     const wfConfig = JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration
     const req: CreateWorkflowRequest = {
         confRespId: wfConfigResp.id,
         ownerId: ownerId,
-        tag: getTag(wfConfigResp),
+        tag: getWfConfigRespTag(wfConfigResp),
         expId: expId,
         context: context,
         baseImage: wfConfig.baseImage,
@@ -223,7 +219,7 @@ export function ExperimentWorkflowTable(props: Props) {
                 if (params.studentId) {
                     thisStudentList = thisStudentList.filter(stu => stu.id.includes(params.studentId))
                 }
-                await useWorkflowStore.getState().refreshWorkflowMapByExpIdAndTag(experiment.id, getTag(wfConfigResp))
+                await useWorkflowStore.getState().refreshWorkflowMapByExpIdAndTag(experiment.id, getWfConfigRespTag(wfConfigResp))
                 const workflowList = Array.from(useWorkflowStore.getState().workflowMap.values())
 
                 const dataList: DataType[] = thisStudentList
