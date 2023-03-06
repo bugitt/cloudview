@@ -25,7 +25,7 @@ export default async function handler(
         case 'GET':
             const projectName = req.query.projectName as string
             const project = (await client.getProjects(undefined, projectName)).data[0]
-            const permissionOk = (await client.getCheckPermission('project', project.id, 'read')).data
+            const permissionOk = (await client.getCheckPermission('project', String(project.id), 'read')).data
             if (!permissionOk) {
                 res.status(403).end('Forbidden')
                 return
@@ -62,9 +62,9 @@ export default async function handler(
 }
 
 const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: CloudapiClientType, user: LoginUserResponse, workflowName?: string) => {
-    const project = (await client.getProjects(req.expId)).data[0]
+    const project = (await client.getProjects(req.expId, undefined, req.ownerId)).data[0]
     const experiment = (await client.getExperimentExperimentId(req.expId, true)).data
-    const wfConfResp = experiment.workflowExperimentConfiguration!!
+    const wfConfResp = (await client.getWorkflowConfigurationId(req.confRespId)).data
     const wfConf = JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration
     const finalWorkflowName = workflowName ?? `wf-${randomString(20)}`
 
@@ -81,12 +81,12 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                 creator: user.userId,
                 expId: String(experiment.id),
                 tag: req.tag,
-                owner: project.owner,
+                owner: req.ownerId,
             }
         },
         spec: {
             round: 1,
-            build: {
+            build: req.context ? {
                 baseImage: wfConf.baseImage,
                 context: {
                     git: req.context.git ? {
@@ -100,11 +100,13 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                 command: wfConf.buildSpec?.command,
                 registryLocation: imageBuilder.imageRegistry,
                 pushSecretName: imageBuilder.pushSecretName,
-            },
+            } : undefined,
             deploy: {
-                changeEnv: wfConf.deploySpec.changeEnv,
+                changeEnv: req.context ? wfConf.deploySpec.changeEnv : true,
+                baseImage: req.context ? undefined : wfConf.baseImage,
                 command: wfConf.deploySpec.command,
                 ports: req.ports,
+                env: req.env,
                 resource: wfConf.resource,
                 resourcePool: wfConfResp.resourcePool,
                 type: 'service',

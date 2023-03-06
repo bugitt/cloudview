@@ -11,6 +11,7 @@ import { getToken, getUserId } from "../../utils/token"
 interface Props {
     experiment: ExperimentResponse
     resourcePool: string    // name of resource pool
+    wfConfigRespId: number
     wfConfig: ExperimentWorkflowConfiguration,
     oldWorkflow?: Workflow
 }
@@ -160,6 +161,8 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                 }
         }
         const req: CreateWorkflowRequest = {
+            confRespId: props.wfConfigRespId,
+            ownerId: getUserId(),
             tag: 'submit',
             expId: experiment.id,
             context: context,

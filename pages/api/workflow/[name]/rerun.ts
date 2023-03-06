@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const client = serverSideCloudapiClient(undefined, req)
     const project = (await client.getProjects(undefined, projectName as string)).data[0]
-    const permissionOk = (await client.getCheckPermission('project', project.id, 'read')).data
+    const permissionOk = (await client.getCheckPermission('project', String(project.id), 'read')).data
     if (!permissionOk) {
         res.status(403).end('Forbidden')
         return

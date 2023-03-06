@@ -1,10 +1,10 @@
-import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, ProFormGroup, ProFormDigit, ProFormList, ProFormSwitch } from "@ant-design/pro-components"
-import { useRequest } from "ahooks"
+import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, ProFormGroup, ProFormDigit, ProFormList, ProFormSwitch, ProFormRadio } from "@ant-design/pro-components"
 import { useState, useRef, useEffect } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationRequest, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
 import { ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
-import { cloudapiClient, viewApiClient } from "../../utils/cloudapi"
+import { cloudapiClient } from "../../utils/cloudapi"
 import { messageInfo, notificationError } from "../../utils/notification"
+import { workflowTemplates } from "../workflow/workflowTemplates"
 
 interface Props {
     experiment: ExperimentResponse
@@ -15,6 +15,7 @@ interface Props {
 }
 
 interface FormDataType {
+    needSubmit: boolean
     submitOptions: SubmitType[]
     baseEnv: string
     baseImage?: string
@@ -26,42 +27,47 @@ interface FormDataType {
         port: string
         protocol: string
     }[]
-    allowCustomBaseImage: boolean
-    allowCustomCompileCommand: boolean
-    allowCustomDeployCommand: boolean
-    allowCustomPorts: boolean
+    allowCustomBaseImage?: boolean
+    allowCustomCompileCommand?: boolean
+    allowCustomDeployCommand?: boolean
+    allowCustomPorts?: boolean
+}
+
+const getWorkflowTemplateByName = (name?: string) => {
+    return workflowTemplates.find((template) => template.name === name)
 }
 
 export function ConfigureExperimentWorkflowForm(props: Props) {
     const { experiment, onSuccessHook, onFailedHook, mode } = props
     const [baseImage, setBaseImage] = useState<string>("")
-
-    const { data: workflowTemplates } = useRequest(() => viewApiClient.getWorkflowTemplates())
+    const [extraFields, setExtraFields] = useState<React.ReactNode>(<></>)
+    const [needSubmit, setNeedSubmit] = useState<boolean | undefined>(undefined)
 
     const formRef = useRef<ProFormInstance>()
 
-    const onFinish = async (values: FormDataType) => {
-        const finalBaseImage = values.baseImage ?? baseImage
+    const onFinish = async (values: any) => {
+        const typedValues = values as FormDataType
+        const finalBaseImage = typedValues.baseImage ?? baseImage
         if (!finalBaseImage) {
             notificationError("请填写基础镜像")
             return false
         }
-        const configuration: ExperimentWorkflowConfiguration = {
+        let configuration: ExperimentWorkflowConfiguration = {
             experimentId: experiment.id,
-            submitOptions: values.submitOptions,
+            submitOptions: typedValues.submitOptions,
             resource: {
-                cpu: values.cpu,
-                memory: values.memory,
+                cpu: typedValues.cpu,
+                memory: typedValues.memory,
             },
-            workflowTemplateName: values.baseEnv,
+            workflowTemplateName: typedValues.baseEnv,
             baseImage: finalBaseImage,
-            buildSpec: values.compileCommand ? {
-                command: values.compileCommand,
+            buildSpec: typedValues.compileCommand ? {
+                command: typedValues.compileCommand,
             } : undefined,
             deploySpec: {
                 changeEnv: false,
-                command: values.deployCommand,
-                ports: values.ports?.map((port) => {
+                command: typedValues.deployCommand,
+                ports: typedValues.ports?.map((port) => {
                     return {
                         export: true,
                         port: parseInt(port.port),
@@ -70,16 +76,24 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 }),
             },
             customOptions: {
-                baseImage: values.allowCustomBaseImage,
-                compileCommand: values.allowCustomCompileCommand,
-                deployCommand: values.allowCustomDeployCommand,
-                ports: values.allowCustomPorts,
+                baseImage: typedValues.allowCustomBaseImage ?? false,
+                compileCommand: typedValues.allowCustomCompileCommand ?? false,
+                deployCommand: typedValues.allowCustomDeployCommand ?? false,
+                ports: typedValues.allowCustomPorts ?? false,
             }
         }
+
+        const template = getWorkflowTemplateByName(typedValues.baseEnv)
+        if (template) {
+            configuration = template.decorate?.(configuration, values) ?? configuration
+        }
+
         const req: ExperimentWorkflowConfigurationRequest = {
+            needSubmit: typedValues.needSubmit,
             expId: experiment.id,
             resource: configuration.resource,
             configuration: JSON.stringify(configuration),
+            name: values.name ? values.name as string : '作业提交与部署',
         }
         try {
             await cloudapiClient.postExperimentExperimentIdWorkflowConfiguration(experiment.id, req)
@@ -100,6 +114,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
             setBaseImage(wfConfig.baseImage)
 
             formRef.current?.setFieldsValue({
+                needSubmit: wfConfigResp.needSubmit ?? true,
                 submitOptions: wfConfig.submitOptions,
                 cpu: wfConfig.resource.cpu,
                 memory: wfConfig.resource.memory,
@@ -113,6 +128,16 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 allowCustomDeployCommand: wfConfig.customOptions.deployCommand,
                 allowCustomPorts: wfConfig.customOptions.ports,
             })
+
+            const template = getWorkflowTemplateByName(wfConfig.workflowTemplateName)
+            if (template) {
+                if (template.setFormFields) {
+                    template.setFormFields(wfConfig, formRef)
+                }
+                if (template.extraFormItems) {
+                    setExtraFields(template.extraFormItems)
+                }
+            }
         }
     }, [mode, props])
 
@@ -126,6 +151,38 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 submitter={mode === 'view' ? false : undefined}
                 disabled={props.mode === "view"}
             >
+
+                <ProFormRadio.Group
+                    name="needSubmit"
+                    label="工作流类型"
+                    options={[
+                        {
+                            label: "作业提交与展示",
+                            value: true,
+                        },
+                        {
+                            label: "辅助实验环境",
+                            value: false,
+                        }
+                    ]}
+                    fieldProps={{
+                        onChange: (e) => {
+                            setNeedSubmit(e.target.value)
+                        }
+                    }}
+                    required
+                />
+
+                {
+                    needSubmit !== undefined && !needSubmit && (
+                        <ProFormText
+                            name="name"
+                            label="工作流名称"
+                            required
+                        />
+                    )
+                }
+
                 <ProFormCheckbox.Group
                     name="submitOptions"
                     label="作业提交方式"
@@ -154,7 +211,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     valueEnum={(new Map(workflowTemplates?.map((template) => [template.name, template.name]) ?? [])).set("custom", "自定义")}
                     fieldProps={{
                         onChange: (value) => {
-                            const template = workflowTemplates?.find((template) => template.name === value)
+                            const template = getWorkflowTemplateByName(value as string)
                             setBaseImage(template?.baseImage ?? "")
                             formRef.current?.setFieldsValue({
                                 baseImage: template?.baseImage,
@@ -164,11 +221,13 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                                 deployCommand: template?.deploySpec?.command,
                                 ports: template?.deploySpec?.ports,
                             })
+                            setExtraFields(template?.extraFormItems ?? <></>)
                         }
                     }}
                     tooltip={"请选择编译和运行所提交的源代码所需要使用的基础环境。"}
                     extra={baseImage && baseImage !== '' ? `当前使用的镜像为 ${baseImage}。` : ''}
                     showSearch
+                    required
                 />
 
                 <ProFormText
@@ -176,6 +235,8 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     label="自定义基础镜像"
                     tooltip={"请给出编译和运行所提交的源代码所需要使用的基础镜像。"}
                 />
+
+                {extraFields}
 
                 <ProFormGroup title="资源限额">
                     <ProFormDigit
@@ -260,7 +321,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     </ProFormGroup>
                 </ProFormList>
 
-                <ProFormGroup title="请配置学生可自定义的选项">
+                {needSubmit && <ProFormGroup title="请配置学生可自定义的选项">
                     <ProFormSwitch
                         name="allowCustomBaseImage"
                         label="是否允许学生自定义基础镜像"
@@ -293,7 +354,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                         initialValue={false}
                         required
                     />
-                </ProFormGroup>
+                </ProFormGroup>}
 
             </ProForm>
         </>

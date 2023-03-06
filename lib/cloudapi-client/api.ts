@@ -1210,7 +1210,7 @@ export interface ExperimentWorkflowConfigurationRequest {
      * @type {Array<string>}
      * @memberof ExperimentWorkflowConfigurationRequest
      */
-    'studentIdList': Array<string>;
+    'studentIdList'?: Array<string>;
     /**
      * 
      * @type {boolean}
@@ -3796,12 +3796,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 检查是否有对某一实体的操作权限
          * @summary 检查是否有对某一实体的操作权限
          * @param {string} [entityType] 
-         * @param {number} [entityId] 
+         * @param {string} [entityId] 
          * @param {string} [action] read, write, admin
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCheckPermission: async (entityType?: string, entityId?: number, action?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getCheckPermission: async (entityType?: string, entityId?: string, action?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/checkPermission`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5000,10 +5000,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
          * @param {string} [name] 项目名称
+         * @param {string} [ownerId] 项目所有者的ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects: async (expId?: number, name?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjects: async (expId?: number, name?: string, ownerId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/projects`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5025,6 +5026,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             if (name !== undefined) {
                 localVarQueryParameter['name'] = name;
+            }
+
+            if (ownerId !== undefined) {
+                localVarQueryParameter['ownerId'] = ownerId;
             }
 
 
@@ -6959,12 +6964,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 检查是否有对某一实体的操作权限
          * @summary 检查是否有对某一实体的操作权限
          * @param {string} [entityType] 
-         * @param {number} [entityId] 
+         * @param {string} [entityId] 
          * @param {string} [action] read, write, admin
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<boolean>> {
+        async getCheckPermission(entityType?: string, entityId?: string, action?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<boolean>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCheckPermission(entityType, entityId, action, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7308,11 +7313,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
          * @param {string} [name] 项目名称
+         * @param {string} [ownerId] 项目所有者的ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(expId?: number, name?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Project>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(expId, name, options);
+        async getProjects(expId?: number, name?: string, ownerId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Project>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(expId, name, ownerId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -7954,12 +7960,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 检查是否有对某一实体的操作权限
          * @summary 检查是否有对某一实体的操作权限
          * @param {string} [entityType] 
-         * @param {number} [entityId] 
+         * @param {string} [entityId] 
          * @param {string} [action] read, write, admin
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: any): AxiosPromise<boolean> {
+        getCheckPermission(entityType?: string, entityId?: string, action?: string, options?: any): AxiosPromise<boolean> {
             return localVarFp.getCheckPermission(entityType, entityId, action, options).then((request) => request(axios, basePath));
         },
         /**
@@ -8272,11 +8278,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @summary 获取项目列表
          * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
          * @param {string} [name] 项目名称
+         * @param {string} [ownerId] 项目所有者的ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects(expId?: number, name?: string, options?: any): AxiosPromise<Array<Project>> {
-            return localVarFp.getProjects(expId, name, options).then((request) => request(axios, basePath));
+        getProjects(expId?: number, name?: string, ownerId?: string, options?: any): AxiosPromise<Array<Project>> {
+            return localVarFp.getProjects(expId, name, ownerId, options).then((request) => request(axios, basePath));
         },
         /**
          * 检查git仓库名称是否重复
@@ -8895,13 +8902,13 @@ export class DefaultApi extends BaseAPI {
      * 检查是否有对某一实体的操作权限
      * @summary 检查是否有对某一实体的操作权限
      * @param {string} [entityType] 
-     * @param {number} [entityId] 
+     * @param {string} [entityId] 
      * @param {string} [action] read, write, admin
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getCheckPermission(entityType?: string, entityId?: number, action?: string, options?: AxiosRequestConfig) {
+    public getCheckPermission(entityType?: string, entityId?: string, action?: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getCheckPermission(entityType, entityId, action, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -9275,12 +9282,13 @@ export class DefaultApi extends BaseAPI {
      * @summary 获取项目列表
      * @param {number} [expId] 如果该值为空，则默认返回该用户创建或参与的所有项目
      * @param {string} [name] 项目名称
+     * @param {string} [ownerId] 项目所有者的ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getProjects(expId?: number, name?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getProjects(expId, name, options).then((request) => request(this.axios, this.basePath));
+    public getProjects(expId?: number, name?: string, ownerId?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getProjects(expId, name, ownerId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

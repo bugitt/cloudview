@@ -1,4 +1,6 @@
+import { ProFormInstance } from '@ant-design/pro-components';
 import * as k8s from '@kubernetes/client-node';
+import React, { MutableRefObject } from 'react';
 import { ExperimentResponse } from '../cloudapi-client';
 import { Builder, BuilderContext } from './builder';
 import { BaseCRDStatus } from './crd';
@@ -48,8 +50,30 @@ export interface WorkflowSpec {
         resourcePool: string
         type: "job" | "service"
         workingDir?: string
+        env?: { [k: string]: string }
     }
     round?: number
+}
+
+export const getWorkflowOwner = (wf: Workflow) => {
+    return wf.metadata?.labels?.owner
+}
+
+export const getWorkflowExpId = (wf: Workflow) => {
+    const expId = wf.metadata?.labels?.expId
+    return expId ? parseInt(expId) : undefined
+}
+
+export const getWorkflowTag = (wf: Workflow) => {
+    return wf.metadata?.labels?.tag
+}
+
+export const getWorkflowName = (wf?: Workflow) => {
+    return wf?.metadata?.name
+}
+
+export const getWorkflowNamespace = (wf?: Workflow) => {
+    return wf?.metadata?.namespace
 }
 
 export interface WorkflowDisplayStatus {
@@ -61,12 +85,15 @@ export interface WorkflowDisplayStatus {
 }
 
 export interface CreateWorkflowRequest {
+    ownerId: string
     tag: string
     expId: number
-    context: BuilderContext
+    context?: BuilderContext
     baseImage: string
     compileCommand?: string
     deployCommand?: string
+    confRespId: number
+    env?: { [k: string]: string }
     ports?: DeployerContainerPort[]
 }
 
@@ -75,11 +102,15 @@ export interface UpdateWorkflowRequest extends CreateWorkflowRequest {
 }
 
 export interface WorkflowTemplate {
+    key: string
     name: string
     resource: Resource
     baseImage: string
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
+    extraFormItems?: React.ReactNode
+    decorate?: (wfConfig: ExperimentWorkflowConfiguration, values: any) => ExperimentWorkflowConfiguration
+    setFormFields?: (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) => void
 }
 
 export interface WorkflowBuildSpec {
@@ -91,6 +122,7 @@ export interface WorkflowDeploySpec {
     baseImage?: string
     filePair?: FilePair
     command?: string
+    env?: { [k: string]: string }
     ports?: DeployerContainerPort[]
 }
 
@@ -111,6 +143,7 @@ export function displaySubmitType(submitType: SubmitType): string {
 }
 
 export interface ExperimentWorkflowConfiguration {
+    needSubmit?: boolean // default true
     experimentId: number
     submitOptions: SubmitType[]
     resource: Resource
@@ -126,30 +159,3 @@ export interface ExperimentWorkflowConfiguration {
         ports: boolean
     }
 }
-
-export function getWfConfFromExperiment(experiment: ExperimentResponse): ExperimentWorkflowConfiguration | undefined {
-    const confStr = experiment.workflowExperimentConfiguration?.configuration
-    if (confStr) {
-        return JSON.parse(confStr)
-    }
-    return undefined
-}
-
-export const workflowTemplates: WorkflowTemplate[] = [
-    {
-        name: '静态网站（Nginx）',
-        baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',
-        resource: {
-            cpu: 10,
-            memory: 100,
-        },
-        buildSpec: {
-            command: "cp -r . /usr/share/nginx/html/"
-        },
-        deploySpec: {
-            changeEnv: false,
-            command: `nginx -g 'daemon off;'`,
-            ports: [{ port: 80, protocol: 'tcp' }],
-        },
-    },
-]

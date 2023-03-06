@@ -1,20 +1,21 @@
 import { LoadingOutlined } from "@ant-design/icons"
 import { ProColumns, ProTable } from "@ant-design/pro-components"
 import { useRequest } from "ahooks"
-import { Drawer, Space, Typography } from "antd"
+import { Badge, Drawer, Popconfirm, Space, Typography } from "antd"
 import { useState } from "react"
-import { ExperimentResponse, UserModel } from "../../cloudapi-client"
+import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
+import { BuilderContext } from "../../models/builder"
 import { ServiceStatus } from "../../models/deployer"
-import { getWfConfFromExperiment, Workflow } from "../../models/workflow"
+import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, getWorkflowExpId, getWorkflowName, getWorkflowOwner, UpdateWorkflowRequest, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi"
-import { notificationError } from "../../utils/notification"
+import { messageSuccess, notificationError } from "../../utils/notification"
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent"
+import { useWorkflowStore } from "../workflow/workflowStateManagement"
 import { WorkflowDescription } from "./WorkflowDescription"
 
 interface Props {
     experiment: ExperimentResponse
-    tag: string
-    studentList: UserModel[]
+    wfConfigResp: ExperimentWorkflowConfigurationResponse
 }
 
 interface DataType {
@@ -24,6 +25,7 @@ interface DataType {
     startTime?: number
     workflowName?: string
     workflow?: Workflow
+    serviceStatus?: boolean
 }
 
 const defaultPageSize = 10
@@ -55,9 +57,69 @@ function ServicePortList({ workflow }: { workflow: Workflow }) {
     )
 }
 
+function ServiceStatus({ workflow }: { workflow: Workflow }) {
+    const [serviceStatus, setServiceStatus] = useState<ServiceStatus>()
+    useRequest(() => {
+        return workflow && workflow.spec.deploy.type === 'service' ? viewApiClient.getServiceStatus(workflow.metadata?.name!!, workflow.metadata?.namespace!!) : Promise.resolve(undefined)
+    }, {
+        refreshDeps: [workflow],
+        onSuccess: (data) => {
+            setServiceStatus(data)
+        },
+        onError: (_) => {
+            notificationError('获取服务状态失败')
+        }
+    })
+    return (
+        serviceStatus && workflow ?
+            serviceStatus.healthy ?
+                <Badge status="success" text="健康" />
+                : <Badge status="error" text="不健康" />
+            :
+            <LoadingOutlined />
+    )
+}
+
+function getTag(wfConfigResp: ExperimentWorkflowConfigurationResponse) {
+    return wfConfigResp.needSubmit ? 'submit' : String(wfConfigResp.id)
+}
+
+async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationResponse, expId: number, ownerId: string, context?: BuilderContext, oldWorkflow?: Workflow) {
+    const wfConfig = JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration
+    const req: CreateWorkflowRequest = {
+        confRespId: wfConfigResp.id,
+        ownerId: ownerId,
+        tag: getTag(wfConfigResp),
+        expId: expId,
+        context: context,
+        baseImage: wfConfig.baseImage,
+        compileCommand: wfConfig.buildSpec?.command,
+        deployCommand: wfConfig.deploySpec?.command,
+        ports: wfConfig.deploySpec.ports,
+        env: wfConfig.deploySpec.env,
+    }
+
+    try {
+        if (oldWorkflow) {
+            const updateReq: UpdateWorkflowRequest = {
+                workflowName: oldWorkflow?.metadata?.name!!,
+                ...req
+            }
+            await viewApiClient.updateWorkflow(updateReq)
+        } else {
+            await viewApiClient.createWorkflow(req)
+        }
+        messageSuccess('提交成功')
+        return true
+    } catch (_) {
+        notificationError('提交失败')
+        return false
+    }
+}
+
 export function ExperimentWorkflowTable(props: Props) {
-    const { experiment, tag, studentList } = props
-    const isJob = !!getWfConfFromExperiment(experiment)?.isJob
+    const { experiment, wfConfigResp } = props
+    const isJob = (JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration).isJob ?? false
     const [currentWorkflow, setCurrentWorkflow] = useState<Workflow>()
     const [workflowDetailDrawer, setWorkflowDetailDrawer] = useState(false)
 
@@ -100,12 +162,12 @@ export function ExperimentWorkflowTable(props: Props) {
 
     if (!isJob) {
         columns.push({
-            title: '访问服务',
+            title: '服务状态',
             dataIndex: 'workflowName',
             hideInSearch: true,
             render: (_, record) => {
                 return record.workflow ?
-                    <ServicePortList workflow={record.workflow} />
+                    <ServiceStatus workflow={record.workflow} />
                     : <> - </>
             }
         })
@@ -120,6 +182,7 @@ export function ExperimentWorkflowTable(props: Props) {
             <Typography.Link
                 key="detail"
                 onClick={() => {
+                    setWorkflowDetailDrawer(true)
                     if (record.workflow) {
                         setCurrentWorkflow(record.workflow)
                         setWorkflowDetailDrawer(true)
@@ -129,6 +192,20 @@ export function ExperimentWorkflowTable(props: Props) {
             >
                 查看详情
             </Typography.Link>,
+            wfConfigResp.needSubmit ? <></> :
+                <Popconfirm
+                    key='setup'
+                    title="执行工作流"
+                    description={`确定要执行学生 ${record.studentId} ${record.studentName} 的工作流吗？`}
+                    onConfirm={() => {
+                        setupWorkflow(wfConfigResp, experiment.id, record.studentId, undefined, record.workflow)
+                    }}
+                >
+                    <Typography.Link>
+                        执行工作流
+                    </Typography.Link>
+                </Popconfirm>,
+
         ],
         align: 'center',
     },)
@@ -137,28 +214,30 @@ export function ExperimentWorkflowTable(props: Props) {
         <ProTable<DataType>
             columns={columns}
             request={async (params, sort, filter) => {
-                let thisStudentList = studentList
+                const currentPage = params.current || 1
+                const pageSize = params.pageSize || defaultPageSize
+                let thisStudentList = wfConfigResp.studentList
                 if (params.studentName) {
                     thisStudentList = thisStudentList.filter(stu => stu.name.includes(params.studentName))
                 }
                 if (params.studentId) {
                     thisStudentList = thisStudentList.filter(stu => stu.id.includes(params.studentId))
                 }
-                const workflowList = (await viewApiClient.listWorkflowsByExperiment(experiment.id, tag))
+                await useWorkflowStore.getState().refreshWorkflowMapByExpIdAndTag(experiment.id, getTag(wfConfigResp))
+                const workflowList = Array.from(useWorkflowStore.getState().workflowMap.values())
 
-                const currentPage = params.current || 1
-                const pageSize = params.pageSize || defaultPageSize
                 const dataList: DataType[] = thisStudentList
                     .slice((currentPage - 1) * pageSize, currentPage * pageSize)
                     .map((student, index) => {
-                        const workflow = workflowList.find(wf => wf.metadata?.labels?.owner === student.id)
+                        const workflow = workflowList.find(wf => getWorkflowOwner(wf) === student.id && getWorkflowExpId(wf) === experiment.id)
                         return {
                             key: index,
                             studentId: student.id,
                             studentName: student.name,
-                            workflowName: workflow?.metadata?.name,
+                            workflowName: getWorkflowName(workflow),
                             workflow,
                             startTime: workflow?.status?.base?.startTime ? workflow?.status?.base?.startTime * 1000 : undefined,
+                            serviceStatus: true,
                         }
                     })
                 return {
@@ -178,20 +257,23 @@ export function ExperimentWorkflowTable(props: Props) {
             dateFormatter="string"
             headerTitle="工作流执行情况"
         />
-        {currentWorkflow && <Drawer
-            width='50%'
-            placement="right"
-            closable={false}
-            onClose={() => {
-                setWorkflowDetailDrawer(false)
-            }}
-            title="工作流详情"
-            open={workflowDetailDrawer}>
-            <WorkflowDescription
-                experiment={experiment}
-                wfConfResp={experiment.workflowExperimentConfiguration!!}
-                projectName={currentWorkflow.metadata?.namespace!!}
-            />
-        </Drawer>}
+        {currentWorkflow &&
+            <Drawer
+                width='50%'
+                placement="right"
+                closable={false}
+                onClose={() => {
+                    setWorkflowDetailDrawer(false)
+                    setCurrentWorkflow(undefined)
+                }}
+                open={workflowDetailDrawer}>
+                <WorkflowDescription
+                    experiment={experiment}
+                    wfConfResp={wfConfigResp}
+                    workflowName={getWorkflowName(currentWorkflow)!!}
+                    projectName={currentWorkflow?.metadata?.namespace!!}
+                />
+            </Drawer>
+        }
     </>)
 }
