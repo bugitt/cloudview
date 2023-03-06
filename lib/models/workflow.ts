@@ -1,7 +1,7 @@
 import { ProFormInstance } from '@ant-design/pro-components';
 import * as k8s from '@kubernetes/client-node';
 import React, { MutableRefObject } from 'react';
-import { ExperimentResponse } from '../cloudapi-client';
+import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from '../cloudapi-client';
 import { Builder, BuilderContext } from './builder';
 import { BaseCRDStatus } from './crd';
 import { Deployer, DeployerContainerPort } from "./deployer"
@@ -74,6 +74,10 @@ export const getWorkflowName = (wf?: Workflow) => {
 
 export const getWorkflowNamespace = (wf?: Workflow) => {
     return wf?.metadata?.namespace
+}
+
+export function getWfConfigRespTag(wfConfigResp: ExperimentWorkflowConfigurationResponse) {
+    return wfConfigResp.needSubmit ? 'submit' : String(wfConfigResp.id)
 }
 
 export interface WorkflowDisplayStatus {

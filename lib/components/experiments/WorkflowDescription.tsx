@@ -6,7 +6,7 @@ import Card from "antd/es/card/Card";
 import React, { useState } from "react";
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client";
 import { ServiceStatus } from "../../models/deployer";
-import { ExperimentWorkflowConfiguration, Workflow } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, getWfConfigRespTag, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent";
@@ -95,14 +95,14 @@ export function WorkflowDescription(props: Props) {
                                 <RedoOutlined /> 重新运行当前任务
                             </Button>
                         </Popconfirm>}
-                        <SubmitExperimentWorkflowForm
+                        {getWfConfigRespTag(wfConfResp) === 'submit' && <SubmitExperimentWorkflowForm
                             wfConfigRespId={wfConfResp.id}
                             experiment={experiment}
                             resourcePool={wfConfResp.resourcePool}
                             wfConfig={JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration}
                             oldWorkflow={workflow}
                             key="submit"
-                        />
+                        />}
                     </Space>
                 </>)}
             >
