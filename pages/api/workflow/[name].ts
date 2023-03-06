@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { workflowClient } from "../../../lib/kube/cloudrun";
 import { Workflow } from "../../../lib/models/workflow";
+import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi";
 import { whoami } from "../../../lib/utils/server";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Workflow>) {
@@ -9,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         method,
     } = req;
 
+    const client = serverSideCloudapiClient(undefined, req)
     const user = await whoami(req)
     let projectName = ''
     if (req.method === 'PATCH') {
@@ -21,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         return
     }
 
-    if (user.projects?.indexOf(projectName) === -1) {
+    if (!(await client.getCheckPermission('projectName', projectName, 'read')).data) {
         res.status(403).end('Forbidden')
         return
     }

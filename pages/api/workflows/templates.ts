@@ -1,6 +1,7 @@
 
 import { NextApiRequest, NextApiResponse } from "next"
-import { WorkflowTemplate, workflowTemplates } from "../../../lib/models/workflow"
+import { workflowTemplates } from "../../../lib/components/workflow/workflowTemplates";
+import { WorkflowTemplate } from "../../../lib/models/workflow"
 
 export default async function handler(
     req: NextApiRequest,

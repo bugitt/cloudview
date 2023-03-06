@@ -22,7 +22,6 @@ specifiers:
   eslint: 8.30.0
   eslint-config-next: 13.1.1
   filesize: ^10.0.6
-  jotai: ^2.0.2
   js-cookie: ^3.0.1
   lodash: ^4.17.21
   md5: ^2.3.0
@@ -36,6 +35,7 @@ specifiers:
   react-use-websocket: ^4.2.0
   reactflow: ^11.4.0
   typescript: 4.9.4
+  zustand: ^4.3.5
 
 dependencies:
   '@ant-design/cssinjs': 1.4.0_biqbaboplfbrettd7655fr4n2y
@@ -59,7 +59,6 @@ dependencies:
   eslint: 8.30.0
   eslint-config-next: 13.1.1_lzzuuodtsqwxnvqeq4g4likcqa
   filesize: 10.0.6
-  jotai: 2.0.2_react@18.2.0
   js-cookie: 3.0.1
   lodash: 4.17.21
   md5: 2.3.0
@@ -73,6 +72,7 @@ dependencies:
   react-use-websocket: 4.2.0_biqbaboplfbrettd7655fr4n2y
   reactflow: 11.4.0_biqbaboplfbrettd7655fr4n2y
   typescript: 4.9.4
+  zustand: 4.3.5_react@18.2.0
 
 packages:
 
@@ -743,7 +743,7 @@ packages:
       classcat: 5.0.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.2.0_react@18.2.0
+      zustand: 4.3.5_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -779,7 +779,7 @@ packages:
       d3-zoom: 3.0.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.2.0_react@18.2.0
+      zustand: 4.3.5_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -799,7 +799,7 @@ packages:
       d3-zoom: 3.0.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.2.0_react@18.2.0
+      zustand: 4.3.5_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -815,7 +815,7 @@ packages:
       classcat: 5.0.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.2.0_react@18.2.0
+      zustand: 4.3.5_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -2624,18 +2624,6 @@ packages:
     dev: false
     optional: true
 
-  /jotai/2.0.2_react@18.2.0:
-    resolution: {integrity: sha512-0yOked08Swa84LUbBjtj7ZLZrE05n3u50rHeZ+bsT86thUjcy0kFgQz9GmEWhYbQDFoT1G8Ww6edSj/MBJHO4A==}
-    engines: {node: '>=12.20.0'}
-    peerDependencies:
-      react: '>=17.0.0'
-    peerDependenciesMeta:
-      react:
-        optional: true
-    dependencies:
-      react: 18.2.0
-    dev: false
-
   /js-cookie/2.2.1:
     resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==}
     dev: false
@@ -4392,8 +4380,8 @@ packages:
       tslib: 2.3.0
     dev: false
 
-  /zustand/4.2.0_react@18.2.0:
-    resolution: {integrity: sha512-eNwaDoD2FYVnMgtNxiMUhTJO780wonZUzJrPQTLYI0erSIMZF8cniWFW22kGQUECd8rdHRJ/ZJL2XO54c9Ttuw==}
+  /zustand/4.3.5_react@18.2.0:
+    resolution: {integrity: sha512-2iPUzfwx+g3f0PagOMz2vDO9mZzEp2puFpNe7vrAymVPOEIEUjCPkC4/zy84eAscxIWmTU4j9g6upXYkJdzEFQ==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       immer: '>=9.0'
@@ -4409,7 +4397,7 @@ packages:
     dev: false
 
   github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2:
-    resolution: {commit: 000ac1800e620f770f4eb31b5ae908f6167b0ab2, repo: git+ssh://git@github.com/moment/moment.git, type: git}
+    resolution: {tarball: https://codeload.github.com/moment/moment/tar.gz/000ac1800e620f770f4eb31b5ae908f6167b0ab2}
     name: moment
     version: 2.29.4
     dev: false

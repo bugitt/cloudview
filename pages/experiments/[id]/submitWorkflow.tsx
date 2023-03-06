@@ -1,6 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { ExperimentResponse, Project } from "../../../lib/cloudapi-client"
-import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
+import { serverSideCloudapiClient, viewApiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
 import { Card } from "antd"
@@ -24,6 +24,12 @@ export default function SubmitWorkflow(props: InferGetServerSidePropsType<typeof
                         experiment={experiment}
                         wfConfResp={wfConfResp}
                         projectName={project.name}
+                        fetchWorkflow={async () => {
+                            const workflowList = await viewApiClient.listWorkflows(project.name, 'submit')
+                            if (workflowList.length > 0) {
+                                return workflowList[0]
+                            }
+                        }}
                     />
                 }
             </Card>
