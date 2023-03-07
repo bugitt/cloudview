@@ -1,6 +1,9 @@
 import { ProFormInstance, ProFormText } from "@ant-design/pro-components";
+import { Typography } from "antd";
 import { MutableRefObject } from "react";
-import { ExperimentWorkflowConfiguration, WorkflowTemplate } from "../../models/workflow";
+import { ServicePort } from "../../models/deployer";
+import { ExperimentWorkflowConfiguration, Workflow, WorkflowTemplate } from "../../models/workflow";
+
 
 export const workflowTemplates: WorkflowTemplate[] = [
     {
@@ -53,5 +56,32 @@ export const workflowTemplates: WorkflowTemplate[] = [
                 mysqlRootPassword: wfConfig.deploySpec.env?.['MYSQL_ROOT_PASSWORD'] ?? '',
             })
         },
+        getServiceStatusListItemByPort: function (port: ServicePort, wf: Workflow) {
+            switch (port.port) {
+                case 3306:
+                    return {
+                        disableAutoConnect: true,
+                        title: 'MySQL数据库端口',
+                        description: <>
+                            <Typography>
+                                数据库 IP <Typography.Text code>
+                                    {port.ip}
+                                </Typography.Text>，
+                                端口 <Typography.Text code>
+                                    {port.nodePort}
+                                </Typography.Text>，
+                                用户名 <Typography.Text code>
+                                    root
+                                </Typography.Text>，
+                                密码 <Typography.Text code>
+                                    {wf.spec.deploy.env?.['MYSQL_ROOT_PASSWORD']}
+                                </Typography.Text>
+                            </Typography>
+                        </>,
+                    }
+                default:
+                    return undefined
+            }
+        }
     },
 ]

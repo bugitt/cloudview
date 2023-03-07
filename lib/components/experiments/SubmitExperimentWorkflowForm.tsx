@@ -7,6 +7,7 @@ import { viewApiClient } from "../../utils/cloudapi"
 import { AntdUploadResponse } from "../../utils/file"
 import { messageSuccess, notificationError } from "../../utils/notification"
 import { getToken, getUserId } from "../../utils/token"
+import { workflowTemplates } from "../workflow/workflowTemplates"
 
 interface Props {
     experiment: ExperimentResponse
@@ -160,6 +161,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                     }
                 }
         }
+        const wfTemplate = workflowTemplates.find(wf => wf.name === wfConfig.workflowTemplateName)
         const req: CreateWorkflowRequest = {
             confRespId: props.wfConfigRespId,
             ownerId: getUserId(),
@@ -169,6 +171,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
             baseImage: values.baseImage,
             compileCommand: values.compileCommand,
             deployCommand: values.deployCommand,
+            templateKey: wfTemplate?.key ?? 'custom',
             ports: values.ports?.map((port) => {
                 return {
                     export: true,

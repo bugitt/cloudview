@@ -2,9 +2,10 @@ import { ProFormInstance } from '@ant-design/pro-components';
 import * as k8s from '@kubernetes/client-node';
 import React, { MutableRefObject } from 'react';
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from '../cloudapi-client';
+import { workflowTemplates } from '../components/workflow/workflowTemplates';
 import { Builder, BuilderContext } from './builder';
 import { BaseCRDStatus } from './crd';
-import { Deployer, DeployerContainerPort } from "./deployer"
+import { Deployer, DeployerContainerPort, ServicePort } from "./deployer"
 import { Resource } from "./resource"
 
 export const crdWorkflowKind = "Workflow";
@@ -72,6 +73,11 @@ export const getWorkflowName = (wf?: Workflow) => {
     return wf?.metadata?.name
 }
 
+export const getWorkflowTemplate = (wf?: Workflow) => {
+    const key = wf?.metadata?.labels?.templateKey
+    return workflowTemplates.find(t => t.key === key)
+}
+
 export const getWorkflowNamespace = (wf?: Workflow) => {
     return wf?.metadata?.namespace
 }
@@ -97,12 +103,19 @@ export interface CreateWorkflowRequest {
     compileCommand?: string
     deployCommand?: string
     confRespId: number
+    templateKey: string
     env?: { [k: string]: string }
     ports?: DeployerContainerPort[]
 }
 
 export interface UpdateWorkflowRequest extends CreateWorkflowRequest {
     workflowName: string
+}
+
+export interface ServiceStatusListItem {
+    title: React.ReactNode
+    description: React.ReactNode
+    disableAutoConnect?: boolean
 }
 
 export interface WorkflowTemplate {
@@ -115,6 +128,7 @@ export interface WorkflowTemplate {
     extraFormItems?: React.ReactNode
     decorate?: (wfConfig: ExperimentWorkflowConfiguration, values: any) => ExperimentWorkflowConfiguration
     setFormFields?: (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) => void
+    getServiceStatusListItemByPort?: (port: ServicePort, wf: Workflow) => ServiceStatusListItem | undefined
 }
 
 export interface WorkflowBuildSpec {
