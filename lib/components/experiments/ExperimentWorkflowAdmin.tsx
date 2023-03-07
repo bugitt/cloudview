@@ -1,6 +1,6 @@
 import { useRequest } from "ahooks";
 import { Collapse, Spin } from "antd";
-import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, SimpleEntity } from "../../cloudapi-client";
+import { ExperimentResponse, SimpleEntity } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { ConfigureExperimentWorkflowForm } from "./ConfigureExperimentWorkflowForm";
 import { ExperimentWorkflowTable } from "./ExperimentWorkflowTable";
@@ -8,10 +8,6 @@ import { ExperimentWorkflowTable } from "./ExperimentWorkflowTable";
 interface Props {
     experiment: ExperimentResponse
     simpleWfConfig: SimpleEntity
-}
-
-function getTag(wfConfigResp: ExperimentWorkflowConfigurationResponse) {
-    return wfConfigResp.needSubmit ? 'submit' : String(wfConfigResp.id)
 }
 
 export function ExperimentWorkflowAdmin(props: Props) {

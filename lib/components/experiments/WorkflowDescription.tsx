@@ -6,7 +6,7 @@ import Card from "antd/es/card/Card";
 import React, { useState } from "react";
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client";
 import { ServiceStatus } from "../../models/deployer";
-import { ExperimentWorkflowConfiguration, getWfConfigRespTag, Workflow } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowName, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent";
@@ -22,7 +22,8 @@ interface Props {
 }
 
 export function WorkflowDescription(props: Props) {
-    const { experiment, wfConfResp, projectName, workflowName } = props
+    const { experiment, wfConfResp, projectName } = props
+    const [workflowName, setWorkflowName] = useState<string | undefined>(props.workflowName)
     const workflow = useWorkflowStore.getState().getWorkflow(workflowName, projectName)
 
     const [serviceStatus, setServiceStatus] = useState<ServiceStatus>()
@@ -39,11 +40,16 @@ export function WorkflowDescription(props: Props) {
     })
 
     const workflowReq = useRequest(() => {
-        return workflowName && projectName ?
-            viewApiClient.getWorkflow(workflowName, projectName) :
+        return projectName ?
+            workflowName ?
+                viewApiClient.getWorkflow(workflowName, projectName) :
+                viewApiClient.listWorkflows(projectName).then((workflows) => {
+                    return workflows.length > 0 ? workflows[0] : undefined
+                }) :
             Promise.resolve(undefined)
     }, {
         onSuccess: (workflow) => {
+            setWorkflowName(getWorkflowName(workflow))
             useWorkflowStore.getState().updateSingleWorkflow(workflow)
             serviceStatusReq.run(workflow)
         },
