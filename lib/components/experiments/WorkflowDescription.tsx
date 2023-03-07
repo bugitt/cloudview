@@ -1,17 +1,18 @@
 import { FileZipOutlined, RedoOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ProDescriptions } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Collapse, Popconfirm, Space, Spin, Typography } from "antd";
+import { Button, Collapse, List, Popconfirm, Space, Spin, Typography } from "antd";
 import Card from "antd/es/card/Card";
 import React, { useState } from "react";
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client";
 import { ServiceStatus } from "../../models/deployer";
-import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowName, Workflow } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowName, getWorkflowNamespace, getWorkflowTemplate, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent";
 import { useWorkflowStore } from "../workflow/workflowStateManagement";
 import { WorkflowStep } from "../workflow/WorkflowStep";
+import { workflowTemplates } from "../workflow/workflowTemplates";
 import { SubmitExperimentWorkflowForm } from "./SubmitExperimentWorkflowForm";
 
 interface Props {
@@ -21,16 +22,9 @@ interface Props {
     workflowName?: string
 }
 
-export function WorkflowDescription(props: Props) {
-    const { experiment, wfConfResp, projectName } = props
-    const [workflowName, setWorkflowName] = useState<string | undefined>(props.workflowName)
-    const workflow = useWorkflowStore.getState().getWorkflow(workflowName, projectName)
-
+function ServiceStatusComponent({ workflow }: { workflow: Workflow }) {
     const [serviceStatus, setServiceStatus] = useState<ServiceStatus>()
-    const serviceStatusReq = useRequest((workflow?: Workflow) => {
-        return workflow && workflow.spec.deploy.type === 'service' ? viewApiClient.getServiceStatus(workflow.metadata?.name!!, workflow.metadata?.namespace!!) : Promise.resolve(undefined)
-    }, {
-        manual: true,
+    const serviceStatusReq = useRequest(() => viewApiClient.getServiceStatus(getWorkflowName(workflow)!!, getWorkflowNamespace(workflow)!!), {
         onSuccess: (data) => {
             setServiceStatus(data)
         },
@@ -38,12 +32,67 @@ export function WorkflowDescription(props: Props) {
             notificationError('获取服务状态失败')
         }
     })
+    const wfTemplate = getWorkflowTemplate(workflow)
+    return (
+        <>
+            <ProDescriptions title="服务状态" loading={serviceStatusReq.loading} >
+                {serviceStatus && <>
+                    <ProDescriptions.Item
+                        label="服务状态"
+                        valueEnum={{
+                            'true': {
+                                text: '健康',
+                                status: 'Success',
+                            },
+                            'false': {
+                                text: '不健康',
+                                status: 'Error',
+                            },
+                        }}
+                    >
+                        {serviceStatus.healthy}
+                    </ProDescriptions.Item>
+                </>}
+            </ProDescriptions>
+            <List
+                itemLayout="horizontal"
+                bordered
+                header={<div><b>服务端口列表</b></div>}
+                dataSource={serviceStatus?.ports}
+                renderItem={(port, index) => (
+                    <List.Item
+                        actions={[
+                            !wfTemplate?.getServiceStatusListItemByPort?.(port, workflow)?.disableAutoConnect && <a key="service-status-connect" target="_blank" href={`http://${port.ip}:${port.nodePort}`} rel="noreferrer">直接访问</a>,
+                        ]}
+                    >
+                        <List.Item.Meta
+                            title={wfTemplate?.getServiceStatusListItemByPort?.(port, workflow)?.title ?
+                                wfTemplate?.getServiceStatusListItemByPort?.(port, workflow)?.title :
+                                <a target="_blank" href={`http://${port.ip}:${port.nodePort}`} rel="noreferrer">
+                                    {port.ip}:{port.nodePort} - {port.name}
+                                </a>}
+                            description={
+                                wfTemplate?.getServiceStatusListItemByPort?.(port, workflow)?.description ?
+                                    wfTemplate?.getServiceStatusListItemByPort?.(port, workflow)?.description :
+                                    "可以通过该端口访问所部署的服务"}
+                        />
+                    </List.Item>
+                )}
+            />
+        </>
+    )
+}
+
+export function WorkflowDescription(props: Props) {
+    const { experiment, wfConfResp, projectName } = props
+    const [workflowName, setWorkflowName] = useState<string | undefined>(props.workflowName)
+    const workflow = useWorkflowStore.getState().getWorkflow(workflowName, projectName)
 
     const workflowReq = useRequest(() => {
         return projectName ?
             workflowName ?
                 viewApiClient.getWorkflow(workflowName, projectName) :
-                viewApiClient.listWorkflows(projectName).then((workflows) => {
+                viewApiClient.listWorkflows(projectName, getWfConfigRespTag(wfConfResp)).then((workflows) => {
                     return workflows.length > 0 ? workflows[0] : undefined
                 }) :
             Promise.resolve(undefined)
@@ -51,7 +100,6 @@ export function WorkflowDescription(props: Props) {
         onSuccess: (workflow) => {
             setWorkflowName(getWorkflowName(workflow))
             useWorkflowStore.getState().updateSingleWorkflow(workflow)
-            serviceStatusReq.run(workflow)
         },
         onError: (_) => {
             notificationError('获取工作流失败')
@@ -119,7 +167,13 @@ export function WorkflowDescription(props: Props) {
                 </>
                     :
                     <Space direction="vertical" style={{ width: '100%' }} size="large">
-                        <Spin spinning={workflowReq.loading || serviceStatusReq.loading}>
+
+                        {
+                            workflow && workflow.spec.deploy.type === 'service' &&
+                            <ServiceStatusComponent workflow={workflow} />
+                        }
+
+                        <Spin spinning={workflowReq.loading}>
                             <ProDescriptions column={3}>
                                 <ProDescriptions.Item
                                     label="状态"
@@ -131,37 +185,7 @@ export function WorkflowDescription(props: Props) {
                                         pollingInterval={1000}
                                     />
                                 </ProDescriptions.Item>
-                                {serviceStatus && <>
-                                    <ProDescriptions.Item
-                                        label="服务状态"
-                                        valueEnum={{
-                                            'true': {
-                                                text: '健康',
-                                                status: 'Success',
-                                            },
-                                            'false': {
-                                                text: '不健康',
-                                                status: 'Error',
-                                            },
-                                        }}
-                                    >
-                                        {serviceStatus.healthy}
-                                    </ProDescriptions.Item>
-                                    <ProDescriptions.Item
-                                        label="访问服务"
-                                        span={2}
-                                        ellipsis
-                                        valueType="text"
-                                    >
-                                        <Space>
-                                            {serviceStatus.ports.map((port) => <>
-                                                <a target="_blank" href={`http://${port.ip}:${port.nodePort}`} rel="noreferrer">
-                                                    {port.ip}:{port.nodePort} - {port.name}
-                                                </a>
-                                            </>)}
-                                        </Space>
-                                    </ProDescriptions.Item>
-                                </>}
+
                             </ProDescriptions >
                             <Collapse>
                                 <Collapse.Panel header="详细配置" key='1'>

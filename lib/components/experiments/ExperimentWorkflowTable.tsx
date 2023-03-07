@@ -11,6 +11,7 @@ import { viewApiClient } from "../../utils/cloudapi"
 import { messageSuccess, notificationError } from "../../utils/notification"
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent"
 import { useWorkflowStore } from "../workflow/workflowStateManagement"
+import { workflowTemplates } from "../workflow/workflowTemplates"
 import { WorkflowDescription } from "./WorkflowDescription"
 
 interface Props {
@@ -82,6 +83,7 @@ function ServiceStatus({ workflow }: { workflow: Workflow }) {
 
 async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationResponse, expId: number, ownerId: string, context?: BuilderContext, oldWorkflow?: Workflow) {
     const wfConfig = JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration
+    const wfTemplate = workflowTemplates.find(wf => wf.name === wfConfig.workflowTemplateName)
     const req: CreateWorkflowRequest = {
         confRespId: wfConfigResp.id,
         ownerId: ownerId,
@@ -89,6 +91,7 @@ async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationRespon
         expId: expId,
         context: context,
         baseImage: wfConfig.baseImage,
+        templateKey: wfTemplate?.key ?? 'custom',
         compileCommand: wfConfig.buildSpec?.command,
         deployCommand: wfConfig.deploySpec?.command,
         ports: wfConfig.deploySpec.ports,

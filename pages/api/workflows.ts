@@ -8,6 +8,7 @@ import { crdWorkflowKind, CreateWorkflowRequest, ExperimentWorkflowConfiguration
 import { CloudapiClientType, serverSideCloudapiClient } from "../../lib/utils/cloudapi";
 import { LoginUserResponse } from "../../lib/cloudapi-client";
 import { ensurePushSecret } from "../../lib/utils/secret";
+import { workflowTemplates } from "../../lib/components/workflow/workflowTemplates";
 
 export default async function handler(
     req: NextApiRequest,
@@ -82,6 +83,7 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                 expId: String(experiment.id),
                 tag: req.tag,
                 owner: req.ownerId,
+                templateKey: req.templateKey
             }
         },
         spec: {
