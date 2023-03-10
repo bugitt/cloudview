@@ -164,7 +164,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
         const wfTemplate = workflowTemplates.find(wf => wf.name === wfConfig.workflowTemplateName)
         const req: CreateWorkflowRequest = {
             confRespId: props.wfConfigRespId,
-            ownerId: getUserId(),
+            ownerIdList: [getUserId()],
             tag: 'submit',
             expId: experiment.id,
             context: context,

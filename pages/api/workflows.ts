@@ -8,7 +8,6 @@ import { crdWorkflowKind, CreateWorkflowRequest, ExperimentWorkflowConfiguration
 import { CloudapiClientType, serverSideCloudapiClient } from "../../lib/utils/cloudapi";
 import { LoginUserResponse } from "../../lib/cloudapi-client";
 import { ensurePushSecret } from "../../lib/utils/secret";
-import { workflowTemplates } from "../../lib/components/workflow/workflowTemplates";
 
 export default async function handler(
     req: NextApiRequest,
@@ -63,77 +62,85 @@ export default async function handler(
 }
 
 const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: CloudapiClientType, user: LoginUserResponse, workflowName?: string) => {
-    const project = (await client.getProjects(req.expId, undefined, req.ownerId)).data[0]
     const experiment = (await client.getExperimentExperimentId(req.expId, true)).data
     const wfConfResp = (await client.getWorkflowConfigurationId(req.confRespId)).data
     const wfConf = JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration
-    const finalWorkflowName = workflowName ?? `wf-${randomString(20)}`
 
-    // make sure the push secret exist in the target namespace
-    await ensurePushSecret(project.name)
+    async function createOrUpdate(ownerId: string) {
+        const project = (await client.getProjects(req.expId, undefined, ownerId)).data[0]
+        // make sure the push secret exist in the target namespace
+        await ensurePushSecret(project.name)
 
-    let workflow: Workflow = {
-        apiVersion: crdApiVersion,
-        kind: crdWorkflowKind,
-        metadata: {
-            name: finalWorkflowName,
-            namespace: project.name,
-            labels: {
-                creator: user.userId,
-                expId: String(experiment.id),
-                tag: req.tag,
-                owner: req.ownerId,
-                templateKey: req.templateKey
-            }
-        },
-        spec: {
-            round: 1,
-            build: req.context ? {
-                baseImage: wfConf.baseImage,
-                context: {
-                    git: req.context.git ? {
-                        urlWithAuth: req.context.git.urlWithAuth,
-                        ref: req.context.git.ref,
-                    } : undefined,
-                    http: req.context.http ? {
-                        url: req.context.http.url,
-                    } : undefined,
-                },
-                command: wfConf.buildSpec?.command,
-                registryLocation: imageBuilder.imageRegistry,
-                pushSecretName: imageBuilder.pushSecretName,
-            } : undefined,
-            deploy: {
-                changeEnv: req.context ? wfConf.deploySpec.changeEnv : true,
-                baseImage: req.context ? undefined : wfConf.baseImage,
-                command: wfConf.deploySpec.command,
-                ports: req.ports,
-                env: req.env,
-                resource: wfConf.resource,
-                resourcePool: wfConfResp.resourcePool,
-                type: 'service',
+        const finalWorkflowName = workflowName ?? `wf-${randomString(20)}`
+        let workflow: Workflow = {
+            apiVersion: crdApiVersion,
+            kind: crdWorkflowKind,
+            metadata: {
+                name: finalWorkflowName,
+                namespace: project.name,
+                labels: {
+                    creator: user.userId.toLowerCase(),
+                    expId: String(experiment.id),
+                    tag: req.tag,
+                    owner: ownerId.toLowerCase(),
+                    templateKey: req.templateKey
+                }
+            },
+            spec: {
+                round: 1,
+                build: req.context ? {
+                    baseImage: wfConf.baseImage,
+                    context: {
+                        git: req.context.git ? {
+                            urlWithAuth: req.context.git.urlWithAuth,
+                            ref: req.context.git.ref,
+                        } : undefined,
+                        http: req.context.http ? {
+                            url: req.context.http.url,
+                        } : undefined,
+                    },
+                    command: wfConf.buildSpec?.command,
+                    registryLocation: imageBuilder.imageRegistry,
+                    pushSecretName: imageBuilder.pushSecretName,
+                } : undefined,
+                deploy: {
+                    changeEnv: req.context ? wfConf.deploySpec.changeEnv : true,
+                    baseImage: req.context ? undefined : wfConf.baseImage,
+                    command: wfConf.deploySpec.command,
+                    ports: req.ports,
+                    env: req.env,
+                    resource: wfConf.resource,
+                    resourcePool: wfConfResp.resourcePool,
+                    type: 'service',
+                }
             }
         }
+
+        if (wfConf.customOptions.compileCommand && workflow.spec.build) {
+            workflow.spec.build.command = req.compileCommand
+        }
+        if (wfConf.customOptions.deployCommand && workflow.spec.deploy) {
+            workflow.spec.deploy.command = req.deployCommand
+        }
+        if (wfConf.customOptions.ports && workflow.spec.deploy) {
+            workflow.spec.deploy.ports = req.ports
+        }
+
+        let oldWorkflow = (await workflowClient.list(project.name)).find(wf => wf.metadata?.name === finalWorkflowName)
+        if (oldWorkflow) {
+            oldWorkflow.spec = workflow.spec
+            workflow = oldWorkflow
+            workflow.spec.round = (oldWorkflow.status?.base?.currentRound ?? 0) + 1
+        }
+
+        return await workflowClient.createOrUpdate(workflow)
     }
 
-    if (wfConf.customOptions.compileCommand && workflow.spec.build) {
-        workflow.spec.build.command = req.compileCommand
-    }
-    if (wfConf.customOptions.deployCommand && workflow.spec.deploy) {
-        workflow.spec.deploy.command = req.deployCommand
-    }
-    if (wfConf.customOptions.ports && workflow.spec.deploy) {
-        workflow.spec.deploy.ports = req.ports
-    }
+    const delayIncrement = 500
+    const createdWorkflowList = await Promise.all(req.ownerIdList.map(async (ownerId, index) => {
+        await setTimeout(() => { }, delayIncrement * index)
+        return await createOrUpdate(ownerId)
+    }))
 
-    let oldWorkflow = (await workflowClient.list(project.name)).find(wf => wf.metadata?.name === finalWorkflowName)
-    if (oldWorkflow) {
-        oldWorkflow.spec = workflow.spec
-        workflow = oldWorkflow
-        workflow.spec.round = (oldWorkflow.status?.base?.currentRound ?? 0) + 1
-    }
-
-    const createdWorkflow = await workflowClient.createOrUpdate(workflow)
-
-    return [createdWorkflow]
+    return createdWorkflowList
 }

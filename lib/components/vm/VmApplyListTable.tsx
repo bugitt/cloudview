@@ -140,7 +140,6 @@ export function VmApplyListTable(props: Props) {
                                 <ModalForm title="审批"
                                     trigger={<Typography.Link>审批</Typography.Link>}
                                     onFinish={async (values: any) => {
-                                        console.log(values)
                                         try {
                                             await cloudapiClient.approveVmsApply(record.vmApply.id, values.isPass as boolean, values.replyMsg ? values.replyMsg : '')
                                             messageInfo("审批完成")

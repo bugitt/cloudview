@@ -48,3 +48,11 @@ export function notificationError(
         description: msg
     })
 }
+
+export function notificationSuccess(
+    message: string
+) {
+    notification['success']({
+        message: message,
+    })
+}

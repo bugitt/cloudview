@@ -13,14 +13,16 @@ const deployerPlural = "deployers"
 const workflowPlural = "workflows"
 
 export const imageBuilderClient = {
-
     get: async (name: string, namespace: string) => {
-        return (await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, builderPlural, name)).body as Builder
+        return get<Builder>(builderPlural, name, namespace)
     },
 
-    list: async (namespace: string) => {
-        const data = (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, builderPlural)).body as BuilderList
-        return data.items
+    exist: async (name: string, namespace: string) => {
+        return exist(builderPlural, name, namespace)
+    },
+
+    list: async (namespace: string, selector?: { [key: string]: string | string[]; }) => {
+        return (await list<BuilderList>(builderPlural, namespace, selector)).items
     },
 
     createOrUpdate: async (builder: Builder) => {
@@ -30,12 +32,15 @@ export const imageBuilderClient = {
 
 export const deployerClient = {
     get: async (name: string, namespace: string) => {
-        return (await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, deployerPlural, name)).body as Deployer
+        return get<Deployer>(deployerPlural, name, namespace)
     },
 
-    list: async (namespace: string) => {
-        const data = (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, deployerPlural)).body as DeployerList
-        return data.items
+    exist: async (name: string, namespace: string) => {
+        return exist(deployerPlural, name, namespace)
+    },
+
+    list: async (namespace?: string, selector?: { [key: string]: string | string[]; }) => {
+        return (await list<DeployerList>(deployerPlural, namespace, selector)).items
     },
 
     createOrUpdate: async (deployer: Deployer) => {
@@ -45,16 +50,15 @@ export const deployerClient = {
 
 export const workflowClient = {
     get: async (name: string, namespace: string) => {
-        return (await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, workflowPlural, name)).body as Workflow
+        return get<Workflow>(workflowPlural, name, namespace)
     },
 
-    list: async (namespace: string, selector?: { [key: string]: string; }) => {
-        let selectorStr: string | undefined = undefined
-        if (selector) {
-            selectorStr = Object.keys(selector).map(key => `${key}=${selector[key]}`).join(',')
-        }
-        const data = (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, workflowPlural, undefined, undefined, undefined, undefined, selectorStr)).body as WorkflowList
-        return data.items
+    exist: async (name: string, namespace: string) => {
+        return exist(workflowPlural, name, namespace)
+    },
+
+    list: async (namespace?: string, selector?: { [key: string]: string | string[]; }) => {
+        return (await list<WorkflowList>(workflowPlural, namespace, selector)).items
     },
 
     createOrUpdate: async (workflow: Workflow) => {
@@ -69,5 +73,44 @@ export const resourcePoolsClient = {
 
     createOrUpdate: async (resourcePool: ResourcePool) => {
         return await createOrUpdate(resourcePool, undefined, undefined, undefined, undefined, true)
+    }
+}
+
+async function list<T>(plural: string, namespace?: string, selector?: { [key: string]: string | string[]; }) {
+    const selectorStr = selector ?
+        Object.keys(selector).map(key => {
+            if (Array.isArray(selector[key])) {
+                const value = selector[key] as string[]
+                return `${key} in (${value.join(',')})`
+            } else {
+                const value = selector[key] as string
+                return `${key}=${value}`
+            }
+        }).join(',')
+        : undefined
+    return namespace ? (await k8sCustomObjectsApi.listNamespacedCustomObject(group, apiVersion, namespace, plural, undefined, undefined, undefined, undefined, selectorStr)).body as T
+        : (await k8sCustomObjectsApi.listClusterCustomObject(group, apiVersion, workflowPlural, undefined, undefined, undefined, undefined, selectorStr)).body as T
+}
+
+async function exist(plural: string, name: string, namespace: string) {
+    try {
+        await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, plural, name)
+        return true
+    } catch (e) {
+        if ((e as any).statusCode === 404) {
+            return false
+        }
+        throw e
+    }
+}
+
+async function get<T>(plural: string, name: string, namespace: string) {
+    try {
+        return (await k8sCustomObjectsApi.getNamespacedCustomObject(group, apiVersion, namespace, plural, name)).body as T
+    } catch (e) {
+        if ((e as any).statusCode === 404) {
+            return undefined
+        }
+        throw e
     }
 }

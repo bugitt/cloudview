@@ -1,26 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { deployerClient, imageBuilderClient, workflowClient } from "../../../../lib/kube/cloudrun";
-import { WorkflowDisplayStatus } from "../../../../lib/models/workflow";
+import { getWorkflowName, getWorkflowNamespace, Workflow, WorkflowDisplayStatus } from "../../../../lib/models/workflow";
 import { serverSideCloudapiClient } from "../../../../lib/utils/cloudapi";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<WorkflowDisplayStatus>) {
-    const name = req.query.name as string
-    const projectName = req.query.projectName as string
-    const client = serverSideCloudapiClient(undefined, req)
-    const project = (await client.getProjects(undefined, projectName)).data[0]
-    const permissionOk = (await client.getCheckPermission('project', String(project.id), 'read')).data
-    if (!permissionOk) {
-        res.status(403).end('Forbidden')
-        return
-    }
-
-    const workflow = await workflowClient.get(name, projectName)
+export async function getWorkflowDisplayStatus(workflow: Workflow) {
+    const ns = getWorkflowNamespace(workflow)!!
+    const name = getWorkflowName(workflow)!!
     const currentRound = workflow.status?.base?.currentRound || 0
-    let builder = (await imageBuilderClient.list(projectName)).find(b => b.metadata?.name === name)
+    let builder = await imageBuilderClient.get(name, ns)
     if (builder && builder.status?.base?.currentRound !== currentRound) {
         builder = undefined
     }
-    let deployer = (await deployerClient.list(projectName)).find(d => d.metadata?.name === name)
+    let deployer = (await deployerClient.list(ns)).find(d => d.metadata?.name === name)
     if (deployer && deployer.status?.base?.currentRound !== currentRound) {
         deployer = undefined
     }
@@ -106,5 +97,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 break
         }
     }
-    res.status(200).json(status)
+    return status
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<WorkflowDisplayStatus>) {
+    const name = req.query.name as string
+    const projectName = req.query.projectName as string
+    const client = serverSideCloudapiClient(undefined, req)
+    const project = (await client.getProjects(undefined, projectName)).data[0]
+    const permissionOk = (await client.getCheckPermission('project', String(project.id), 'read')).data
+    if (!permissionOk) {
+        res.status(403).end('Forbidden')
+        return
+    }
+
+    const workflow = await workflowClient.get(name, projectName)
+    workflow ? res.status(200).json(await getWorkflowDisplayStatus(workflow)) : res.status(404).end('Not Found')
 }

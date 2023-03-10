@@ -11,8 +11,8 @@ export const workflowTemplates: WorkflowTemplate[] = [
         name: '静态网站（Nginx）',
         baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',
         resource: {
-            cpu: 10,
-            memory: 100,
+            cpu: 20,
+            memory: 20,
         },
         buildSpec: {
             command: "cp -r . /usr/share/nginx/html/"
@@ -28,8 +28,8 @@ export const workflowTemplates: WorkflowTemplate[] = [
         name: 'MySQL 8',
         baseImage: 'scs.buaa.edu.cn:8081/library/mysql8:1.0.0',
         resource: {
-            cpu: 100,
-            memory: 512,
+            cpu: 150,
+            memory: 768,
         },
         deploySpec: {
             changeEnv: false,

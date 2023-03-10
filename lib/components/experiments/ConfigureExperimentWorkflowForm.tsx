@@ -1,7 +1,8 @@
 import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, ProFormGroup, ProFormDigit, ProFormList, ProFormSwitch, ProFormRadio } from "@ant-design/pro-components"
+import { notification } from "antd"
 import { useState, useRef, useEffect } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationRequest, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
-import { ExperimentWorkflowConfiguration, SubmitType } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, setupWorkflow, SubmitType } from "../../models/workflow"
 import { cloudapiClient } from "../../utils/cloudapi"
 import { messageInfo, notificationError } from "../../utils/notification"
 import { workflowTemplates } from "../workflow/workflowTemplates"
@@ -16,7 +17,7 @@ interface Props {
 
 interface FormDataType {
     needSubmit: boolean
-    submitOptions: SubmitType[]
+    submitOptions?: SubmitType[]
     baseEnv: string
     baseImage?: string
     cpu: number
@@ -27,6 +28,7 @@ interface FormDataType {
         port: string
         protocol: string
     }[]
+    setupNow: boolean
     allowCustomBaseImage?: boolean
     allowCustomCompileCommand?: boolean
     allowCustomDeployCommand?: boolean
@@ -54,7 +56,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
         }
         let configuration: ExperimentWorkflowConfiguration = {
             experimentId: experiment.id,
-            submitOptions: typedValues.submitOptions,
+            submitOptions: typedValues.submitOptions ?? [],
             resource: {
                 cpu: typedValues.cpu,
                 memory: typedValues.memory,
@@ -96,9 +98,18 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
             name: values.name ? values.name as string : '作业提交与部署',
         }
         try {
-            await cloudapiClient.postExperimentExperimentIdWorkflowConfiguration(experiment.id, req)
+            const wfConfigResp = (await cloudapiClient.postExperimentExperimentIdWorkflowConfiguration(experiment.id, req)).data
             onSuccessHook()
             messageInfo("配置PaaS工作流成功")
+            if (typedValues.setupNow) {
+                notification['info']({
+                    message: '正在为每位学生部署工作流，请稍等……'
+                })
+                setupWorkflow(wfConfigResp, experiment.id, wfConfigResp.studentList.map((s) => s.id))
+                // notification['success']({
+                //     message: '工作流部署完成'
+                // })
+            }
             return true
         } catch (e) {
             notificationError("配置PaaS工作流失败")
@@ -174,6 +185,16 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 />
 
                 {
+                    needSubmit !== undefined && !needSubmit && <ProFormSwitch
+                        name="setupNow"
+                        label="是否立即部署"
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        initialValue={true}
+                    />
+                }
+
+                {
                     needSubmit !== undefined && !needSubmit && (
                         <ProFormText
                             name="name"
@@ -183,7 +204,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     )
                 }
 
-                <ProFormCheckbox.Group
+                {needSubmit !== undefined && needSubmit && <ProFormCheckbox.Group
                     name="submitOptions"
                     label="作业提交方式"
                     options={[
@@ -203,7 +224,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                             message: "请选择作业提交方式",
                         },
                     ]}
-                />
+                />}
 
                 <ProFormSelect
                     name="baseEnv"

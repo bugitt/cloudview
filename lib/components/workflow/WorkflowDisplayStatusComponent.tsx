@@ -7,6 +7,7 @@ import { viewApiClient } from "../../utils/cloudapi"
 import { notificationError } from "../../utils/notification"
 
 interface Props {
+    displayStatus?: WorkflowDisplayStatus
     workflow?: Workflow
     shouldWait?: boolean
     pollingInterval?: number
@@ -33,10 +34,11 @@ function getWorkflowDisplayStatusIcon(status?: WorkflowDisplayStatus): React.Rea
 }
 
 export function WorkflowDisplayStatusComponent(props: Props) {
-    const { workflow, shouldWait, pollingInterval } = props
+    const { displayStatus, workflow, shouldWait, pollingInterval } = props
     const [workflowDisplayStatus, setWorkflowDisplayStatus] = useState<WorkflowDisplayStatus>()
     useRequest(() => {
-        return workflow ? viewApiClient.getWorkflowDisplayStatus(workflow.metadata?.name!!, workflow.metadata?.namespace!!) : Promise.resolve(undefined)
+        return displayStatus ? Promise.resolve(displayStatus) :
+            workflow ? viewApiClient.getWorkflowDisplayStatus(workflow.metadata?.name!!, workflow.metadata?.namespace!!) : Promise.resolve(undefined)
     }, {
         pollingInterval: pollingInterval,
         refreshDeps: [workflow],

@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     switch (method) {
         case 'GET':
             const builder = await imageBuilderClient.get(name as string, projectName)
-            res.status(200).json(builder)
+            builder ? res.status(200).json(builder) : res.status(404).end('Not Found')
             break
         default:
             res.setHeader('Allow', ['GET'])

@@ -3,9 +3,11 @@ import * as k8s from '@kubernetes/client-node';
 import React, { MutableRefObject } from 'react';
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from '../cloudapi-client';
 import { workflowTemplates } from '../components/workflow/workflowTemplates';
+import { viewApiClient } from '../utils/cloudapi';
+import { messageSuccess, notificationError, notificationSuccess } from '../utils/notification';
 import { Builder, BuilderContext } from './builder';
 import { BaseCRDStatus } from './crd';
-import { Deployer, DeployerContainerPort, ServicePort } from "./deployer"
+import { Deployer, DeployerContainerPort, ServicePort, ServiceStatus } from "./deployer"
 import { Resource } from "./resource"
 
 export const crdWorkflowKind = "Workflow";
@@ -95,7 +97,7 @@ export interface WorkflowDisplayStatus {
 }
 
 export interface CreateWorkflowRequest {
-    ownerId: string
+    ownerIdList: string[]
     tag: string
     expId: number
     context?: BuilderContext
@@ -175,5 +177,47 @@ export interface ExperimentWorkflowConfiguration {
         compileCommand: boolean
         deployCommand: boolean
         ports: boolean
+    }
+}
+
+export interface WorkflowResponse {
+    workflow: Workflow
+    displayStatus?: WorkflowDisplayStatus
+    serviceStatus?: ServiceStatus
+}
+
+
+export async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationResponse, expId: number, ownerIdList: string[], context?: BuilderContext, oldWorkflow?: Workflow) {
+    const wfConfig = JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration
+    const wfTemplate = workflowTemplates.find(wf => wf.name === wfConfig.workflowTemplateName)
+    const req: CreateWorkflowRequest = {
+        confRespId: wfConfigResp.id,
+        ownerIdList: ownerIdList,
+        tag: getWfConfigRespTag(wfConfigResp),
+        expId: expId,
+        context: context,
+        baseImage: wfConfig.baseImage,
+        templateKey: wfTemplate?.key ?? 'custom',
+        compileCommand: wfConfig.buildSpec?.command,
+        deployCommand: wfConfig.deploySpec?.command,
+        ports: wfConfig.deploySpec.ports,
+        env: wfConfig.deploySpec.env,
+    }
+
+    try {
+        if (oldWorkflow) {
+            const updateReq: UpdateWorkflowRequest = {
+                workflowName: oldWorkflow?.metadata?.name!!,
+                ...req
+            }
+            await viewApiClient.updateWorkflow(updateReq)
+        } else {
+            await viewApiClient.createWorkflow(req)
+        }
+        notificationSuccess('成功提交任务')
+        return true
+    } catch (_) {
+        notificationError('提交失败')
+        return false
     }
 }

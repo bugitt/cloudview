@@ -29,7 +29,7 @@ function ServiceStatusComponent({ workflow }: { workflow: Workflow }) {
             setServiceStatus(data)
         },
         onError: (_) => {
-            notificationError('获取服务状态失败')
+            // notificationError('获取服务状态失败')
         }
     })
     const wfTemplate = getWorkflowTemplate(workflow)

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { deployerConfig } from "../../../../lib/config/env";
 import { deployerClient } from "../../../../lib/kube/cloudrun";
 import { listPods, listServices } from "../../../../lib/kube/core";
-import { ServicePort, ServiceStatus } from "../../../../lib/models/deployer";
+import { Deployer, ServicePort, ServiceStatus } from "../../../../lib/models/deployer";
 import { serverSideCloudapiClient } from "../../../../lib/utils/cloudapi";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ServiceStatus>) {
@@ -19,6 +19,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const deployer = await deployerClient.get(name as string, projectName as string)
+    if (!deployer) {
+        res.status(404).end('Not Found')
+        return
+    }
+    const status = await getServiceStatus(deployer)
+    res.status(200).json(status)
+}
+
+export async function getServiceStatus(deployer: Deployer) {
     const selector = `owner.name=${deployer.metadata?.name},round=${deployer.status?.base?.currentRound}`
     const pods = await listPods(deployer.metadata?.namespace!!, selector)
     let healthy = false
@@ -40,5 +49,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         }
         ports.push(port)
     })
-    res.status(200).json({ healthy, ports })
+    return { healthy, ports }
 }

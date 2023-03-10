@@ -1,4 +1,4 @@
-import { Workflow } from "../../models/workflow";
+import { Workflow, WorkflowResponse } from "../../models/workflow";
 import { create } from "zustand";
 import { viewApiClient } from "../../utils/cloudapi";
 
@@ -6,7 +6,7 @@ export interface WorkflowMapState {
     workflowMap: Map<string, Workflow>
     loading: boolean
     getWorkflow: (name?: string, namespace?: string) => Workflow | undefined
-    refreshWorkflowMapByExpIdAndTag: (expId: number, tag: string) => Promise<void>
+    refreshWorkflowMapByExpIdAndTag: (expId: number, tag: string, studentIdList?: string[]) => Promise<WorkflowResponse[]>
     refreshWorkflowMapByProjectNameAndTag: (projectName: string, tag: string) => Promise<void>
     updateSingleWorkflow: (workflow?: Workflow) => void
 }
@@ -22,14 +22,15 @@ export const useWorkflowStore = create<WorkflowMapState>()((set, get) => ({
         }
         return get().workflowMap.get(`${namespace},${name}`)
     },
-    refreshWorkflowMapByExpIdAndTag: async (expId: number, tag: string) => {
+    refreshWorkflowMapByExpIdAndTag: async (expId: number, tag: string, studentIdList?: string[]) => {
         set({ loading: true })
-        const workflowList = await viewApiClient.listWorkflowsByExperiment(expId, tag)
+        const workflowRespList = await viewApiClient.listWorkflowResponsesByExperiment(expId, tag, studentIdList)
         const newMap = new Map<string, Workflow>()
-        workflowList.forEach(workflow => {
-            newMap.set(workflowKey(workflow), workflow)
+        workflowRespList.forEach(workflowResp => {
+            newMap.set(workflowKey(workflowResp.workflow), workflowResp.workflow)
         })
         set({ workflowMap: newMap, loading: false })
+        return workflowRespList
     },
     refreshWorkflowMapByProjectNameAndTag: async (projectName: string, tag: string) => {
         set({ loading: true })

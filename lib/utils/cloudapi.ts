@@ -5,7 +5,7 @@ import { cloudapi } from '../config/env'
 import { Builder, CreateImageBuilderRequest } from '../models/builder'
 import { AddDeployerTriggerRequest, CreateDeployerRequest, Deployer, ServiceStatus } from '../models/deployer'
 import { ResourcePool } from '../models/resource'
-import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus, WorkflowTemplate } from '../models/workflow'
+import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus, WorkflowResponse, WorkflowTemplate } from '../models/workflow'
 import { notificationError } from './notification'
 import { getToken, getTokenFromReq } from './token'
 
@@ -130,12 +130,26 @@ export const viewApiClient = {
         return (await cloudviewAxios.get(`/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
     },
 
-    listWorkflowsByExperiment: async (expId: number, tag?: string) => {
+    listWorkflowsByExperiment: async (expId: number, tag?: string, studentIdList?: string[]) => {
         const params = new URLSearchParams()
         if (tag) {
             params.append('tag', tag)
         }
+        if (studentIdList && studentIdList.length > 0) {
+            params.append('studentIdList', studentIdList.join(','))
+        }
         return (await cloudviewAxios.get(`/experiment/${expId}/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
+    },
+
+    listWorkflowResponsesByExperiment: async (expId: number, tag?: string, studentIdList?: string[]) => {
+        const params = new URLSearchParams()
+        if (tag) {
+            params.append('tag', tag)
+        }
+        if (studentIdList && studentIdList.length > 0) {
+            params.append('studentIdList', studentIdList.join(','))
+        }
+        return (await cloudviewAxios.get(`/experiment/${expId}/workflowResponses?${params.toString()}`, viewApiClientConfig())).data as WorkflowResponse[]
     },
 
     getWorkflow: async (name: string, projectName: string) => {

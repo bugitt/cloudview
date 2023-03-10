@@ -5,19 +5,25 @@ import { workflowClient } from "../../../../lib/kube/cloudrun";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Workflow[]>) {
     const client = serverSideCloudapiClient(undefined, req)
-    const expId = req.query.id as unknown as number
-    const permissionOk = (await client.getCheckPermission('experiment', String(expId), 'write')).data
+    const expId = req.query.id as unknown as string
+    const permissionOk = (await client.getCheckPermission('experiment', expId, 'write')).data
     if (!permissionOk) {
         res.status(403).end('Forbidden')
         return
     }
     const tag = req.query.tag as string
+    const studentIdListStr = req.query.studentIdList
 
-    const workflowList = await client.getProjects(expId).then((data) => {
-        const projects = data.data
-        return Promise.all(projects.map(async (project) => {
-            return await workflowClient.list(project.name, tag ? { 'tag': tag } : undefined)
-        }))
-    }).then(data => data.flat())
+    const studentIdList = studentIdListStr ? (studentIdListStr as unknown as string).split(',').map(it => it.trim().toLowerCase()) : undefined
+    const selector: { [k: string]: string | string[] } = {
+        expId: expId,
+    }
+    if (tag) {
+        selector.tag = tag
+    }
+    if (studentIdList) {
+        selector.owner = studentIdList
+    }
+    const workflowList = await workflowClient.list(undefined, selector)
     res.status(200).json(workflowList)
 }

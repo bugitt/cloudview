@@ -2,6 +2,7 @@
 export const businessK8s = {
     server: process.env.BUSINESS_K8S_SERVER,
     userToken: process.env.BUSINESS_K8S_USER_TOKEN,
+    caData: process.env.BUSINESS_K8S_CA_DATA,
 }
 
 // for cloudapi
