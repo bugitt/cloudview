@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     switch (method) {
         case 'GET':
             const deployer = await deployerClient.get(name as string, projectName)
-            res.status(200).json(deployer)
+            deployer ? res.status(200).json(deployer) : res.status(404).end('Not Found')
             break
         default:
             res.setHeader('Allow', ['GET'])

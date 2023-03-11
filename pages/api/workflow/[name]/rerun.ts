@@ -17,6 +17,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const workflow = await workflowClient.get(name as string, projectName as string)
+    if (!workflow) {
+        res.status(404).end('Not Found')
+        return
+    }
     workflow.spec.round = (workflow.status?.base?.currentRound || 0) + 1
     const newWorkflow = await workflowClient.createOrUpdate(workflow)
     res.status(200).json(newWorkflow)

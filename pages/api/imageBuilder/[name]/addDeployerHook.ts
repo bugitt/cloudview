@@ -29,6 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         dynamicImage: request.dynamicImage,
         resourcePool: request.resourcePool,
     }
+    if (!builder) {
+        res.status(404).end('Not Found')
+        return
+    }
     builder.spec.deployerHooks = [hook]
     const newBuilder = await imageBuilderClient.createOrUpdate(builder)
     res.status(200).json(newBuilder)

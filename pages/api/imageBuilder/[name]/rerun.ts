@@ -22,6 +22,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const builder = await imageBuilderClient.get(name as string, projectName as string)
+    if (!builder) {
+        res.status(404).end('Not Found')
+        return
+    }
     if (tag) {
         const imageMeta = getImageMeta(builder)
         const newDest = `${imageBuilder.imageRegistry}/${projectName}/${imageMeta.name}:${tag}`

@@ -21,6 +21,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const deployer = await deployerClient.get(name as string, projectName as string)
+    if (!deployer) {
+        res.status(404).end('Not Found')
+        return
+    }
     if (resourcePool) {
         deployer.spec.resourcePool = resourcePool as string
     }
