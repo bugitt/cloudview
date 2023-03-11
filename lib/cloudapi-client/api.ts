@@ -2835,6 +2835,25 @@ export interface SimpleUser {
 /**
  * 
  * @export
+ * @interface SimpleWorkflowConfigurationResponse
+ */
+export interface SimpleWorkflowConfigurationResponse {
+    /**
+     * 
+     * @type {Array<SimpleEntity>}
+     * @memberof SimpleWorkflowConfigurationResponse
+     */
+    'entityList': Array<SimpleEntity>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SimpleWorkflowConfigurationResponse
+     */
+    'hasSubmitType': boolean;
+}
+/**
+ * 
+ * @export
  * @interface StatCourseExp
  */
 export interface StatCourseExp {
@@ -3529,6 +3548,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(deleteCourseResourcesRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 根据ID删除某项实验工作流配置
+         * @summary 删除某项实验工作流配置
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteExperimentWorkflowConfigurationId: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteExperimentWorkflowConfigurationId', 'id', id)
+            const localVarPath = `/experimentWorkflowConfiguration/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -6884,6 +6940,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 根据ID删除某项实验工作流配置
+         * @summary 删除某项实验工作流配置
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteExperimentWorkflowConfigurationId(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteExperimentWorkflowConfigurationId(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 删除一项互评申诉（学生主动撤销）
          * @summary 删除一项互评申诉
          * @param {number} peerAppealId 
@@ -7091,7 +7158,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<SimpleEntity>>> {
+        async getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SimpleWorkflowConfigurationResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -7887,6 +7954,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.deleteCourseCourseIdResources(courseId, deleteCourseResourcesRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 根据ID删除某项实验工作流配置
+         * @summary 删除某项实验工作流配置
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteExperimentWorkflowConfigurationId(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteExperimentWorkflowConfigurationId(id, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 删除一项互评申诉（学生主动撤销）
          * @summary 删除一项互评申诉
          * @param {number} peerAppealId 
@@ -8076,7 +8153,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: any): AxiosPromise<Array<SimpleEntity>> {
+        getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId: number, options?: any): AxiosPromise<SimpleWorkflowConfigurationResponse> {
             return localVarFp.getExperimentExperimentIdSimpleWorkflowConfiguration(experimentId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -8812,6 +8889,18 @@ export class DefaultApi extends BaseAPI {
      */
     public deleteCourseCourseIdResources(courseId: number, deleteCourseResourcesRequest?: DeleteCourseResourcesRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).deleteCourseCourseIdResources(courseId, deleteCourseResourcesRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 根据ID删除某项实验工作流配置
+     * @summary 删除某项实验工作流配置
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteExperimentWorkflowConfigurationId(id: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteExperimentWorkflowConfigurationId(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

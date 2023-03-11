@@ -141,6 +141,17 @@ export const viewApiClient = {
         return (await cloudviewAxios.get(`/experiment/${expId}/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
     },
 
+    deleteWorkflowsByExperiment: async (expId: number, tag?: string, studentIdList?: string[]) => {
+        const params = new URLSearchParams()
+        if (tag) {
+            params.append('tag', tag)
+        }
+        if (studentIdList && studentIdList.length > 0) {
+            params.append('studentIdList', studentIdList.join(','))
+        }
+        return (await cloudviewAxios.delete(`/experiment/${expId}/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
+    },
+
     listWorkflowResponsesByExperiment: async (expId: number, tag?: string, studentIdList?: string[]) => {
         const params = new URLSearchParams()
         if (tag) {
@@ -154,6 +165,10 @@ export const viewApiClient = {
 
     getWorkflow: async (name: string, projectName: string) => {
         return (await cloudviewAxios.get(`/workflow/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Workflow
+    },
+
+    deleteWorkflow: async (name: string, projectName: string) => {
+        return (await cloudviewAxios.delete(`/workflow/${name}?projectName=${projectName}`, viewApiClientConfig())).data as Workflow
     },
 
     rerunWorkflow: async (name: string, projectName: string) => {

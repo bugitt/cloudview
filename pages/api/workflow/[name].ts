@@ -17,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         projectName = req.body.projectName as string
     } else if (req.method === 'GET') {
         projectName = req.query.projectName as string
+    } else if (req.method === 'DELETE') {
+        projectName = req.query.projectName as string
     }
     if (!user || !projectName) {
         res.status(401).end('Unauthorized')
@@ -28,16 +30,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         return
     }
 
+    let workflow: Workflow | undefined
     switch (method) {
         case 'GET':
-            const workflow = await workflowClient.get(name as string, projectName)
-            res.status(200).json(workflow)
+            workflow = await workflowClient.get(name as string, projectName)
             break
         case 'PATCH':
-
+            break
+        case 'DELETE':
+            workflow = await workflowClient.delete(name as string, projectName)
+            break
 
         default:
-            res.setHeader('Allow', ['GET', 'PATCH'])
+            res.setHeader('Allow', ['GET', 'PATCH', 'DELETE'])
             res.status(405).end(`Method ${method} Not Allowed`)
     }
+    workflow ? res.status(200).json(workflow) : res.status(404).end('Not Found')
 }

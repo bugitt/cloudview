@@ -1,8 +1,9 @@
 import { useRequest } from "ahooks";
-import { Collapse, Spin } from "antd";
+import { Button, Collapse, Space, Spin } from "antd";
 import { ExperimentResponse, SimpleEntity } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { ConfigureExperimentWorkflowForm } from "./ConfigureExperimentWorkflowForm";
+import { DeleteExperimentWorkflowConfigurationButton } from "./DeleteExperimentWorkflowConfigurationButton";
 import { ExperimentWorkflowTable } from "./ExperimentWorkflowTable";
 
 interface Props {
@@ -21,13 +22,16 @@ export function ExperimentWorkflowAdmin(props: Props) {
                 {data && !loading && <>
                     <Collapse>
                         <Collapse.Panel header="工作流配置详情" key="1">
-                            <ConfigureExperimentWorkflowForm
-                                experiment={experiment}
-                                mode="view"
-                                wfConfigResp={data.data}
-                                onSuccessHook={() => { }}
-                                onFailedHook={() => { }}
-                            />
+                            <Space direction='vertical' style={{ width: '100%' }}>
+                                <DeleteExperimentWorkflowConfigurationButton wfConfigResp={data.data} />
+                                <ConfigureExperimentWorkflowForm
+                                    experiment={experiment}
+                                    mode="view"
+                                    wfConfigResp={data.data}
+                                    onSuccessHook={() => { }}
+                                    onFailedHook={() => { }}
+                                />
+                            </Space>
                         </Collapse.Panel>
                     </Collapse>
                     <ExperimentWorkflowTable

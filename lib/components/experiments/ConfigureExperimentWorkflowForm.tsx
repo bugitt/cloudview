@@ -5,6 +5,7 @@ import { ExperimentResponse, ExperimentWorkflowConfigurationRequest, ExperimentW
 import { ExperimentWorkflowConfiguration, setupWorkflow, SubmitType } from "../../models/workflow"
 import { cloudapiClient } from "../../utils/cloudapi"
 import { messageInfo, notificationError } from "../../utils/notification"
+import { useExpWfConfRespListStore } from "../workflow/experimentWorkflowConfigurationStateManagement"
 import { workflowTemplates } from "../workflow/workflowTemplates"
 
 interface Props {
@@ -40,10 +41,11 @@ const getWorkflowTemplateByName = (name?: string) => {
 }
 
 export function ConfigureExperimentWorkflowForm(props: Props) {
+    const disableChosenSubmit = useExpWfConfRespListStore().hasSubmitType
     const { experiment, onSuccessHook, onFailedHook, mode } = props
     const [baseImage, setBaseImage] = useState<string>("")
     const [extraFields, setExtraFields] = useState<React.ReactNode>(<></>)
-    const [needSubmit, setNeedSubmit] = useState<boolean | undefined>(undefined)
+    const [needSubmit, setNeedSubmit] = useState<boolean | undefined>(disableChosenSubmit ? false : undefined)
 
     const formRef = useRef<ProFormInstance>()
 
@@ -150,7 +152,13 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 }
             }
         }
-    }, [mode, props])
+
+        if (disableChosenSubmit) {
+            formRef.current?.setFieldsValue({
+                needSubmit: false,
+            })
+        }
+    }, [mode, props, disableChosenSubmit])
 
     return (
         <>
@@ -182,6 +190,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                         }
                     }}
                     required
+                    disabled={disableChosenSubmit}
                 />
 
                 {
@@ -212,10 +221,10 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                             label: "使用压缩包提交",
                             value: "zip",
                         },
-                        {
-                            label: "使用 Git 提交",
-                            value: "git",
-                        }
+                        // {
+                        //     label: "使用 Git 提交",
+                        //     value: "git",
+                        // }
                     ]}
                     initialValue={["zip"]}
                     rules={[

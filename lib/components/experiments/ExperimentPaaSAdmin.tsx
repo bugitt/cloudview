@@ -1,9 +1,10 @@
 import { useRequest } from "ahooks";
 import { Card, Button, Drawer, Tabs, Spin } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExperimentResponse, SimpleEntity } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
+import { useExpWfConfRespListStore } from "../workflow/experimentWorkflowConfigurationStateManagement";
 import { ConfigureExperimentWorkflowForm } from "./ConfigureExperimentWorkflowForm";
 import { ExperimentWorkflowAdmin } from "./ExperimentWorkflowAdmin";
 
@@ -14,15 +15,11 @@ interface Props {
 export function ExperimentPaaSAdmin(props: Props) {
     const { experiment } = props
     const [configFormDrawerOpen, setConfigFormDrawerOpen] = useState(false)
-    const [expWfConfigList, setExpWfConfigList] = useState<SimpleEntity[]>([])
-    const expWfListReq = useRequest(() => cloudapiClient.getExperimentExperimentIdSimpleWorkflowConfiguration(experiment.id), {
-        onSuccess: (resp) => {
-            setExpWfConfigList(resp.data)
-        },
-        onError: () => {
-            notificationError("获取实验工作流配置列表失败")
-        },
-    })
+    const expWfConfigList = useExpWfConfRespListStore().expWfConfRespList
+    const refresh = useExpWfConfRespListStore().refresh
+    useEffect(() => {
+        refresh(props.experiment.id)
+    }, [props.experiment, refresh])
     return (
         <>
             <Card title="PaaS工作流" bordered={false}
@@ -35,7 +32,7 @@ export function ExperimentPaaSAdmin(props: Props) {
                 )}
             >
                 <Drawer
-                    title="配置PaaS工作流"
+                    title="配置新的PaaS工作流"
                     placement="right"
                     onClose={() => {
                         setConfigFormDrawerOpen(false)
@@ -47,34 +44,32 @@ export function ExperimentPaaSAdmin(props: Props) {
                         experiment={experiment}
                         mode="create"
                         onSuccessHook={() => {
-                            expWfListReq.run()
+                            refresh(experiment.id)
                             setConfigFormDrawerOpen(false)
                         }}
                         onFailedHook={() => {
-                            expWfListReq.run()
+                            refresh(experiment.id)
                             setConfigFormDrawerOpen(true)
                         }}
                     />
                 </Drawer>
 
-                <Spin spinning={expWfListReq.loading}>
-                    <Tabs
-                        defaultActiveKey="1"
-                        items={expWfConfigList.map((wfConfig, index) => {
-                            return {
-                                key: String(index + 1),
-                                label: wfConfig.name,
-                                children: (
-                                    <ExperimentWorkflowAdmin
-                                        key={index}
-                                        experiment={experiment}
-                                        simpleWfConfig={wfConfig}
-                                    />
-                                )
-                            }
-                        })}
-                    />
-                </Spin>
+                <Tabs
+                    defaultActiveKey="1"
+                    items={expWfConfigList.map((wfConfig, index) => {
+                        return {
+                            key: String(index + 1),
+                            label: wfConfig.name,
+                            children: (
+                                <ExperimentWorkflowAdmin
+                                    key={index}
+                                    experiment={experiment}
+                                    simpleWfConfig={wfConfig}
+                                />
+                            )
+                        }
+                    })}
+                />
             </Card>
         </>
     )

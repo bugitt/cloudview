@@ -24,6 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     if (studentIdList) {
         selector.owner = studentIdList
     }
-    const workflowList = await workflowClient.list(undefined, selector)
+    let workflowList: Workflow[] = []
+    switch (req.method) {
+        case 'GET':
+            workflowList = await workflowClient.list(undefined, selector)
+            break
+        case 'DELETE':
+            workflowList = await workflowClient.deleteMany(undefined, selector)
+            break
+    }
     res.status(200).json(workflowList)
 }

@@ -6,9 +6,9 @@ import { useState } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
 import { BuilderContext } from "../../models/builder"
 import { ServiceStatus } from "../../models/deployer"
-import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowOwner, setupWorkflow, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
+import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowNamespace, getWorkflowOwner, setupWorkflow, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi"
-import { messageSuccess, notificationError } from "../../utils/notification"
+import { messageSuccess, notificationError, notificationSuccess } from "../../utils/notification"
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent"
 import { useWorkflowStore } from "../workflow/workflowStateManagement"
 import { workflowTemplates } from "../workflow/workflowTemplates"
@@ -148,6 +148,19 @@ export function ExperimentWorkflowTable(props: Props) {
                         {(record.workflow ? '重新' : '') + '执行工作流'}
                     </Typography.Link>
                 </Popconfirm>,
+            record.workflow ? <Popconfirm
+                key='delete'
+                title="删除工作流"
+                description={`确定要删除学生 ${record.studentId} ${record.studentName} 的工作流吗？`}
+                onConfirm={async () => {
+                    await viewApiClient.deleteWorkflow(getWorkflowName(record.workflow)!!, getWorkflowNamespace(record.workflow)!!)
+                    notificationSuccess('删除成功')
+                }}
+            >
+                <Typography.Link type='danger'>
+                    删除工作流
+                </Typography.Link>
+            </Popconfirm> : <></>,
 
         ],
         align: 'center',
