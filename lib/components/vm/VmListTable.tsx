@@ -2,7 +2,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { Button, Modal, Popconfirm, Space, Typography } from "antd";
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { CreateVmApplyResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { messageInfo, notificationError } from "../../utils/notification";
@@ -47,6 +47,7 @@ export function VmListTable(props: Props) {
     const { fetchVmList } = props
     const [vmApply, setVmApply] = useState<CreateVmApplyResponse | undefined>(undefined)
     const [vmList, setVmList] = useState<DataType[]>([])
+    const [vmShownList, setVmShownList] = useState<DataType[]>([])
     const [currentVm, setCurrentVm] = useState<DataType | undefined>(undefined)
     const [selectedVmList, setSelectedVmList] = useState<DataType[]>([])
     const [isVmDetailModalOpen, setIsVmDetailModalOpen] = useState(false);
@@ -55,7 +56,8 @@ export function VmListTable(props: Props) {
         return fetchVmList(props.experimentId)
     }, {
         onSuccess: async (vmList) => {
-            const data: DataType[] = await Promise.all(vmList.map(async (vm, index) => {
+            const data: DataType[] = await Promise.all(vmList.filter(vm => !vm.isTemplate)
+            .map(async (vm, index) => {
                 const item: DataType = {
                     key: index,
                     name: vm.name,
@@ -74,6 +76,7 @@ export function VmListTable(props: Props) {
                 return item
             }))
             setVmList(data)
+            setVmShownList(data)
         },
         onError: (_) => {
             notificationError("获取虚拟机列表失败")
@@ -264,8 +267,24 @@ export function VmListTable(props: Props) {
                 ><Button type="primary" danger={true}>删除全部虚拟机</Button>
                 </Popconfirm>
             ]}
+            toolbar={{
+                search: {
+                  onSearch: (search: string) => {
+                    setVmShownList(vmList.filter(vm => 
+                        vm.name.toLowerCase().includes(search.toLowerCase()) ||
+                        vm.systemName?.toLowerCase().includes(search.toLowerCase()) ||
+                        vm.ip?.toLowerCase().includes(search.toLowerCase())))
+                  },
+                  onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                    setVmShownList(vmList.filter(vm => 
+                        vm.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                        vm.systemName?.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                        vm.ip?.toLowerCase().includes(event.target.value.toLowerCase())))
+                  }
+                }}
+            }
             columns={columns}
-            dataSource={vmList}
+            dataSource={vmShownList}
             search={false}
             loading={vmListReq.loading}
             headerTitle="虚拟机列表"
