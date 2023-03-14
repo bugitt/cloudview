@@ -56,7 +56,8 @@ export function VmListTable(props: Props) {
         return fetchVmList(props.experimentId)
     }, {
         onSuccess: async (vmList) => {
-            const data: DataType[] = await Promise.all(vmList.map(async (vm, index) => {
+            const data: DataType[] = await Promise.all(vmList.filter(vm => !vm.isTemplate)
+            .map(async (vm, index) => {
                 const item: DataType = {
                     key: index,
                     name: vm.name,
