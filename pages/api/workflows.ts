@@ -62,9 +62,9 @@ export default async function handler(
 }
 
 const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: CloudapiClientType, user: LoginUserResponse, workflowName?: string) => {
-    const experiment = (await client.getExperimentExperimentId(req.expId, true)).data
-    const wfConfResp = (await client.getWorkflowConfigurationId(req.confRespId)).data
-    const wfConf = JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration
+    const experiment = req.expId ? (await client.getExperimentExperimentId(req.expId, true)).data : undefined
+    const wfConfResp = req.confRespId ? (await client.getWorkflowConfigurationId(req.confRespId)).data : undefined
+    const wfConf = wfConfResp ? JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration : undefined
 
     async function createOrUpdate(ownerId: string) {
         const project = (await client.getProjects(req.expId, undefined, ownerId)).data[0]
@@ -80,16 +80,17 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                 namespace: project.name,
                 labels: {
                     creator: user.userId.toLowerCase(),
-                    expId: String(experiment.id),
+                    expId: experiment ? String(experiment.id) : '0',
                     tag: req.tag,
                     owner: ownerId.toLowerCase(),
                     templateKey: req.templateKey
-                }
+                },
+                annotations: req.annotation,
             },
             spec: {
                 round: 1,
                 build: req.context ? {
-                    baseImage: wfConf.baseImage,
+                    baseImage: wfConf?.baseImage ?? req.baseImage,
                     context: {
                         git: req.context.git ? {
                             urlWithAuth: req.context.git.urlWithAuth,
@@ -99,35 +100,37 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                             url: req.context.http.url,
                         } : undefined,
                     },
-                    command: wfConf.buildSpec?.command,
+                    command: wfConf?.buildSpec?.command ?? req.compileCommand,
                     registryLocation: imageBuilder.imageRegistry,
                     pushSecretName: imageBuilder.pushSecretName,
                 } : undefined,
                 deploy: {
-                    changeEnv: req.context ? wfConf.deploySpec.changeEnv : true,
-                    baseImage: req.context ? undefined : wfConf.baseImage,
-                    command: wfConf.deploySpec.command,
+                    changeEnv: req.context ? wfConf?.deploySpec.changeEnv ?? true : true,
+                    baseImage: req.context ? undefined : wfConf?.baseImage ?? req.baseImage,
+                    command: wfConf?.deploySpec.command ?? req.deployCommand,
                     ports: req.ports,
                     env: req.env,
-                    resource: wfConf.resource,
-                    resourcePool: wfConfResp.resourcePool,
+                    resource: wfConf?.resource ?? req.resource!!,
+                    resourcePool: wfConfResp?.resourcePool ?? req.resourcePool!!,
                     type: 'service',
                 }
             }
         }
 
-        if (wfConf.customOptions.compileCommand && workflow.spec.build) {
+        if (wfConf?.customOptions.compileCommand && workflow.spec.build) {
             workflow.spec.build.command = req.compileCommand
         }
-        if (wfConf.customOptions.deployCommand && workflow.spec.deploy) {
+        if (wfConf?.customOptions.deployCommand && workflow.spec.deploy) {
             workflow.spec.deploy.command = req.deployCommand
         }
-        if (wfConf.customOptions.ports && workflow.spec.deploy) {
+        if (wfConf?.customOptions.ports && workflow.spec.deploy) {
             workflow.spec.deploy.ports = req.ports
         }
 
         let oldWorkflow = (await workflowClient.list(project.name)).find(wf => wf.metadata?.name === finalWorkflowName)
         if (oldWorkflow) {
+            oldWorkflow.metadata!!.labels = workflow.metadata?.labels
+            oldWorkflow.metadata!!.annotations = workflow.metadata?.annotations
             oldWorkflow.spec = workflow.spec
             workflow = oldWorkflow
             workflow.spec.round = (oldWorkflow.status?.base?.currentRound ?? 0) + 1

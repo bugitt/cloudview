@@ -40,3 +40,18 @@ export interface PodWorker {
   containerList: string[]
   initContainerList: string[]
 }
+
+export function getCrdDisplayName(obj: k8s.KubernetesObject): string {
+  return obj.metadata?.annotations?.['displayName'] ?? obj.metadata?.labels?.displayName ?? obj.metadata?.name!!
+}
+
+export function isBindToWorkflow(obj: k8s.KubernetesObject, workflowName?: string): boolean {
+  const wfLabel = obj.metadata?.labels?.['workflow']
+  if (!wfLabel) {
+    return false
+  }
+  if (workflowName) {
+    return wfLabel === workflowName
+  }
+  return true
+}

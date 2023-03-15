@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { deployerClient, workflowClient } from "../../../../lib/kube/cloudrun";
-import { getWorkflowName, getWorkflowNamespace, WorkflowResponse } from "../../../../lib/models/workflow";
+import { workflowClient } from "../../../../lib/kube/cloudrun";
+import { WorkflowResponse } from "../../../../lib/models/workflow";
 import { serverSideCloudapiClient } from "../../../../lib/utils/cloudapi";
-import { getServiceStatus } from "../../deployer/[name]/serviceStatus";
-import { getWorkflowDisplayStatus } from "../../workflow/[name]/displayStatus";
+import { convertWorkflowResponseList } from "../../workflowResponses";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<WorkflowResponse[]>) {
     const client = serverSideCloudapiClient(undefined, req)
@@ -27,18 +26,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         selector.owner = studentIdList
     }
     const workflows = await workflowClient.list(undefined, selector)
-    const responseList = await Promise.all(workflows.map(async (workflow) => {
-        const displayStatus = await getWorkflowDisplayStatus(workflow)
-        let deployer = await deployerClient.get(getWorkflowName(workflow)!!, getWorkflowNamespace(workflow)!!)
-        if (deployer && deployer.status?.base?.currentRound !== (workflow.status?.base?.currentRound || 0)) {
-            deployer = undefined
-        }
-        const serviceStatus = deployer ? await getServiceStatus(deployer) : undefined
-        return {
-            workflow: workflow,
-            displayStatus: displayStatus,
-            serviceStatus: serviceStatus,
-        }
-    }))
-    res.status(200).json(responseList)
+    res.status(200).json(await convertWorkflowResponseList(workflows))
 }

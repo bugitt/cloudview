@@ -4,14 +4,12 @@ import { useRequest } from "ahooks"
 import { Badge, Drawer, Popconfirm, Space, Typography } from "antd"
 import { useState } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
-import { BuilderContext } from "../../models/builder"
 import { ServiceStatus } from "../../models/deployer"
-import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowNamespace, getWorkflowOwner, setupWorkflow, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowNamespace, getWorkflowOwner, setupWorkflow, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi"
-import { messageSuccess, notificationError, notificationSuccess } from "../../utils/notification"
+import { notificationSuccess } from "../../utils/notification"
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent"
 import { useWorkflowStore } from "../workflow/workflowStateManagement"
-import { workflowTemplates } from "../workflow/workflowTemplates"
 import { WorkflowDescription } from "./WorkflowDescription"
 
 interface Props {
@@ -84,6 +82,12 @@ export function ExperimentWorkflowTable(props: Props) {
             valueType: 'text',
         },
         {
+            title: '部署时间',
+            dataIndex: 'startTime',
+            valueType: 'dateTime',
+            hideInSearch: true,
+        },
+        {
             title: '工作流状态',
             dataIndex: 'displayStatus',
             render: (_, record) => {
@@ -93,12 +97,6 @@ export function ExperimentWorkflowTable(props: Props) {
                     shouldWait={false}
                 />
             },
-            hideInSearch: true,
-        },
-        {
-            title: '部署时间',
-            dataIndex: 'startTime',
-            valueType: 'dateTime',
             hideInSearch: true,
         },
     ]

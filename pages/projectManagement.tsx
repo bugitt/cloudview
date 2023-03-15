@@ -10,6 +10,9 @@ interface ProjectsProps extends BaseSSRType {
 }
 
 export default function Projects(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    if (typeof window === 'undefined') {
+        return (<></>)
+    }
     const { projectList, userInfo } = props
     setUserInfo(userInfo)
     return (

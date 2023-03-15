@@ -152,6 +152,15 @@ export const viewApiClient = {
         return (await cloudviewAxios.delete(`/experiment/${expId}/workflows?${params.toString()}`, viewApiClientConfig())).data as Workflow[]
     },
 
+    listWorkflowResponses: async (projectName: string, tag?: string) => {
+        const params = new URLSearchParams()
+        params.append('projectName', projectName)
+        if (tag) {
+            params.append('tag', tag)
+        }
+        return (await cloudviewAxios.get(`/workflowResponses?${params.toString()}`, viewApiClientConfig())).data as WorkflowResponse[]
+    },
+
     listWorkflowResponsesByExperiment: async (expId: number, tag?: string, studentIdList?: string[]) => {
         const params = new URLSearchParams()
         if (tag) {

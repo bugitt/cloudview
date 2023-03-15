@@ -82,10 +82,6 @@ export interface AddDeployerTriggerRequest {
     dynamicImage?: boolean
 }
 
-export function getDeployerDisplayName(deployer: Deployer) {
-    return deployer.metadata?.labels?.displayName || deployer.metadata?.name || ''
-}
-
 const convertStatus = (status: string) => {
     switch (status.toLocaleLowerCase()) {
         case "undo":

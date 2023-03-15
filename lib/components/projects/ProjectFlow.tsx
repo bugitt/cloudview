@@ -18,13 +18,14 @@ import { AddImageBuilderForm } from "./image/AddImageBuilderForm";
 import { Builder, builderDisplayName, getImageMeta } from "../../models/builder";
 import { ShowBuilderDrawer } from "./image/ShowBuilderDrawer";
 import { AddDeployerForm } from "./deployer/AddDeployerForm";
-import { Deployer, getDeployerDisplayName } from "../../models/deployer";
+import { Deployer } from "../../models/deployer";
 import { ShowDeployerDrawer } from "./deployer/ShowDeployerDrawer";
 import { AddDeployerTriggerForm } from "./image/AddDeployerTriggerForm";
 import { ReloadOutlined } from "@ant-design/icons";
 import { ResourceStatCardInProject } from "./resource/stat/ResourceStatCard";
 import { ResourcePool } from "../../models/resource";
 import { ImageListTable } from "./image/ImageListTable";
+import { getCrdDisplayName } from "../../models/crd";
 
 interface ProjectFlowProps {
     project: Project,
@@ -55,7 +56,7 @@ const DeployerNode: React.FC<NodeProps<DeployerNodeProps>> = (props) => {
                         <>
                             <SiOpencontainersinitiative />
                             &nbsp;
-                            {getDeployerDisplayName(deployer)}
+                            {getCrdDisplayName(deployer)}
                         </>
                     )}
                     style={{
@@ -221,6 +222,7 @@ export function ProjectFlow(props: ProjectFlowProps) {
                     data: { builder: builder },
                 }
             })
+            console.log(builderNodes)
             setBuilderNodes(builderNodes)
             setBuilderNodeMap(nodeMap)
         },

@@ -89,7 +89,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
 
         const template = getWorkflowTemplateByName(typedValues.baseEnv)
         if (template) {
-            configuration = template.decorate?.(configuration, values) ?? configuration
+            configuration = template.decorateConfiguration?.(configuration, values) ?? configuration
         }
 
         const req: ExperimentWorkflowConfigurationRequest = {

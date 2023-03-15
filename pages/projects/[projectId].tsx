@@ -5,6 +5,7 @@ import { Project, Repository } from "../../lib/cloudapi-client"
 import { ImageListTable } from "../../lib/components/projects/image/ImageListTable"
 import { ProjectFlow } from "../../lib/components/projects/ProjectFlow"
 import { ResourceStatCardInProject } from "../../lib/components/projects/resource/stat/ResourceStatCard"
+import { ProjectWorkflowListTable } from "../../lib/components/workflow/ProjectWorkflowListTable"
 import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
 import { formatTimeStamp } from "../../lib/utils/date"
 import { setUserInfo, ssrUserInfo } from "../../lib/utils/token"
@@ -18,6 +19,11 @@ interface ProjectProps extends BaseSSRType {
 export default function SingleProjectPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { project, userInfo } = props
     setUserInfo(userInfo)
+
+    if (typeof window === 'undefined') {
+        return (<></>)
+    }
+
     return (
         <>
             <PageHeader
@@ -37,7 +43,8 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
                     </Descriptions>
                 </Space>
             </PageHeader>
-            <ProjectFlow project={project} title="工作流概览" />
+            <ProjectWorkflowListTable project={project} />
+            <ProjectFlow project={project} title="工作区概览" />
             <ImageListTable project={project} />
             <ResourceStatCardInProject title="项目中各项容器部署任务资源占比" project={project} />
         </>

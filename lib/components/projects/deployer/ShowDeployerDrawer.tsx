@@ -4,8 +4,8 @@ import { Button, Descriptions, Drawer, Modal, Space, Spin, Tag } from "antd";
 import { useState } from "react";
 import { SiAiohttp, SiOpencontainersinitiative } from "react-icons/si";
 import { Project } from "../../../cloudapi-client";
-import { BaseCRDHistory, crdDisplayStatus } from "../../../models/crd";
-import { Deployer, deployerDisplayStatus, deployerHistoryList, DeployerSpec, getDeployerDisplayName, ServicePort, ServiceStatus } from "../../../models/deployer";
+import { BaseCRDHistory, crdDisplayStatus, getCrdDisplayName, isBindToWorkflow } from "../../../models/crd";
+import { Deployer, deployerDisplayStatus, deployerHistoryList, DeployerSpec, ServicePort, ServiceStatus } from "../../../models/deployer";
 import { viewApiClient } from "../../../utils/cloudapi";
 import { formatTimeStamp } from "../../../utils/date";
 import { crdStatusTag } from "../../../utils/tag";
@@ -100,7 +100,7 @@ export const ShowDeployerDrawer = (props: ShowDeployerDrawerProps) => {
                 <>
                     <SiOpencontainersinitiative />
                     &nbsp;&nbsp;
-                    {`容器部署任务 - ${getDeployerDisplayName(deployer)}`}
+                    {`容器部署任务 - ${getCrdDisplayName(deployer)}`}
 
                     &nbsp;&nbsp;
                     <Button type="primary" onClick={() => {
@@ -111,13 +111,13 @@ export const ShowDeployerDrawer = (props: ShowDeployerDrawerProps) => {
                     </Button>
 
                     &nbsp;&nbsp;
-                    <RerunDeployerButton
+                    {!isBindToWorkflow(deployer) && <RerunDeployerButton
                         deployerName={deployer.metadata?.name || ""}
                         projectName={project.name}
                         projectId={project.id}
                         hook={() => { deployerReq.run() }}
                         image={deployer.spec.containers[0].image}
-                    />
+                    />}
                 </>
             )}
                 placement="right"

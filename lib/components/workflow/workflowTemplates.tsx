@@ -2,7 +2,7 @@ import { ProFormInstance, ProFormText } from "@ant-design/pro-components";
 import { Typography } from "antd";
 import { MutableRefObject } from "react";
 import { ServicePort } from "../../models/deployer";
-import { ExperimentWorkflowConfiguration, Workflow, WorkflowTemplate } from "../../models/workflow";
+import { CreateWorkflowRequest, ExperimentWorkflowConfiguration, Workflow, WorkflowTemplate } from "../../models/workflow";
 
 
 export const workflowTemplates: WorkflowTemplate[] = [
@@ -22,6 +22,8 @@ export const workflowTemplates: WorkflowTemplate[] = [
             command: `nginx -g 'daemon off;'`,
             ports: [{ port: 80, protocol: 'tcp' }],
         },
+        needCompile: true,
+        fileUploadInfo: '请上传要部署的静态网站文件压缩包，请保证 index.html 位于压缩包的根目录中。',
     },
     {
         key: 'simpleMysql',
@@ -44,12 +46,19 @@ export const workflowTemplates: WorkflowTemplate[] = [
                 />
             </>
         ),
-        decorate: function (wfConfig: ExperimentWorkflowConfiguration, values: any) {
+        decorateConfiguration: function (wfConfig: ExperimentWorkflowConfiguration, values: any) {
             const mysqlRootPassword = values.mysqlRootPassword as string
             let env: { [k: string]: string } = wfConfig.deploySpec.env ?? {}
             env['MYSQL_ROOT_PASSWORD'] = mysqlRootPassword
             wfConfig.deploySpec.env = env
             return wfConfig
+        },
+        decorateCreateWorkflowRequest: function (req: CreateWorkflowRequest, values: any) {
+            const mysqlRootPassword = values.mysqlRootPassword as string
+            let env: { [k: string]: string } = req.env ?? {}
+            env['MYSQL_ROOT_PASSWORD'] = mysqlRootPassword
+            req.env = env
+            return req
         },
         setFormFields: function (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) {
             formRef?.current?.setFieldsValue({

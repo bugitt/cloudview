@@ -4,11 +4,12 @@ import { useRequest } from "ahooks";
 import { Button, Collapse, List, Popconfirm, Space, Spin, Typography } from "antd";
 import Card from "antd/es/card/Card";
 import React, { useState } from "react";
-import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client";
+import { ExperimentResponse, ExperimentWorkflowConfigurationResponse, Project } from "../../cloudapi-client";
 import { ServiceStatus } from "../../models/deployer";
 import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowName, getWorkflowNamespace, getWorkflowTemplate, Workflow } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi";
 import { notificationError } from "../../utils/notification";
+import { PersonalCreateWorkflowForm } from "../workflow/PersonalCreateWorkflowForm";
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent";
 import { useWorkflowStore } from "../workflow/workflowStateManagement";
 import { WorkflowStep } from "../workflow/WorkflowStep";
@@ -16,9 +17,11 @@ import { workflowTemplates } from "../workflow/workflowTemplates";
 import { SubmitExperimentWorkflowForm } from "./SubmitExperimentWorkflowForm";
 
 interface Props {
-    experiment: ExperimentResponse
-    wfConfResp: ExperimentWorkflowConfigurationResponse
-    projectName: string
+    personal?: boolean
+    experiment?: ExperimentResponse
+    wfConfResp?: ExperimentWorkflowConfigurationResponse
+    project?: Project
+    projectName?: string
     workflowName?: string
 }
 
@@ -92,7 +95,7 @@ export function WorkflowDescription(props: Props) {
         return projectName ?
             workflowName ?
                 viewApiClient.getWorkflow(workflowName, projectName) :
-                viewApiClient.listWorkflows(projectName, getWfConfigRespTag(wfConfResp)).then((workflows) => {
+                viewApiClient.listWorkflows(projectName, wfConfResp ? getWfConfigRespTag(wfConfResp) : undefined).then((workflows) => {
                     return workflows.length > 0 ? workflows[0] : undefined
                 }) :
             Promise.resolve(undefined)
@@ -149,7 +152,7 @@ export function WorkflowDescription(props: Props) {
                                 <RedoOutlined /> 重新运行当前任务
                             </Button>
                         </Popconfirm>}
-                        {getWfConfigRespTag(wfConfResp) === 'submit' && <SubmitExperimentWorkflowForm
+                        {wfConfResp && experiment && getWfConfigRespTag(wfConfResp) === 'submit' && <SubmitExperimentWorkflowForm
                             wfConfigRespId={wfConfResp.id}
                             experiment={experiment}
                             resourcePool={wfConfResp.resourcePool}
@@ -157,6 +160,13 @@ export function WorkflowDescription(props: Props) {
                             oldWorkflow={workflow}
                             key="submit"
                         />}
+                        {
+                            props.personal && <PersonalCreateWorkflowForm
+                                project={props.project!!}
+                                oldWorkflow={workflow}
+                                title='重新提交工作流任务'
+                            />
+                        }
                     </Space>
                 </>)}
             >

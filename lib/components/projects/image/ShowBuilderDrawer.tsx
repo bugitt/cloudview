@@ -11,7 +11,7 @@ import { removeAuthFromUrl } from "../../../utils/url";
 import { RerunImageBuilderButton } from "./RerunImageBuilderButton";
 import { ProField, ProList } from "@ant-design/pro-components";
 import { formatTimeStamp } from "../../../utils/date";
-import { BaseCRDHistory, crdDisplayStatus } from "../../../models/crd";
+import { BaseCRDHistory, crdDisplayStatus, isBindToWorkflow } from "../../../models/crd";
 
 interface ShowBuilderDrawerProps {
     builder: Builder
@@ -134,12 +134,12 @@ export const ShowBuilderDrawer = (props: ShowBuilderDrawerProps) => {
                     </Button>
 
                     &nbsp;&nbsp;
-                    <RerunImageBuilderButton
+                    {!!isBindToWorkflow(builder) && <RerunImageBuilderButton
                         builderName={builder.metadata?.name || ""}
                         projectName={imageMeta.owner || ""}
                         tag={imageMeta.tag}
                         hook={() => { builderReq.run() }}
-                    />
+                    />}
                 </>
             )}
                 placement="right"

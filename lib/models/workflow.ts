@@ -99,14 +99,17 @@ export interface WorkflowDisplayStatus {
 export interface CreateWorkflowRequest {
     ownerIdList: string[]
     tag: string
-    expId: number
+    expId?: number
     context?: BuilderContext
     baseImage: string
     compileCommand?: string
     deployCommand?: string
-    confRespId: number
+    resourcePool?: string
+    resource?: Resource
+    confRespId?: number
     templateKey: string
     env?: { [k: string]: string }
+    annotation?: { [k: string]: string }
     ports?: DeployerContainerPort[]
 }
 
@@ -128,7 +131,10 @@ export interface WorkflowTemplate {
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
     extraFormItems?: React.ReactNode
-    decorate?: (wfConfig: ExperimentWorkflowConfiguration, values: any) => ExperimentWorkflowConfiguration
+    fileUploadInfo?: string
+    needCompile?: boolean
+    decorateConfiguration?: (wfConfig: ExperimentWorkflowConfiguration, values: any) => ExperimentWorkflowConfiguration
+    decorateCreateWorkflowRequest?: (req: CreateWorkflowRequest, values: any) => CreateWorkflowRequest
     setFormFields?: (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) => void
     getServiceStatusListItemByPort?: (port: ServicePort, wf: Workflow) => ServiceStatusListItem | undefined
 }
