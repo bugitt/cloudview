@@ -67,7 +67,8 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
     const wfConf = wfConfResp ? JSON.parse(wfConfResp.configuration) as ExperimentWorkflowConfiguration : undefined
 
     async function createOrUpdate(ownerId: string) {
-        const project = (await client.getProjects(req.expId, undefined, ownerId)).data[0]
+        const project = req.expId ? (await client.getProjects(req.expId, undefined, ownerId)).data[0] :
+            (await client.getProjectProjectId(req.projectId!!)).data
         // make sure the push secret exist in the target namespace
         await ensurePushSecret(project.name)
 

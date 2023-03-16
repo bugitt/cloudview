@@ -63,6 +63,7 @@ export function PersonalCreateWorkflowForm(props: Props) {
                 'displayName': typedValues.name,
             },
             expId: project.expId,
+            projectId: project.id,
             context: fileUrl ? {
                 http: {
                     url: fileUrl,

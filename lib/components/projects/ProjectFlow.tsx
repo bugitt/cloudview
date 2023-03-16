@@ -222,7 +222,6 @@ export function ProjectFlow(props: ProjectFlowProps) {
                     data: { builder: builder },
                 }
             })
-            console.log(builderNodes)
             setBuilderNodes(builderNodes)
             setBuilderNodeMap(nodeMap)
         },

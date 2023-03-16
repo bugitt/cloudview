@@ -100,6 +100,7 @@ export interface CreateWorkflowRequest {
     ownerIdList: string[]
     tag: string
     expId?: number
+    projectId?: number
     context?: BuilderContext
     baseImage: string
     compileCommand?: string
