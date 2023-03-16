@@ -30,17 +30,18 @@ export function ProjectWorkflowListTable(props: Props) {
     const [workflowList, setWorkflowList] = useState<DataType[]>([])
     const req = useRequest(() => viewApiClient.listWorkflowResponses(project.name), {
         onSuccess: (data) => {
-            const dataList: DataType[] = data.map((wfResp: WorkflowResponse, index: number) => {
-                const workflow = wfResp.workflow
-                return {
-                    key: index,
-                    name: getCrdDisplayName(wfResp.workflow),
-                    workflow: wfResp.workflow,
-                    startTime: workflow?.status?.base?.startTime ? workflow?.status?.base?.startTime * 1000 : undefined,
-                    displayStatus: wfResp.displayStatus,
-                    serviceStatus: wfResp.serviceStatus,
-                }
-            })
+            const dataList: DataType[] = data.sort((a, b) => (b.workflow?.status?.base?.startTime || 0) - (a.workflow?.status?.base?.startTime || 0))
+                .map((wfResp: WorkflowResponse, index: number) => {
+                    const workflow = wfResp.workflow
+                    return {
+                        key: index,
+                        name: getCrdDisplayName(wfResp.workflow),
+                        workflow: wfResp.workflow,
+                        startTime: workflow?.status?.base?.startTime ? workflow?.status?.base?.startTime * 1000 : undefined,
+                        displayStatus: wfResp.displayStatus,
+                        serviceStatus: wfResp.serviceStatus,
+                    }
+                })
             setWorkflowList(dataList)
         }
     })
@@ -132,7 +133,7 @@ export function ProjectWorkflowListTable(props: Props) {
             dataSource={workflowList}
             columns={columns}
             toolBarRender={() => [
-                <PersonalCreateWorkflowForm key='create' project={project} />,
+                <PersonalCreateWorkflowForm key='create' project={project} hook={() => { req.run() }} />,
             ]}
         />
 

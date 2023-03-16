@@ -11,8 +11,8 @@ export const workflowTemplates: WorkflowTemplate[] = [
         name: '静态网站（Nginx）',
         baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',
         resource: {
-            cpu: 20,
-            memory: 20,
+            cpu: 50,
+            memory: 100,
         },
         buildSpec: {
             command: "cp -r . /usr/share/nginx/html/"
@@ -85,6 +85,35 @@ export const workflowTemplates: WorkflowTemplate[] = [
                                 密码 <Typography.Text code>
                                     {wf.spec.deploy.env?.['MYSQL_ROOT_PASSWORD']}
                                 </Typography.Text>
+                            </Typography>
+                        </>,
+                    }
+                default:
+                    return undefined
+            }
+        }
+    },
+    {
+        key: 'ubuntu2204',
+        name: 'Ubuntu 22.04',
+        baseImage: 'scs.buaa.edu.cn:8081/library/ubuntu-ttyd:22.04-v-1.0.6',
+        resource: {
+            cpu: 500,
+            memory: 512,
+        },
+        deploySpec: {
+            changeEnv: false,
+            ports: [{ port: 7681, protocol: 'tcp' }],
+        },
+        getServiceStatusListItemByPort: function (port: ServicePort, wf: Workflow) {
+            switch (port.port) {
+                case 7681:
+                    return {
+                        title: '访问 Terminal',
+                        description: <>
+                            <Typography>
+                                请使用 <Typography.Link href={`http://${port.ip}:${port.nodePort}`}>该链接</Typography.Link> 访问 Terminal。
+                                请注意：该环境联网性能很差，仅供学习了解 Linux 环境使用。例如，你可以练习使用VIM，使用 GCC 编译代码和 GDB 调试代码，使用 Python 运行脚本等。
                             </Typography>
                         </>,
                     }

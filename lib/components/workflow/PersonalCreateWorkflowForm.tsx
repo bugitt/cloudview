@@ -1,6 +1,6 @@
 import { DrawerForm, ProFormDigit, ProFormGroup, ProFormInstance, ProFormList, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, ProFormUploadButton } from "@ant-design/pro-components";
 import { Button } from "antd";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Project } from "../../cloudapi-client";
 import { getCrdDisplayName } from "../../models/crd";
 import { ResourcePool } from "../../models/resource";
@@ -16,11 +16,12 @@ interface Props {
     project: Project
     oldWorkflow?: Workflow
     title?: string
+    hook?: () => void
 }
 
 interface FormDataType {
     name: string
-    zipInfo?: { response: string }
+    zipInfo?: { response: string }[]
     baseEnv: string
     baseImage: string
     resourcePool: string,
@@ -54,6 +55,7 @@ export function PersonalCreateWorkflowForm(props: Props) {
 
     const onFinish = async (values: any) => {
         const typedValues = values as FormDataType
+        const fileUrl = typedValues.zipInfo?.at(0)?.response
         let req: CreateWorkflowRequest = {
             ownerIdList: [getUserId()],
             tag: randomString(15),
@@ -61,9 +63,9 @@ export function PersonalCreateWorkflowForm(props: Props) {
                 'displayName': typedValues.name,
             },
             expId: project.expId,
-            context: typedValues.zipInfo ? {
+            context: fileUrl ? {
                 http: {
-                    url: typedValues.zipInfo?.response
+                    url: fileUrl,
                 }
             } : undefined,
             baseImage: typedValues.baseImage,
@@ -97,6 +99,7 @@ export function PersonalCreateWorkflowForm(props: Props) {
                 await viewApiClient.createWorkflow(req)
             }
             messageSuccess('提交成功')
+            props.hook?.()
             return true
         } catch (_) {
             notificationError('提交失败')

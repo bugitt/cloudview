@@ -32,8 +32,10 @@ export async function getServiceStatus(deployer: Deployer) {
     const pods = await listPods(deployer.metadata?.namespace!!, selector)
     let healthy = false
     pods.forEach(p => {
+        if (deployer.metadata?.name === 'wf-nuxz1p6lzh6vi2d5bloj')
+            console.log('lolheagnkkkkk', p.metadata, p.status?.phase, p.status?.containerStatuses?.[0]?.ready)
         if (p.status?.phase === 'Running' && p.status?.containerStatuses?.[0]?.ready) {
-            healthy = true
+            healthy = (healthy || true)
         }
     })
     const ports: ServicePort[] = []

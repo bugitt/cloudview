@@ -105,7 +105,8 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
                     pushSecretName: imageBuilder.pushSecretName,
                 } : undefined,
                 deploy: {
-                    changeEnv: req.context ? wfConf?.deploySpec.changeEnv ?? true : true,
+                    // TODO changeEnv is always false for now
+                    changeEnv: false,
                     baseImage: req.context ? undefined : wfConf?.baseImage ?? req.baseImage,
                     command: wfConf?.deploySpec.command ?? req.deployCommand,
                     ports: req.ports,

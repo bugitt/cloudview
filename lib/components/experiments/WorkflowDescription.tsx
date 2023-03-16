@@ -165,6 +165,7 @@ export function WorkflowDescription(props: Props) {
                                 project={props.project!!}
                                 oldWorkflow={workflow}
                                 title='重新提交工作流任务'
+                                hook={() => { workflowReq.run() }}
                             />
                         }
                     </Space>
