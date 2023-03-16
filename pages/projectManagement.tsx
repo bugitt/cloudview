@@ -1,3 +1,4 @@
+import { Space, Alert, Typography } from "antd"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project } from "../lib/cloudapi-client"
 import { ProjectTable } from "../lib/components/projects/ProjectTable"
@@ -17,7 +18,18 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
     setUserInfo(userInfo)
     return (
         <>
-            <ProjectTable projectList={projectList} />
+            <Space direction="vertical" style={{ width: '100%' }} size='large'>
+                <Alert
+                    message={
+                        <Typography>
+                            请访问 <Typography.Link href='https://scs.buaa.edu.cn/doc/01_common/paas/' target='_blank'>文档</Typography.Link> 来了解我们新推出的PaaS工作流功能！
+                        </Typography>
+                    }
+                    type='info'
+                    closable
+                />
+                <ProjectTable projectList={projectList} />
+            </Space>
         </>
     )
 }
