@@ -3,7 +3,7 @@ import { ExperimentResponse, Project } from "../../../lib/cloudapi-client"
 import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
-import { Tabs } from "antd"
+import { Alert, Space, Tabs, Typography } from "antd"
 import { useEffect } from "react"
 import { ExperimentWorkflowStudent } from "../../../lib/components/experiments/ExperimentWorkflowStudent"
 import { useExpWfConfRespListStore } from "../../../lib/components/workflow/experimentWorkflowConfigurationStateManagement"
@@ -23,23 +23,34 @@ export default function SubmitWorkflow(props: InferGetServerSidePropsType<typeof
     }, [experiment, refresh])
     return (
         <>
-            <Tabs
-                defaultActiveKey="1"
-                items={expWfConfigList.map((wfConfig, index) => {
-                    return {
-                        key: String(index + 1),
-                        label: wfConfig.name,
-                        children: (
-                            project ? <ExperimentWorkflowStudent
-                                key={index}
-                                experiment={experiment}
-                                projectName={project?.name}
-                                simpleWfConfig={wfConfig}
-                            /> : <></>
-                        )
+            <Space direction="vertical" style={{ width: '100%' }} size='large'>
+                <Alert
+                    message={
+                        <Typography>
+                            请访问 <Typography.Link href='https://scs.buaa.edu.cn/doc/01_common/expreiment_paas/' target='_blank'>文档</Typography.Link> 来了解我们新推出的课程实验PaaS工作流功能！
+                        </Typography>
                     }
-                })}
-            />
+                    type='info'
+                    closable
+                />
+                <Tabs
+                    defaultActiveKey="1"
+                    items={expWfConfigList.map((wfConfig, index) => {
+                        return {
+                            key: String(index + 1),
+                            label: wfConfig.name,
+                            children: (
+                                project ? <ExperimentWorkflowStudent
+                                    key={index}
+                                    experiment={experiment}
+                                    projectName={project?.name}
+                                    simpleWfConfig={wfConfig}
+                                /> : <></>
+                            )
+                        }
+                    })}
+                />
+            </Space>
         </>
     )
 }

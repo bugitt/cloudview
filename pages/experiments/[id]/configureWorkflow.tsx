@@ -4,6 +4,7 @@ import { serverSideCloudapiClient } from "../../../lib/utils/cloudapi"
 import { BaseSSRType } from "../../../lib/utils/type"
 import { setUserInfo, ssrUserInfo } from "../../../lib/utils/token"
 import { ExperimentPaaSAdmin } from "../../../lib/components/experiments/ExperimentPaaSAdmin"
+import { Space, Alert, Typography } from "antd"
 
 interface Props extends BaseSSRType {
     experiment: ExperimentResponse
@@ -18,7 +19,18 @@ export default function ConfigureWorkflow(props: InferGetServerSidePropsType<typ
 
     return (
         <>
-            <ExperimentPaaSAdmin experiment={props.experiment} />
+            <Space direction="vertical" style={{ width: '100%' }} size='large'>
+                <Alert
+                    message={
+                        <Typography>
+                            请访问 <Typography.Link href='https://scs.buaa.edu.cn/doc/01_common/expreiment_paas/' target='_blank'>文档</Typography.Link> 来了解我们新推出的课程实验PaaS工作流功能！
+                        </Typography>
+                    }
+                    type='info'
+                    closable
+                />
+                <ExperimentPaaSAdmin experiment={props.experiment} />
+            </Space>
         </>
     )
 }
