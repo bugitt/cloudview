@@ -26,6 +26,25 @@ export const workflowTemplates: WorkflowTemplate[] = [
         fileUploadInfo: '请上传要部署的静态网站文件压缩包，请保证 index.html 位于压缩包的根目录中。',
     },
     {
+        key: 'simpleNode18',
+        name: 'Node.js 18 with npm pnpm cnpm yarn',
+        baseImage: 'scs.buaa.edu.cn:8081/library/node18-npm-cnpm-pnpm-yarn:1.0.0',
+        resource: {
+            cpu: 100,
+            memory: 200,
+        },
+        buildSpec: {
+            command: "npm install && npm run build"
+        },
+        deploySpec: {
+            changeEnv: false,
+            command: `npm run start`,
+            ports: [{ port: 3000, protocol: 'tcp' }],
+        },
+        needCompile: true,
+        fileUploadInfo: '上传要编译和部署的代码压缩包。请保证 package.json 文件位于压缩包的根目录。请注意不要包含 node_modules 文件夹。',
+    },
+    {
         key: 'simpleMysql',
         name: 'MySQL 8',
         baseImage: 'scs.buaa.edu.cn:8081/library/mysql8:1.0.0',
@@ -84,6 +103,77 @@ export const workflowTemplates: WorkflowTemplate[] = [
                                 </Typography.Text>，
                                 密码 <Typography.Text code>
                                     {wf.spec.deploy.env?.['MYSQL_ROOT_PASSWORD']}
+                                </Typography.Text>
+                            </Typography>
+                        </>,
+                    }
+                default:
+                    return undefined
+            }
+        }
+    },
+    {
+        key: 'simplePostgres',
+        name: 'PostgreSQL 15',
+        baseImage: 'scs.buaa.edu.cn:8081/library/postgres:15',
+        resource: {
+            cpu: 100,
+            memory: 128,
+        },
+        deploySpec: {
+            changeEnv: false,
+            ports: [{ port: 5432, protocol: 'tcp' }],
+        },
+        extraFormItems: (
+            <>
+                <ProFormText
+                    name="postgresPassword"
+                    label="数据库中 postgres 用户的密码"
+                    required
+                />
+            </>
+        ),
+        decorateConfiguration: function (wfConfig: ExperimentWorkflowConfiguration, values: any) {
+            const postgresPassword = values.postgresPassword as string
+            let env: { [k: string]: string } = wfConfig.deploySpec.env ?? {}
+            env['POSTGRES_PASSWORD'] = postgresPassword
+            wfConfig.deploySpec.env = env
+            return wfConfig
+        },
+        decorateCreateWorkflowRequest: function (req: CreateWorkflowRequest, values: any) {
+            const postgresPassword = values.postgresPassword as string
+            let env: { [k: string]: string } = req.env ?? {}
+            env['POSTGRES_PASSWORD'] = postgresPassword
+            req.env = env
+            return req
+        },
+        setFormFields: function (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) {
+            formRef?.current?.setFieldsValue({
+                postgresPassword: wfConfig.deploySpec.env?.['POSTGRES_PASSWORD'] ?? '',
+            })
+        },
+        getServiceStatusListItemByPort: function (port: ServicePort, wf: Workflow) {
+            switch (port.port) {
+                case 5432:
+                    return {
+                        disableAutoConnect: true,
+                        title: 'Postgres数据库端口',
+                        description: <>
+                            <Typography>
+                                数据库 IP <Typography.Text code>
+                                    {port.ip}
+                                </Typography.Text>，
+                                端口 <Typography.Text code>
+                                    {port.nodePort}
+                                </Typography.Text>，
+                                用户名 <Typography.Text code>
+                                    postgres
+                                </Typography.Text>，
+                                密码 <Typography.Text code>
+                                    {wf.spec.deploy.env?.['POSTGRES_PASSWORD']}
+                                </Typography.Text>
+                                默认数据库名 <Typography.Text code>
+                                    postgres
                                 </Typography.Text>
                             </Typography>
                         </>,
