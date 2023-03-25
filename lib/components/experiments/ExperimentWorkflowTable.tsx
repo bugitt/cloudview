@@ -5,7 +5,7 @@ import { Badge, Drawer, Popconfirm, Space, Typography } from "antd"
 import { useState } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
 import { ServiceStatus } from "../../models/deployer"
-import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowNamespace, getWorkflowOwner, setupWorkflow, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, getWfConfigRespTag, getWorkflowExpId, getWorkflowName, getWorkflowNamespace, getWorkflowOwner, adminSetupWorkflow, Workflow, WorkflowDisplayStatus } from "../../models/workflow"
 import { viewApiClient } from "../../utils/cloudapi"
 import { notificationSuccess } from "../../utils/notification"
 import { WorkflowDisplayStatusComponent } from "../workflow/WorkflowDisplayStatusComponent"
@@ -139,7 +139,7 @@ export function ExperimentWorkflowTable(props: Props) {
                     title="执行工作流"
                     description={`确定要执行学生 ${record.studentId} ${record.studentName} 的工作流吗？`}
                     onConfirm={async () => {
-                        await setupWorkflow(wfConfigResp, experiment.id, [record.studentId], undefined, record.workflow)
+                        await adminSetupWorkflow(wfConfigResp, experiment.id, [record.studentId], undefined, record.workflow)
                     }}
                 >
                     <Typography.Link>

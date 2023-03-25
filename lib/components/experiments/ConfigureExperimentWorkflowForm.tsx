@@ -2,7 +2,7 @@ import { ProFormInstance, ProForm, ProFormCheckbox, ProFormSelect, ProFormText, 
 import { notification } from "antd"
 import { useState, useRef, useEffect } from "react"
 import { ExperimentResponse, ExperimentWorkflowConfigurationRequest, ExperimentWorkflowConfigurationResponse } from "../../cloudapi-client"
-import { ExperimentWorkflowConfiguration, setupWorkflow, SubmitType } from "../../models/workflow"
+import { ExperimentWorkflowConfiguration, adminSetupWorkflow, SubmitType } from "../../models/workflow"
 import { cloudapiClient } from "../../utils/cloudapi"
 import { messageInfo, notificationError } from "../../utils/notification"
 import { useExpWfConfRespListStore } from "../workflow/experimentWorkflowConfigurationStateManagement"
@@ -43,7 +43,7 @@ const getWorkflowTemplateByName = (name?: string) => {
 export function ConfigureExperimentWorkflowForm(props: Props) {
     const disableChosenSubmit = useExpWfConfRespListStore().hasSubmitType
     const { experiment, onSuccessHook, onFailedHook, mode } = props
-    const [baseImage, setBaseImage] = useState<string>("")
+    const [baseImage, setBaseImage] = useState<string>()
     const [extraFields, setExtraFields] = useState<React.ReactNode>(<></>)
     const [needSubmit, setNeedSubmit] = useState<boolean | undefined>(disableChosenSubmit ? false : undefined)
 
@@ -52,10 +52,6 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
     const onFinish = async (values: any) => {
         const typedValues = values as FormDataType
         const finalBaseImage = typedValues.baseImage ?? baseImage
-        if (!finalBaseImage) {
-            notificationError("请填写基础镜像")
-            return false
-        }
         let configuration: ExperimentWorkflowConfiguration = {
             experimentId: experiment.id,
             submitOptions: typedValues.submitOptions ?? [],
@@ -107,7 +103,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                 notification['info']({
                     message: '正在为每位学生部署工作流，请稍等……'
                 })
-                setupWorkflow(wfConfigResp, experiment.id, wfConfigResp.studentList.map((s) => s.id))
+                adminSetupWorkflow(wfConfigResp, experiment.id, wfConfigResp.studentList.map((s) => s.id))
                 // notification['success']({
                 //     message: '工作流部署完成'
                 // })

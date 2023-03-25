@@ -175,7 +175,7 @@ export interface ExperimentWorkflowConfiguration {
     submitOptions: SubmitType[]
     resource: Resource
     workflowTemplateName?: string
-    baseImage: string
+    baseImage?: string
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
     isJob?: boolean
@@ -194,7 +194,7 @@ export interface WorkflowResponse {
 }
 
 
-export async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationResponse, expId: number, ownerIdList: string[], context?: BuilderContext, oldWorkflow?: Workflow) {
+export async function adminSetupWorkflow(wfConfigResp: ExperimentWorkflowConfigurationResponse, expId: number, ownerIdList: string[], context?: BuilderContext, oldWorkflow?: Workflow) {
     const wfConfig = JSON.parse(wfConfigResp.configuration) as ExperimentWorkflowConfiguration
     const wfTemplate = workflowTemplates.find(wf => wf.name === wfConfig.workflowTemplateName)
     const req: CreateWorkflowRequest = {
@@ -203,7 +203,7 @@ export async function setupWorkflow(wfConfigResp: ExperimentWorkflowConfiguratio
         tag: getWfConfigRespTag(wfConfigResp),
         expId: expId,
         context: context,
-        baseImage: wfConfig.baseImage,
+        baseImage: wfConfig.baseImage!!,
         templateKey: wfTemplate?.key ?? 'custom',
         compileCommand: wfConfig.buildSpec?.command,
         deployCommand: wfConfig.deploySpec?.command,
