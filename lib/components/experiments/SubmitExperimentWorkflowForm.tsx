@@ -8,6 +8,7 @@ import { AntdUploadResponse } from "../../utils/file"
 import { messageSuccess, notificationError } from "../../utils/notification"
 import { getToken, getUserId } from "../../utils/token"
 import { workflowTemplates } from "../workflow/workflowTemplates"
+import { getWorkflowTemplateByName } from "./ConfigureExperimentWorkflowForm"
 
 interface Props {
     experiment: ExperimentResponse
@@ -24,6 +25,7 @@ interface FormDataType {
     gitRef?: string
     gitUsername?: string
     gitPassword?: string
+    baseEnv?: string
     baseImage: string
     compileCommand?: string
     deployCommand?: string
@@ -43,7 +45,6 @@ export function SubmitExperimentWorkflowForm(props: Props) {
         formRef.current?.setFieldsValue({
             cpu: wfConfig.resource.cpu,
             memory: wfConfig.resource.memory,
-            baseEnv: wfConfig.workflowTemplateName,
             baseImage: wfConfig.baseImage,
             compileCommand: wfConfig.buildSpec?.command,
             deployCommand: wfConfig.deploySpec.command,
@@ -116,6 +117,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
 
 
     const onFinish = async (values: FormDataType) => {
+        console.log(values)
         let url = values.zipInfo.at(0)?.response.files.at(0)?.downloadLink!!
         const structuredUrl = new URL(url)
         structuredUrl.searchParams.append('token', getToken())
@@ -161,7 +163,8 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                     }
                 }
         }
-        const wfTemplate = workflowTemplates.find(wf => wf.name === wfConfig.workflowTemplateName)
+        const wfTemplate = workflowTemplates.find(wf => (wf.name === wfConfig.workflowTemplateName || wf.name === values.baseEnv))
+        console.log(';llll', wfTemplate)
         const req: CreateWorkflowRequest = {
             confRespId: props.wfConfigRespId,
             ownerIdList: [getUserId()],
@@ -223,6 +226,39 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                 />
 
                 {submitType && getSubmitFields(submitType)}
+
+                {
+                    wfConfig.customOptions.baseImage && (
+                        <>
+                            <ProFormSelect
+                                name="baseEnv"
+                                label="基础环境"
+                                valueEnum={(new Map(workflowTemplates?.map((template) => [template.name, template.name]) ?? []))}
+                                fieldProps={{
+                                    onChange: (value) => {
+                                        const template = getWorkflowTemplateByName(value as string)
+                                        formRef.current?.setFieldsValue({
+                                            baseImage: template?.baseImage,
+                                        })
+                                        const customOptions = wfConfig.customOptions
+                                        if (customOptions.compileCommand) {
+                                            formRef.current?.setFieldValue('compileCommand', template?.buildSpec?.command)
+                                        }
+                                        if (customOptions.deployCommand) {
+                                            formRef.current?.setFieldValue('deployCommand', template?.deploySpec?.command)
+                                        }
+                                        if (customOptions.ports) {
+                                            formRef.current?.setFieldValue('ports', template?.deploySpec?.ports)
+                                        }
+                                    }
+                                }}
+                                tooltip={"请选择编译和运行所提交的源代码所需要使用的基础环境。"}
+                                showSearch
+                                required
+                            />
+                        </>
+                    )
+                }
 
                 <ProFormText
                     name={"baseImage"}

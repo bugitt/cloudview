@@ -28,7 +28,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'simpleNode18',
         name: 'Node.js 18 with npm pnpm cnpm yarn',
-        baseImage: 'scs.buaa.edu.cn:8081/library/node18-npm-cnpm-pnpm-yarn:1.0.0',
+        baseImage: 'scs.buaa.edu.cn:8081/library/node18-npm-cnpm-pnpm-yarn:1.1.0',
         resource: {
             cpu: 100,
             memory: 200,

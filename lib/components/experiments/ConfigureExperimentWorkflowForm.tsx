@@ -36,7 +36,7 @@ interface FormDataType {
     allowCustomPorts?: boolean
 }
 
-const getWorkflowTemplateByName = (name?: string) => {
+export const getWorkflowTemplateByName = (name?: string) => {
     return workflowTemplates.find((template) => template.name === name)
 }
 
