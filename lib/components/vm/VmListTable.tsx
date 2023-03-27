@@ -20,6 +20,7 @@ interface Props {
 interface DataType {
     key: React.Key
     name: string
+    studentId: string
     state: string
     expName?: string
     diskSize: number
@@ -62,6 +63,7 @@ export function VmListTable(props: Props) {
                 .map(async (vm, index) => {
                     const item: DataType = {
                         key: index,
+                        studentId: vm.studentId,
                         name: vm.name,
                         state: vm.state,
                         diskSize: vm.diskSize / 1024 / 1024 / 1024,
@@ -112,6 +114,12 @@ export function VmListTable(props: Props) {
             title: '名称',
             dataIndex: 'name',
             key: 'name',
+            valueType: 'text'
+        },
+        {
+            title: '学号',
+            dataIndex: 'studentId',
+            key: 'studentId',
             valueType: 'text'
         },
         {
