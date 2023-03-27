@@ -51,35 +51,39 @@ export function VmListTable(props: Props) {
     const [currentVm, setCurrentVm] = useState<DataType | undefined>(undefined)
     const [selectedVmList, setSelectedVmList] = useState<DataType[]>([])
     const [isVmDetailModalOpen, setIsVmDetailModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false)
 
     const vmListReq = useRequest(() => {
+        setLoading(true)
         return fetchVmList(props.experimentId)
     }, {
         onSuccess: async (vmList) => {
             const data: DataType[] = await Promise.all(vmList.filter(vm => !vm.isTemplate)
-            .map(async (vm, index) => {
-                const item: DataType = {
-                    key: index,
-                    name: vm.name,
-                    state: vm.state,
-                    diskSize: vm.diskSize / 1024 / 1024 / 1024,
-                    memory: vm.memory / 1024,
-                    cpu: vm.cpu,
-                    systemName: vm.osFullName,
-                    ip: findValidIp(vm.netInfos),
-                    vm: vm,
-                }
-                if (vm.experimentId != 0) {
-                    const experiment = await (await cloudapiClient.getExperimentExperimentId(vm.experimentId)).data
-                    item.expName = experiment.name
-                }
-                return item
-            }))
+                .map(async (vm, index) => {
+                    const item: DataType = {
+                        key: index,
+                        name: vm.name,
+                        state: vm.state,
+                        diskSize: vm.diskSize / 1024 / 1024 / 1024,
+                        memory: vm.memory / 1024,
+                        cpu: vm.cpu,
+                        systemName: vm.osFullName,
+                        ip: findValidIp(vm.netInfos),
+                        vm: vm,
+                    }
+                    if (vm.experimentId != 0) {
+                        const experiment = await (await cloudapiClient.getExperimentExperimentId(vm.experimentId)).data
+                        item.expName = experiment.name
+                    }
+                    return item
+                }))
             setVmList(data)
             setVmShownList(data)
+            setLoading(false)
         },
         onError: (_) => {
             notificationError("获取虚拟机列表失败")
+            setLoading(false)
         }
     })
 
@@ -172,6 +176,13 @@ export function VmListTable(props: Props) {
                             setCurrentVm(record)
                             setIsVmDetailModalOpen(true)
                         }}>详情</Typography.Link>
+                        {
+                            record.name.startsWith("docker") && record.state === 'running' &&
+                            <Typography.Link
+                                href={`http://${record.ip}:7681`}
+                                target='_blank'
+                            >访问虚拟机</Typography.Link>
+                        }
                         <Typography.Link disabled={record.state !== 'stopped'}
                             onClick={() => {
                                 cloudapiClient.patchVmVmIdPower(record.vm.id, "poweron")
@@ -269,24 +280,25 @@ export function VmListTable(props: Props) {
             ]}
             toolbar={{
                 search: {
-                  onSearch: (search: string) => {
-                    setVmShownList(vmList.filter(vm => 
-                        vm.name.toLowerCase().includes(search.toLowerCase()) ||
-                        vm.systemName?.toLowerCase().includes(search.toLowerCase()) ||
-                        vm.ip?.toLowerCase().includes(search.toLowerCase())))
-                  },
-                  onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                    setVmShownList(vmList.filter(vm => 
-                        vm.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-                        vm.systemName?.toLowerCase().includes(event.target.value.toLowerCase()) ||
-                        vm.ip?.toLowerCase().includes(event.target.value.toLowerCase())))
-                  }
-                }}
+                    onSearch: (search: string) => {
+                        setVmShownList(vmList.filter(vm =>
+                            vm.name.toLowerCase().includes(search.toLowerCase()) ||
+                            vm.systemName?.toLowerCase().includes(search.toLowerCase()) ||
+                            vm.ip?.toLowerCase().includes(search.toLowerCase())))
+                    },
+                    onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                        setVmShownList(vmList.filter(vm =>
+                            vm.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                            vm.systemName?.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                            vm.ip?.toLowerCase().includes(event.target.value.toLowerCase())))
+                    }
+                }
+            }
             }
             columns={columns}
             dataSource={vmShownList}
             search={false}
-            loading={vmListReq.loading}
+            loading={loading}
             headerTitle="虚拟机列表"
         />
         <Modal title="虚拟机详情" open={isVmDetailModalOpen} onOk={() => setIsVmDetailModalOpen(false)} onCancel={() => setIsVmDetailModalOpen(false)}>
