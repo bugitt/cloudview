@@ -3,7 +3,7 @@ import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-component
 import { useRequest } from "ahooks";
 import { Button, Modal, Popconfirm, Space, Typography } from "antd";
 import { useState, ChangeEvent } from "react";
-import { CreateVmApplyResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
+import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { messageInfo, notificationError } from "../../utils/notification";
 import { AddVmIntoApplyForm } from "./AddVmIntoApplyForm";
@@ -59,8 +59,19 @@ export function VmListTable(props: Props) {
         return fetchVmList(props.experimentId)
     }, {
         onSuccess: async (vmList) => {
+            const expIdSet = new Set<number>()
+            vmList.forEach(vm => {
+                if (vm.experimentId != 0) {
+                    expIdSet.add(vm.experimentId)
+                }
+            })
+            const expIdMap = new Map<number, ExperimentResponse>()
+            await Promise.all(Array.from(expIdSet.values()).map(async (expId) => {
+                const experiment = await (await cloudapiClient.getExperimentExperimentId(expId)).data
+                expIdMap.set(expId, experiment)
+            }))
             const data: DataType[] = await Promise.all(vmList.filter(vm => !vm.isTemplate)
-                .map(async (vm, index) => {
+                .map((vm, index) => {
                     const item: DataType = {
                         key: index,
                         studentId: vm.studentId,
@@ -74,8 +85,8 @@ export function VmListTable(props: Props) {
                         vm: vm,
                     }
                     if (vm.experimentId != 0) {
-                        const experiment = await (await cloudapiClient.getExperimentExperimentId(vm.experimentId)).data
-                        item.expName = experiment.name
+                        const experiment = expIdMap.get(vm.experimentId)
+                        item.expName = experiment?.name
                     }
                     return item
                 }))
