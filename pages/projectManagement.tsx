@@ -2,6 +2,7 @@ import { ProDescriptions } from "@ant-design/pro-components"
 import { Space, Alert, Typography, Button } from "antd"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { Project } from "../lib/cloudapi-client"
+import { ResetPaaSTokenButton } from "../lib/components/auth/ResetPaaSTokenButton"
 import { ProjectTable } from "../lib/components/projects/ProjectTable"
 import { copyToClipboard } from "../lib/utils/clipboard"
 import { serverSideCloudapiClient } from "../lib/utils/cloudapi"
@@ -27,6 +28,9 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
                         <Button onClick={() => {
                             copyToClipboard(props.paasToken, 'PaaS平台通用密码')
                         }}>点击复制</Button>
+                    </ProDescriptions.Item>
+                    <ProDescriptions.Item label='重置PaaS平台通用密码' span={3}>
+                        <ResetPaaSTokenButton />
                     </ProDescriptions.Item>
                 </ProDescriptions>
                 <Alert

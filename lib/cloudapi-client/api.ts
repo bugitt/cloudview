@@ -2667,6 +2667,19 @@ export interface PutExperimentRequest {
 /**
  * 
  * @export
+ * @interface PutPaasTokenRequest
+ */
+export interface PutPaasTokenRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof PutPaasTokenRequest
+     */
+    'paasToken': string;
+}
+/**
+ * 
+ * @export
  * @interface Repository
  */
 export interface Repository {
@@ -6881,6 +6894,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 修改PaaS平台通用token
+         * @summary 修改PaaS平台通用token
+         * @param {PutPaasTokenRequest} [putPaasTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        putPaasToken: async (putPaasTokenRequest?: PutPaasTokenRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/paasToken`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(putPaasTokenRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -7899,6 +7949,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.putExperimnetExperimentId(experimentId, putExperimentRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 修改PaaS平台通用token
+         * @summary 修改PaaS平台通用token
+         * @param {PutPaasTokenRequest} [putPaasTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async putPaasToken(putPaasTokenRequest?: PutPaasTokenRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.putPaasToken(putPaasTokenRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -8828,6 +8889,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         putExperimnetExperimentId(experimentId: number, putExperimentRequest?: PutExperimentRequest, options?: any): AxiosPromise<ExperimentResponse> {
             return localVarFp.putExperimnetExperimentId(experimentId, putExperimentRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 修改PaaS平台通用token
+         * @summary 修改PaaS平台通用token
+         * @param {PutPaasTokenRequest} [putPaasTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        putPaasToken(putPaasTokenRequest?: PutPaasTokenRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.putPaasToken(putPaasTokenRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -9933,6 +10004,18 @@ export class DefaultApi extends BaseAPI {
      */
     public putExperimnetExperimentId(experimentId: number, putExperimentRequest?: PutExperimentRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).putExperimnetExperimentId(experimentId, putExperimentRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 修改PaaS平台通用token
+     * @summary 修改PaaS平台通用token
+     * @param {PutPaasTokenRequest} [putPaasTokenRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public putPaasToken(putPaasTokenRequest?: PutPaasTokenRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).putPaasToken(putPaasTokenRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
