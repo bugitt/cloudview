@@ -26,6 +26,25 @@ export const workflowTemplates: WorkflowTemplate[] = [
         fileUploadInfo: '请上传要部署的静态网站文件压缩包，请保证 index.html 位于压缩包的根目录中。',
     },
     {
+        key: 'simplePython3.11',
+        name: 'Python 3.11',
+        baseImage: 'scs.buaa.edu.cn:8081/library/python3.11:1.0.0',
+        resource: {
+            cpu: 50,
+            memory: 100,
+        },
+        buildSpec: {
+            command: "pip install -r requirements.txt"
+        },
+        deploySpec: {
+            changeEnv: false,
+            command: ``,
+            ports: [],
+        },
+        needCompile: true,
+        fileUploadInfo: '请上传要部署的Python项目压缩包',
+    },
+    {
         key: 'simpleNode18',
         name: 'Node.js 18 with npm pnpm cnpm yarn',
         baseImage: 'scs.buaa.edu.cn:8081/library/node18-npm-cnpm-pnpm-yarn:1.1.0',
