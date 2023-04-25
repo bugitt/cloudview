@@ -35,7 +35,7 @@ function findValidIp(netInfos: VmNetInfo[]) {
     let validIp = '-'
     netInfos.forEach(netInfo => {
         netInfo.ipList.forEach(ip => {
-            if (ip.startsWith("10.")) {
+            if (ip.startsWith("10.251.")) {
                 validIp = ip
                 return
             }
