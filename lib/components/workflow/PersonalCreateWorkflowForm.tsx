@@ -29,6 +29,10 @@ interface FormDataType {
     memory: number,
     compileCommand?: string,
     deployCommand?: string,
+    envs?: {
+        key: string
+        value: string
+    }[]
     ports?: {
         port: string
         protocol: string
@@ -56,6 +60,14 @@ export function PersonalCreateWorkflowForm(props: Props) {
     const onFinish = async (values: any) => {
         const typedValues = values as FormDataType
         const fileUrl = typedValues.zipInfo?.at(0)?.response
+        const envs: {
+            [k: string]: string
+        } = {}
+        if (typedValues.envs) {
+            typedValues.envs.forEach((env) => {
+                envs[env.key] = env.value
+            })
+        }
         let req: CreateWorkflowRequest = {
             ownerIdList: [getUserId()],
             tag: randomString(15),
@@ -78,6 +90,7 @@ export function PersonalCreateWorkflowForm(props: Props) {
             },
             resourcePool: typedValues.resourcePool,
             templateKey: workflowTemplate?.key ?? 'custom',
+            env: envs,
             ports: typedValues.ports?.map((port) => {
                 return {
                     export: true,
@@ -202,6 +215,31 @@ export function PersonalCreateWorkflowForm(props: Props) {
             />
 
             {extraFields}
+
+            <ProFormList
+                name="envs"
+                label="环境变量"
+                copyIconProps={false}
+                creatorButtonProps={{
+                    creatorButtonText: '添加一对环境变量'
+                }}
+                deleteIconProps={{
+                    tooltipText: '删除'
+                }}
+            >
+                <ProFormGroup key="envGroup">
+                    <ProFormText
+                        name="key"
+                        label="键"
+                        rules={[{ required: true }]}
+                    />
+                    <ProFormText
+                        name="value"
+                        label="值"
+                        rules={[{ required: true }]}
+                    />
+                </ProFormGroup>
+            </ProFormList>
 
             <ProFormList
                 name="ports"
