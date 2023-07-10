@@ -28,3 +28,9 @@ export const createOrUpdate = async<T extends k8s.KubernetesObject | k8s.Kuberne
         return (await k8sObjectApi.create(obj)).body;
     }
 }
+
+export const updateK8sObj = async (obj: k8s.KubernetesObject) => {
+    // @ts-ignore
+    await k8sObjectApi.read(obj);
+    return (await k8sObjectApi.patch(obj)).body;
+}

@@ -8,6 +8,7 @@ import { ResourcePool } from '../models/resource'
 import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowDisplayStatus, WorkflowResponse, WorkflowTemplate } from '../models/workflow'
 import { notificationError } from './notification'
 import { getToken, getTokenFromReq } from './token'
+import * as k8s from '@kubernetes/client-node';
 
 const cloudviewAxios = globalAxios
 
@@ -187,4 +188,12 @@ export const viewApiClient = {
     getWorkflowDisplayStatus: async (name: string, projectName: string) => {
         return (await cloudviewAxios.get(`/workflow/${name}/displayStatus?projectName=${projectName}`, viewApiClientConfig())).data as WorkflowDisplayStatus
     },
+
+    getPodListByNamespace: async (ns: string) => {
+        return (await cloudviewAxios.get(`/kube/${ns}/podList`, viewApiClientConfig())).data as k8s.V1PodList
+    },
+
+    updateKubeObject: async (obj: k8s.KubernetesObject) => {
+        return (await cloudviewAxios.put(`/kube/object`, obj, viewApiClientConfig())).data as k8s.KubernetesObject
+    }
 }
