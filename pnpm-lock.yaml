@@ -77,8 +77,8 @@ dependencies:
     specifier: ^2.3.0
     version: 2.3.0
   moment:
-    specifier: github:moment/moment
-    version: github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2
+    specifier: ^2.29.4
+    version: 2.29.4
   next:
     specifier: 13.1.1
     version: 13.1.1(react-dom@18.2.0)(react@18.2.0)
@@ -3060,6 +3060,10 @@ packages:
     hasBin: true
     dev: false
 
+  /moment@2.29.4:
+    resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
+    dev: false
+
   /ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
     dev: false
@@ -3655,7 +3659,7 @@ packages:
       '@rc-component/trigger': 1.14.1(react-dom@18.2.0)(react@18.2.0)
       classnames: 2.3.2
       dayjs: 1.11.7
-      moment: github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2
+      moment: 2.29.4
       rc-util: 5.34.1(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -4650,10 +4654,4 @@ packages:
     dependencies:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
-    dev: false
-
-  github.com/moment/moment/000ac1800e620f770f4eb31b5ae908f6167b0ab2:
-    resolution: {commit: 000ac1800e620f770f4eb31b5ae908f6167b0ab2, repo: git+ssh://git@github.com/moment/moment.git, type: git}
-    name: moment
-    version: 2.29.4
     dev: false

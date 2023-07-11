@@ -9,7 +9,7 @@ ENV NODE_ENV production
 COPY . .
 
 RUN npm config set registry https://registry.npmmirror.com && \
-    pnpm install && \
+    pnpm install --reporter ndjson && \
     pnpm build
 
 EXPOSE 3000
