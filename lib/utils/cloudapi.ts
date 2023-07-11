@@ -200,5 +200,9 @@ export const viewApiClient = {
 
     deleteKubeObject: async (obj: k8s.KubernetesObject) => {
         return (await cloudviewAxios.delete(`/kube/object`, viewApiClientConfig(obj))).data as k8s.KubernetesObject
-    }
+    },
+
+    getKubeNodeList: async () => {
+        return (await cloudviewAxios.get(`/kube/nodeList`, viewApiClientConfig())).data as k8s.V1NodeList
+    },
 }

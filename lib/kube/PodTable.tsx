@@ -107,6 +107,7 @@ export function PodTable(props: Props) {
                             description={`确定要删除Pod ${record.name} 吗？`}
                             onConfirm={async () => {
                                 await viewApiClient.deleteKubeObject(record.pod)
+                                podListReq.run()
                             }}
                             okText="是"
                             cancelText="否"

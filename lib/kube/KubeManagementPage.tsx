@@ -1,6 +1,7 @@
 import { Select, SelectProps, Space } from "antd";
 import { useState } from "react";
 import { PodTable } from "./PodTable";
+import { KubeNodeTable } from "./KubeNodeTable";
 
 interface Props {
     namespaceList: string[]
@@ -13,6 +14,7 @@ export function KubeManagementPage(props: Props) {
     return (
         <>
             <Space style={{ width: '100%' }} direction="vertical" size='large'>
+                <KubeNodeTable />
                 <Space style={{ width: '100%' }}>
                     命名空间：
                     <Select
