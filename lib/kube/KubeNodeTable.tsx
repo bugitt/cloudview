@@ -88,6 +88,7 @@ export function KubeNodeTable(props: Props) {
             valueType: 'option',
             render: (text, record, _, action) => [
                 <KubeObjectModal
+                    key='edit'
                     obj={record.node}
                     title='Node'
                     hook={() => {
