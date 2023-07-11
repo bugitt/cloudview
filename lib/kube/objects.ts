@@ -34,3 +34,9 @@ export const updateK8sObj = async (obj: k8s.KubernetesObject) => {
     await k8sObjectApi.read(obj);
     return (await k8sObjectApi.patch(obj)).body;
 }
+
+export const deleteK8sObj = async (obj: k8s.KubernetesObject) => {
+    // @ts-ignore
+    await k8sObjectApi.read(obj);
+    return (await k8sObjectApi.delete(obj)).body;
+}

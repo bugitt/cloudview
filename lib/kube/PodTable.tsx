@@ -1,9 +1,9 @@
 import * as k8s from '@kubernetes/client-node';
-import { ModalForm, ProColumns, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components'
+import { ProColumns, ProTable } from '@ant-design/pro-components'
 import { useState } from 'react';
 import { useRequest } from 'ahooks';
-import { cloudapiClient, viewApiClient } from '../utils/cloudapi';
-import { messageInfo, notificationError } from '../utils/notification';
+import { viewApiClient } from '../utils/cloudapi';
+import { notificationError } from '../utils/notification';
 import { GetColumnSearchProps } from '../utils/table';
 import { Space, Typography, Popconfirm } from 'antd';
 import { KubeObjectModal } from './KubeObjectModal';
@@ -41,8 +41,6 @@ export function PodTable(props: Props) {
             notificationError('获取Pod列表失败')
         }
     })
-
-    const [updatePodModalVisible, setUpdatePodModalVisible] = useState<boolean>(false)
 
     const columns: ProColumns<DataType>[] = [
         {
@@ -104,16 +102,19 @@ export function PodTable(props: Props) {
 
                             <KubeObjectModal obj={record.pod} hook={() => { podListReq.run() }} />
                         </>
-                        {/* <Popconfirm
-                            title="删除虚拟机"
-                            description={`确定要删除虚拟机 ${record.name} 吗？`}
+                        <Popconfirm
+                            title="删除Pod"
+                            description={`确定要删除Pod ${record.name} 吗？`}
                             onConfirm={async () => {
-                                await cloudapiClient.deleteVmVmId(record.vm.id)
+                                await viewApiClient.deleteKubeObject(record.pod)
                             }}
                             okText="是"
                             cancelText="否"
-                        ><Typography.Link >删除</Typography.Link>
-                        </Popconfirm> */}
+                        >
+                            <Typography.Link type='danger'>
+                                删除
+                            </Typography.Link>
+                        </Popconfirm>
                     </Space>
                 </>
             }

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { whoami } from "../../../lib/utils/server";
 import * as k8s from '@kubernetes/client-node';
-import { updateK8sObj } from "../../../lib/kube/objects";
+import { deleteK8sObj, updateK8sObj } from "../../../lib/kube/objects";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<k8s.KubernetesObject>) {
     const {
@@ -26,6 +26,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 res.status(500).end(e)
                 return
             }
+
+        case 'DELETE':
+            try {
+                const obj = req.body as k8s.KubernetesObject
+                res.status(200).json(await deleteK8sObj(obj))
+                return
+            } catch (e) {
+                res.status(500).end(e)
+                return
+            }
+
 
     }
 }

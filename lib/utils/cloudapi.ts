@@ -55,12 +55,13 @@ export const serverSideCloudapiClient = (token?: string, req?: NextApiRequest) =
     )
 }
 
-const viewApiClientConfig = () => {
+const viewApiClientConfig = (data?: any) => {
     const token = getToken()
     return {
         headers: {
             Authorization: token,
         },
+        data: data,
         baseURL: "/view/v2/api",
     }
 }
@@ -195,5 +196,9 @@ export const viewApiClient = {
 
     updateKubeObject: async (obj: k8s.KubernetesObject) => {
         return (await cloudviewAxios.put(`/kube/object`, obj, viewApiClientConfig())).data as k8s.KubernetesObject
+    },
+
+    deleteKubeObject: async (obj: k8s.KubernetesObject) => {
+        return (await cloudviewAxios.delete(`/kube/object`, viewApiClientConfig(obj))).data as k8s.KubernetesObject
     }
 }
