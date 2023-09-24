@@ -17,7 +17,7 @@ export default function KubeManagement(props: InferGetServerSidePropsType<typeof
     setUserInfo(userInfo)
     return (
         <>
-            <KubeManagementPage namespaceList={props.namespaceList} />
+            <KubeManagementPage allNamespaceList={props.namespaceList} />
         </>
     )
 }

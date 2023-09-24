@@ -4,10 +4,10 @@ import { PodTable } from "./PodTable";
 import { KubeNodeTable } from "./KubeNodeTable";
 
 interface Props {
-    namespaceList: string[]
+    allNamespaceList: string[]
 }
 
-const defaultNSList = ['default']
+const defaultNSList: string[] = []
 
 export function KubeManagementPage(props: Props) {
     const [nsList, setNSListState] = useState<string[]>(defaultNSList)
@@ -21,12 +21,12 @@ export function KubeManagementPage(props: Props) {
                         mode="multiple"
                         allowClear
                         style={{ width: '900px' }}
-                        placeholder="请选择"
+                        placeholder="请选择命名空间，默认展示所有命名空间"
                         defaultValue={defaultNSList}
                         onChange={(value) => {
                             setNSListState(value as string[])
                         }}
-                        options={props.namespaceList.map((ns) => {
+                        options={props.allNamespaceList.map((ns) => {
                             return {
                                 label: ns,
                                 value: ns,

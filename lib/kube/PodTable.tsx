@@ -28,8 +28,9 @@ interface DataType {
 export function PodTable(props: Props) {
     const [pods, setPods] = useState<k8s.V1Pod[]>([])
     const podListReq = useRequest(async () => {
+        const nsList = props.namespaceList.length === 0 ? ["all-ns"] : props.namespaceList
         return (await Promise.all(
-            props.namespaceList.map(async (ns) => {
+            nsList.map(async (ns) => {
                 return (await viewApiClient.getPodListByNamespace(ns)).items
             })
         )).flat()
@@ -38,7 +39,7 @@ export function PodTable(props: Props) {
             setPods(data)
         },
         onError: () => {
-            notificationError('获取Pod列表失败')
+            notificationError('获取容器组列表失败')
         }
     })
 
@@ -66,7 +67,8 @@ export function PodTable(props: Props) {
             title: '命名空间',
             dataIndex: 'namespace',
             valueType: 'text',
-            ...GetColumnSearchProps<DataType>('namespace'),
+            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => { return a.namespace.localeCompare(b.namespace) }
         },
         {
             title: '容器组IP',

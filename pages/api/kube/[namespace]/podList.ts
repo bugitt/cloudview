@@ -24,7 +24,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 async function getPodList(ns: string, selector?: string) {
-    const podList = (await k8sCoreV1Api.listNamespacedPod(ns, undefined, undefined, undefined, undefined, selector)).body
+    const podList = ns === "all-ns" ? (await k8sCoreV1Api.listPodForAllNamespaces()).body :
+        (await k8sCoreV1Api.listNamespacedPod(ns, undefined, undefined, undefined, undefined, selector)).body
     podList.items = podList.items.map((it) => {
         it.apiVersion = "v1"
         it.kind = "Pod"
