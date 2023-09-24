@@ -68,7 +68,8 @@ export function PodTable(props: Props) {
             dataIndex: 'namespace',
             valueType: 'text',
             sortDirections: ['ascend', 'descend'],
-            sorter: (a, b) => { return a.namespace.localeCompare(b.namespace) }
+            sorter: (a, b) => { return a.namespace.localeCompare(b.namespace) },
+            ...GetColumnSearchProps<DataType>('namespace'),
         },
         {
             title: '容器组IP',

@@ -91,7 +91,7 @@ export function GetColumnSearchProps<T extends ReactKeyType>(
         ),
         filterIcon: (filtered: boolean) => (
             <SearchOutlined
-                style={{ color: filtered ? '#1890ff' : undefined }}
+                style={{ color: filtered ? '#1890ff' : 'black' }}
             />
         ),
 
