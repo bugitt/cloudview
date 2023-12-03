@@ -9,7 +9,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'simpleNginx',
         name: '静态网站（Nginx）',
-        baseImage: 'scs.buaa.edu.cn:8081/library/nginx:latest',
+        baseImage: 'harbor.service.internal:8081/library/nginx:latest',
         resource: {
             cpu: 50,
             memory: 100,
@@ -28,7 +28,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'simplePython3.11',
         name: 'Python 3.11',
-        baseImage: 'scs.buaa.edu.cn:8081/library/python3.11:1.0.0',
+        baseImage: 'harbor.service.internal:8081/library/python3.11:1.0.0',
         resource: {
             cpu: 50,
             memory: 100,
@@ -47,7 +47,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'simpleNode18',
         name: 'Node.js 18 with npm pnpm cnpm yarn',
-        baseImage: 'scs.buaa.edu.cn:8081/library/node18-npm-cnpm-pnpm-yarn:1.1.0',
+        baseImage: 'harbor.service.internal:8081/library/node18-npm-cnpm-pnpm-yarn:1.1.0',
         resource: {
             cpu: 100,
             memory: 200,
@@ -66,7 +66,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'simpleMysql',
         name: 'MySQL 8',
-        baseImage: 'scs.buaa.edu.cn:8081/library/mysql8:1.0.0',
+        baseImage: 'harbor.service.internal:8081/library/mysql8:1.0.0',
         resource: {
             cpu: 150,
             memory: 768,
@@ -134,7 +134,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'simplePostgres',
         name: 'PostgreSQL 15',
-        baseImage: 'scs.buaa.edu.cn:8081/library/postgres:15',
+        baseImage: 'harbor.service.internal:8081/library/postgres:15',
         resource: {
             cpu: 100,
             memory: 128,
@@ -205,7 +205,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     {
         key: 'ubuntu2204',
         name: 'Ubuntu 22.04',
-        baseImage: 'scs.buaa.edu.cn:8081/library/ubuntu-ttyd:22.04-v-1.0.6',
+        baseImage: 'harbor.service.internal:8081/library/ubuntu-ttyd:22.04-v-1.0.6',
         resource: {
             cpu: 500,
             memory: 512,
