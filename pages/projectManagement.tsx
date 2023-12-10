@@ -33,7 +33,7 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
                         <ResetPaaSTokenButton />
                     </ProDescriptions.Item>
                 </ProDescriptions>
-                <Alert
+                {/* <Alert
                     message={
                         <Typography>
                             请访问 <Typography.Link href='https://scs.buaa.edu.cn/doc/01_common/paas/' target='_blank'>文档</Typography.Link> 来了解我们新推出的PaaS工作流功能！
@@ -41,7 +41,7 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
                     }
                     type='info'
                     closable
-                />
+                /> */}
                 <ProjectTable projectList={projectList} />
             </Space>
         </>
