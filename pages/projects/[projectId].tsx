@@ -44,9 +44,9 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
                 </Space>
             </PageHeader>
             <ProjectWorkflowListTable project={project} />
-            <ProjectFlow project={project} title="工作区概览" />
+            {/* <ProjectFlow project={project} title="工作区概览" />
             <ImageListTable project={project} />
-            <ResourceStatCardInProject title="项目中各项容器部署任务资源占比" project={project} />
+            <ResourceStatCardInProject title="项目中各项容器部署任务资源占比" project={project} /> */}
         </>
     )
 }
