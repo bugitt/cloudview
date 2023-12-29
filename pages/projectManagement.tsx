@@ -23,7 +23,7 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size='large'>
-                <ProDescriptions>
+                {/* <ProDescriptions>
                     <ProDescriptions.Item label='PaaS平台通用密码' span={3}>
                         <Button onClick={() => {
                             copyToClipboard(props.paasToken, 'PaaS平台通用密码')
@@ -32,7 +32,7 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
                     <ProDescriptions.Item label='重置PaaS平台通用密码' span={3}>
                         <ResetPaaSTokenButton />
                     </ProDescriptions.Item>
-                </ProDescriptions>
+                </ProDescriptions> */}
                 {/* <Alert
                     message={
                         <Typography>
