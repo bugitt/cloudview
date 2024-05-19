@@ -21,6 +21,7 @@ interface FormDataType {
     submitOptions?: SubmitType[]
     baseEnv: string
     baseImage?: string
+    serverless?: boolean
     cpu: number
     memory: number
     compileCommand?: string
@@ -61,6 +62,7 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
             },
             workflowTemplateName: typedValues.baseEnv,
             baseImage: finalBaseImage,
+            serverless: typedValues.serverless ?? false,
             buildSpec: typedValues.compileCommand ? {
                 command: typedValues.compileCommand,
             } : undefined,
@@ -260,6 +262,14 @@ export function ConfigureExperimentWorkflowForm(props: Props) {
                     name={"baseImage"}
                     label="自定义基础镜像"
                     tooltip={"请给出编译和运行所提交的源代码所需要使用的基础镜像。"}
+                />
+
+                <ProFormSwitch
+                    name='serverless'
+                    label='是否按需服务'
+                    checkedChildren="是"
+                    unCheckedChildren="否"
+                    initialValue={false}
                 />
 
                 {extraFields}
