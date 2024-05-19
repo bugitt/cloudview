@@ -1,4 +1,4 @@
-FROM node:16-bullseye
+FROM node:18-bullseye
 
 RUN apt update && apt install curl wget vim -y && npm install -g pnpm
 
