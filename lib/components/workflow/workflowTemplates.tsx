@@ -132,6 +132,71 @@ export const workflowTemplates: WorkflowTemplate[] = [
         }
     },
     {
+        key: 'simpleCodeServer',
+        name: 'Code Server',
+        baseImage: 'scs.buaa.edu.cn:8081/library/code-server:v0.1.0',
+        resource: {
+            cpu: 1000,
+            memory: 2048,
+        },
+        deploySpec: {
+            changeEnv: false,
+            ports: [{ port: 8443, protocol: 'tcp' }],
+        },
+        extraFormItems: (
+            <>
+                <ProFormText
+                    name="password"
+                    label="Code Server的登录密码"
+                    required
+                />
+            </>
+        ),
+        decorateConfiguration: function (wfConfig: ExperimentWorkflowConfiguration, values: any) {
+            const password = values.password as string
+            let env: { [k: string]: string } = wfConfig.deploySpec.env ?? {}
+            env['PASSWORD'] = password
+            wfConfig.deploySpec.env = env
+            return wfConfig
+        },
+        decorateCreateWorkflowRequest: function (req: CreateWorkflowRequest, values: any) {
+            const password = values.password as string
+            let env: { [k: string]: string } = req.env ?? {}
+            env['PASSWORD'] = password
+            req.env = env
+            return req
+        },
+        setFormFields: function (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) {
+            formRef?.current?.setFieldsValue({
+                password: wfConfig.deploySpec.env?.['PASSWORD'] ?? '',
+            })
+        },
+        getServiceStatusListItemByPort: function (port: ServicePort, wf: Workflow) {
+            switch (port.port) {
+                case 3306:
+                    return {
+                        disableAutoConnect: true,
+                        title: 'Code Server 访问入口',
+                        description: <>
+                            <Typography>
+                                数据库 IP <Typography.Text code>
+                                    {port.ip}
+                                </Typography.Text>，
+                                端口 <Typography.Text code>
+                                    {port.nodePort}
+                                </Typography.Text>，
+                                密码 <Typography.Text code>
+                                    {wf.spec.deploy.env?.['PASSWORD']}
+                                </Typography.Text>
+                            </Typography>
+                        </>,
+                    }
+                default:
+                    return undefined
+            }
+        }
+    },
+    {
         key: 'simplePostgres',
         name: 'PostgreSQL 15',
         baseImage: 'scs.buaa.edu.cn:8081/library/postgres:15',
