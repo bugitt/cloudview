@@ -94,7 +94,7 @@ export function getImageMeta(builder: Builder): ImageMeta {
 }
 
 export function getImageUri(imageMeta: ImageMeta) {
-  return `scs.buaa.edu.cn:8081/${imageMeta.owner}/${imageMeta.name}:${imageMeta.tag}`
+  return `harbor.service.internal:8081/${imageMeta.owner}/${imageMeta.name}:${imageMeta.tag}`
 }
 
 export function getImageMetaFromUri(uri: string): ImageMeta {
@@ -109,7 +109,7 @@ export function getImageMetaFromUri(uri: string): ImageMeta {
 
 export function getBuilderImageUri(builder: Builder) {
   const imageMeta = getImageMeta(builder);
-  return `scs.buaa.edu.cn:8081/${imageMeta.owner}/${imageMeta.name}:${imageMeta.tag}`
+  return `harbor.service.internal:8081/${imageMeta.owner}/${imageMeta.name}:${imageMeta.tag}`
 }
 
 export function builderDisplayName(builder: Builder) {
