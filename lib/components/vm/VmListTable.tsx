@@ -1,7 +1,7 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Modal, Popconfirm, Space, Typography } from "antd";
+import { Button, Modal, Popconfirm, Space, Typography, Tabs } from "antd";
 import { useState, ChangeEvent, useEffect } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
