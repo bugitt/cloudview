@@ -2,7 +2,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { Button, Modal, Popconfirm, Space, Typography } from "antd";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { messageInfo, notificationError } from "../../utils/notification";
@@ -111,6 +111,15 @@ export function VmListTable(props: Props) {
             setVmApply(data)
         }
     })
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            vmListReq.run();
+        }, 10000); // 每10秒执行一次
+
+        // 清除定时器
+        return () => clearInterval(intervalId);
+    }, [vmListReq]); 
 
     const columns: ProColumns<DataType>[] = [
         {
