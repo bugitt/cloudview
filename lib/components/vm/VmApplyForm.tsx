@@ -143,30 +143,32 @@ export function VmApplyForm(props: Props) {
                     rules={[{ required: true, message: '请输入申请理由' }]}
                 />
 
-                <ProFormGroup title="选择需要添加虚拟机的学生">
-                    <ProFormSwitch name="all" label="全选"
-                        checkedChildren="全选"
-                        unCheckedChildren="全不选"
-                        fieldProps={{
-                            onChange: (e) => {
-                                if (e) {
-                                    formRef.current?.setFieldValue("studentIdList", studentList.map(student => student.id))
-                                } else {
-                                    formRef.current?.setFieldValue("studentIdList", [])
-                                }
-                            },
-                        }}
-                    />
-                    <ProFormCheckbox.Group
-                        name="studentIdList"
-                        label="学生列表"
-                        layout="vertical"
-                        options={studentList.map(student => {
-                            return { label: `${student.id} ${student.name}`, value: student.id }
-                        })}
-                        required
-                    />
-                </ProFormGroup>
+                {studentList.length > 0 && (
+                    <ProFormGroup title="选择需要添加虚拟机的学生">
+                        <ProFormSwitch name="all" label="全选"
+                            checkedChildren="全选"
+                            unCheckedChildren="全不选"
+                            fieldProps={{
+                                onChange: (e) => {
+                                    if (e) {
+                                        formRef.current?.setFieldValue("studentIdList", studentList.map(student => student.id))
+                                    } else {
+                                        formRef.current?.setFieldValue("studentIdList", [])
+                                    }
+                                },
+                            }}
+                        />
+                        <ProFormCheckbox.Group
+                            name="studentIdList"
+                            label="学生列表"
+                            layout="vertical"
+                            options={studentList.map(student => {
+                                return { label: `${student.id} ${student.name}`, value: student.id }
+                            })}
+                            required
+                        />
+                    </ProFormGroup>
+                )}
 
             </ModalForm>
         </>
