@@ -75,6 +75,10 @@ export const getWorkflowName = (wf?: Workflow) => {
     return wf?.metadata?.name
 }
 
+export const getCheckpointID = (wf?: k8s.KubernetesObject) => {
+    return wf?.metadata?.labels?.['checkpoint-id']
+}
+
 export const getWorkflowTemplate = (wf?: Workflow) => {
     const key = wf?.metadata?.labels?.templateKey
     return workflowTemplates.find(t => t.key === key)
@@ -105,6 +109,7 @@ export interface CreateWorkflowRequest {
     baseImage: string
     compileCommand?: string
     deployCommand?: string
+    serverless?: boolean
     resourcePool?: string
     resource?: Resource
     confRespId?: number
@@ -176,6 +181,7 @@ export interface ExperimentWorkflowConfiguration {
     resource: Resource
     workflowTemplateName?: string
     baseImage?: string
+    serverless?: boolean
     buildSpec?: WorkflowBuildSpec
     deploySpec: WorkflowDeploySpec
     isJob?: boolean
@@ -204,6 +210,7 @@ export async function adminSetupWorkflow(wfConfigResp: ExperimentWorkflowConfigu
         expId: expId,
         context: context,
         baseImage: wfConfig.baseImage!!,
+        serverless: wfConfig.serverless ?? false,
         templateKey: wfTemplate?.key ?? 'custom',
         compileCommand: wfConfig.buildSpec?.command,
         deployCommand: wfConfig.deploySpec?.command,

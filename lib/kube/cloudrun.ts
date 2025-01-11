@@ -2,6 +2,7 @@ import { Builder, BuilderList } from "../models/builder"
 import { Deployer, DeployerList } from "../models/deployer"
 import { ResourcePool } from "../models/resource"
 import { Workflow, WorkflowList } from "../models/workflow"
+import { folonetUnregistry } from "../utils/folonet"
 import { k8sCustomObjectsApi } from "./client"
 import { createOrUpdate } from "./objects"
 
@@ -58,6 +59,9 @@ export const workflowClient = {
     delete: async (name: string, namespace: string) => {
         const workflow = await get<Workflow>(workflowPlural, name, namespace)
         if (workflow) {
+            if (workflow.metadata?.labels && workflow.metadata?.labels['checkpoint-id']) {
+                await folonetUnregistry(name)
+            }
             await k8sCustomObjectsApi.deleteNamespacedCustomObject(group, apiVersion, namespace, workflowPlural, name)
         }
         return workflow

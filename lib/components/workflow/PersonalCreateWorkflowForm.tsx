@@ -29,6 +29,7 @@ interface FormDataType {
     memory: number,
     compileCommand?: string,
     deployCommand?: string,
+    serverless: boolean,
     envs?: {
         key: string
         value: string
@@ -84,6 +85,7 @@ export function PersonalCreateWorkflowForm(props: Props) {
             baseImage: typedValues.baseImage,
             compileCommand: typedValues.compileCommand,
             deployCommand: typedValues.deployCommand,
+            serverless: typedValues.serverless,
             resource: {
                 cpu: typedValues.cpu,
                 memory: typedValues.memory,
@@ -212,6 +214,14 @@ export function PersonalCreateWorkflowForm(props: Props) {
                 name={"deployCommand"}
                 label="启动命令"
                 placeholder="请给出部署时所使用的命令。如果没有给出，将使用默认基础镜像的默认启动命令。"
+            />
+
+            <ProFormSwitch
+                name='serverless'
+                label='是否按需服务'
+                checkedChildren="是"
+                unCheckedChildren="否"
+                initialValue={false}
             />
 
             {extraFields}

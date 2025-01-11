@@ -30,3 +30,8 @@ export const imageBuilder = {
 export const deployerConfig = {
     externalIp: process.env.DEPLOYER_EXTERNAL_IP,
 }
+
+// for folonet
+export const folonetConfig = {
+    serverBaseURL: process.env.FOLONET_SERVER_BASE_URL,
+}

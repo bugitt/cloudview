@@ -8,6 +8,7 @@ import { crdWorkflowKind, CreateWorkflowRequest, ExperimentWorkflowConfiguration
 import { CloudapiClientType, serverSideCloudapiClient } from "../../lib/utils/cloudapi";
 import { LoginUserResponse } from "../../lib/cloudapi-client";
 import { ensurePushSecret } from "../../lib/utils/secret";
+import { folonetRegistry } from "../../lib/utils/folonet";
 
 export default async function handler(
     req: NextApiRequest,
@@ -127,6 +128,27 @@ const createOrUpdateWorkflow = async (req: CreateWorkflowRequest, client: Clouda
         }
         if (wfConf?.customOptions.ports && workflow.spec.deploy) {
             workflow.spec.deploy.ports = req.ports
+        }
+
+        // config serverless labels and annotations
+        if (req.serverless) {
+            const name = finalWorkflowName
+            const portsStr = req.ports?.map(p => `${p.protocol}-${p.port}-${p.protocol}`).join(',') || ""
+            const resp = await folonetRegistry({
+                name: name,
+                deployment: name,
+                service: name,
+                namespace: project.name,
+                ports: portsStr,
+            })
+            if (!workflow.metadata?.labels) {
+                workflow.metadata!.labels = {}
+            }
+            if (!workflow.metadata?.annotations) {
+                workflow.metadata!.annotations = {}
+            }
+            workflow.metadata!.labels['checkpoint-id'] = finalWorkflowName
+            workflow.metadata!.annotations['cni.projectcalico.org/ipAddrs'] = `["${resp.IP}"]`
         }
 
         let oldWorkflow = (await workflowClient.list(project.name)).find(wf => wf.metadata?.name === finalWorkflowName)
