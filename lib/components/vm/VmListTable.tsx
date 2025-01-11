@@ -35,7 +35,7 @@ function findValidIp(netInfos: VmNetInfo[]) {
     let validIp = '-'
     netInfos.forEach(netInfo => {
         netInfo.ipList.forEach(ip => {
-            if (ip.startsWith("10.251.")) {
+            if (ip.startsWith("172.28.")) {
                 validIp = ip
                 return
             }
@@ -332,14 +332,7 @@ export function VmListTable(props: Props) {
         <Modal title="虚拟机详情" open={isVmDetailModalOpen} onOk={() => setIsVmDetailModalOpen(false)} onCancel={() => setIsVmDetailModalOpen(false)}>
             <ProDescriptions column={1}>
                 <ProDescriptions.Item label="名称">{currentVm?.name}</ProDescriptions.Item>
-                <ProDescriptions.Item label="使用须知"><a href="https://scs.buaa.edu.cn/doc/01_common/virtual_machine_help/" target="_blank" rel="noreferrer">虚拟机使用说明</a></ProDescriptions.Item>
-                <ProDescriptions.Item label="访问"><Button type="link" onClick={() => {
-                    if (currentVm !== undefined) {
-                        cloudapiClient.createVncConsole(currentVm.vm.uuid || '').then(res => {
-                            window.open(res.data.url?.split('"')[1], '_blank');
-                        })
-                    }
-                }}>打开控制台</Button></ProDescriptions.Item>
+                <ProDescriptions.Item label="使用须知"><a href="http://172.28.120.21/doc/03_student/vm/" target="_blank" rel="noreferrer">虚拟机使用说明</a></ProDescriptions.Item>
             </ProDescriptions>
             <Tabs defaultActiveKey="1" items={[
                 {
@@ -347,7 +340,7 @@ export function VmListTable(props: Props) {
                     key: '1',
                     children: (
                     <ProDescriptions column={1}>
-                        <ProDescriptions.Item label="登录用户名"> hebau </ProDescriptions.Item>
+                        <ProDescriptions.Item label="登录用户名"> root </ProDescriptions.Item>
                         <ProDescriptions.Item label="默认登录密码"> @hebau123 </ProDescriptions.Item>
                     </ProDescriptions>),
                 },
