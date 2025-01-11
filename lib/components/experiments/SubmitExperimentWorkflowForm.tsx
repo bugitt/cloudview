@@ -164,7 +164,6 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                 }
         }
         const wfTemplate = workflowTemplates.find(wf => (wf.name === wfConfig.workflowTemplateName || wf.name === values.baseEnv))
-        console.log(';llll', wfTemplate)
         const req: CreateWorkflowRequest = {
             confRespId: props.wfConfigRespId,
             ownerIdList: [getUserId()],
@@ -172,6 +171,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
             expId: experiment.id,
             context: context,
             baseImage: values.baseImage,
+            serverless: wfConfig.serverless,
             compileCommand: values.compileCommand,
             deployCommand: values.deployCommand,
             templateKey: wfTemplate?.key ?? 'custom',

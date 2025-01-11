@@ -4,6 +4,8 @@ import { deployerClient } from "../../../../lib/kube/cloudrun";
 import { listPods, listServices } from "../../../../lib/kube/core";
 import { Deployer, ServicePort, ServiceStatus } from "../../../../lib/models/deployer";
 import { serverSideCloudapiClient } from "../../../../lib/utils/cloudapi";
+import { getCheckpointID } from "../../../../lib/models/workflow";
+import { folonetPorts } from "../../../../lib/utils/folonet";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ServiceStatus>) {
     const {
@@ -28,6 +30,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 export async function getServiceStatus(deployer: Deployer) {
+    if (getCheckpointID(deployer)) {
+        const name = deployer.metadata?.name!!
+        const ports = await folonetPorts(name)
+        const healthy = true
+        return { healthy, ports }
+    }
+
     const selector = `owner.name=${deployer.metadata?.name},round=${deployer.status?.base?.currentRound}`
     const pods = await listPods(deployer.metadata?.namespace!!, selector)
     let healthy = false
