@@ -161,7 +161,7 @@ export const ImageListTable = (props: { project: Project }) => {
                                 name: `${item.digest.substring(0, 15)}`,
                                 pullCommand: item.pullCommand,
                                 tags: item.tags,
-                                size: filesize(item.imageSize) as string,
+                                size: filesize(item.imageSize) as unknown as string,
                                 pushTime: formatTimeStamp(item.pushTime),
                                 pullTime: formatTimeStamp(item.pullTime)
                             }
