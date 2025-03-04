@@ -2,13 +2,13 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { Button, Modal, Popconfirm, Space, Typography } from "antd";
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
 import { messageInfo, notificationError } from "../../utils/notification";
 import { AddVmIntoApplyForm } from "./AddVmIntoApplyForm";
 import { VmApplyForm } from "./VmApplyForm";
-import WMKSPage from "./VmWebConsole"
+import WMKSPage, { WMKSPageRef } from "./VmWebConsole";
 
 interface Props {
     fetchVmList: (experimentId?: number) => Promise<VirtualMachine[]>
@@ -56,6 +56,7 @@ export function VmListTable(props: Props) {
     const [loading, setLoading] = useState(false)
     const [showConsole, setShowConsole] = useState(false);
     const [consoleProps, setConsoleProps] = useState<{host: string, ticket: string} | null>(null);
+    const wmksRef = useRef<WMKSPageRef>(null);
 
     const vmListReq = useRequest(() => {
         setLoading(true)
@@ -249,8 +250,14 @@ export function VmListTable(props: Props) {
     return (<>
         {showConsole ? (
             <div>
-                <Button onClick={() => setShowConsole(false)}>返回列表</Button>
+                <Space size={10}>
+                    <Button onClick={() => setShowConsole(false)}>返回列表</Button>
+                    <Button onClick={() => wmksRef.current?.sendCtrlAltDel()}>
+                        发送 Ctrl+Alt+Del
+                    </Button>
+                </Space>
                 <WMKSPage 
+                    ref={wmksRef}
                     key={`${consoleProps?.host}-${consoleProps?.ticket}`}
                     host={consoleProps?.host || ""}
                     ticket={consoleProps?.ticket || ""}

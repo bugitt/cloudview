@@ -1,13 +1,25 @@
-import { useEffect, useRef } from "react";
+import { forwardRef, useImperativeHandle, useEffect, useRef } from "react";
 
 interface WMKSPageProps {
   host: string;
   ticket: string;
 }
 
-const WMKSPage: React.FC<WMKSPageProps> = ({ host, ticket }) => {
+// 新增类型定义
+export interface WMKSPageRef {
+  sendCtrlAltDel: () => void;
+}
+
+const WMKSPage = forwardRef<WMKSPageRef, WMKSPageProps>(({ host, ticket }, ref) => {
   const wmksContainerRef = useRef<HTMLDivElement | null>(null);
   const wmksInstance = useRef<any>(null);
+
+  useImperativeHandle(ref, () => ({
+    sendCtrlAltDel: () => {
+      if (!wmksInstance.current) return;
+      wmksInstance.current.sendCAD();
+    }
+  }));
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -42,7 +54,7 @@ const WMKSPage: React.FC<WMKSPageProps> = ({ host, ticket }) => {
     if (canvas) {
       canvas.style.position = "relative";
     }
-    const url = `ws://10.251.253.111/${host}/${ticket}`;
+    const url = `wss://scs.buaa.edu.cn/esxi/${host}/${ticket}`;
     try {
       wmksInstance.current.connect(url);
       console.log("Connected to VM Console");
@@ -51,20 +63,8 @@ const WMKSPage: React.FC<WMKSPageProps> = ({ host, ticket }) => {
     }
   };
 
-  const sendCtrlAltDel = () => {
-    if (!wmksInstance.current) return;
-    wmksInstance.current.sendCAD();
-    console.log("Sent Ctrl+Alt+Del");
-  };
-
   return (
     <div className="flex flex-col items-center">
-      <button
-        onClick={sendCtrlAltDel}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        发送 Ctrl+Alt+Del
-      </button>
       <div
         id="wmksContainer"
         ref={wmksContainerRef}
@@ -72,6 +72,6 @@ const WMKSPage: React.FC<WMKSPageProps> = ({ host, ticket }) => {
       ></div>
     </div>
   );
-};
+});
 
 export default WMKSPage;
