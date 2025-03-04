@@ -183,7 +183,7 @@ export function ExperimentWorkflowTable(props: Props) {
 
                 const dataList: DataType[] = thisStudentList
                     .map((student, index) => {
-                        const workflowResp = workflowRespList.find(wfResp => getWorkflowOwner(wfResp.workflow) === student.id && getWorkflowExpId(wfResp.workflow) === experiment.id)
+                        const workflowResp = workflowRespList.find((wfResp: any) => getWorkflowOwner(wfResp.workflow) === student.id && getWorkflowExpId(wfResp.workflow) === experiment.id)
                         const workflow = workflowResp?.workflow
                         return {
                             key: index,
