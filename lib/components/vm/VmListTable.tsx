@@ -8,6 +8,7 @@ import { cloudapiClient } from "../../utils/cloudapi";
 import { messageInfo, notificationError } from "../../utils/notification";
 import { AddVmIntoApplyForm } from "./AddVmIntoApplyForm";
 import { VmApplyForm } from "./VmApplyForm";
+import WMKSPage from "./VmWebConsole"
 
 interface Props {
     fetchVmList: (experimentId?: number) => Promise<VirtualMachine[]>
@@ -53,6 +54,8 @@ export function VmListTable(props: Props) {
     const [selectedVmList, setSelectedVmList] = useState<DataType[]>([])
     const [isVmDetailModalOpen, setIsVmDetailModalOpen] = useState(false);
     const [loading, setLoading] = useState(false)
+    const [showConsole, setShowConsole] = useState(false);
+    const [consoleProps, setConsoleProps] = useState<{host: string, ticket: string} | null>(null);
 
     const vmListReq = useRequest(() => {
         setLoading(true)
@@ -204,13 +207,6 @@ export function VmListTable(props: Props) {
                             setCurrentVm(record)
                             setIsVmDetailModalOpen(true)
                         }}>详情</Typography.Link>
-                        {
-                            record.name.startsWith("docker") && record.state === 'running' &&
-                            <Typography.Link
-                                href={`http://${record.ip}:7681`}
-                                target='_blank'
-                            >访问虚拟机</Typography.Link>
-                        }
                         <Typography.Link disabled={record.state !== 'stopped'}
                             onClick={() => {
                                 cloudapiClient.patchVmVmIdPower(record.vm.id, "poweron")
@@ -224,6 +220,16 @@ export function VmListTable(props: Props) {
                                 messageInfo('成功提交关机任务')
                                 vmListReq.run()
                             }}>关机</Typography.Link>
+                        <Typography.Link disabled={record.state !== 'running'}
+                            onClick={async () => {
+                                cloudapiClient.postVmVmIdTicket(record.vm.uuid || "").then(res => {
+                                    setConsoleProps({
+                                        host: res.data.host,
+                                        ticket: res.data.ticket
+                                    });
+                                    setShowConsole(true);
+                                })
+                            }}>打开控制台</Typography.Link>
                         <Popconfirm
                             title="删除虚拟机"
                             description={`确定要删除虚拟机 ${record.name} 吗？`}
@@ -241,94 +247,105 @@ export function VmListTable(props: Props) {
     ]
 
     return (<>
-        <ProTable<DataType>
-            options={{
-                reload: () => { vmListReq.run() }
-            }}
-            rowSelection={{
-                onChange: (_, selectedRows) => {
-                    setSelectedVmList(selectedRows)
-                }
-            }}
-            tableAlertOptionRender={() => {
-                return (
-                    <Space>
-                        <Popconfirm
-                            title="删除虚拟机"
-                            description={`确定要删除虚拟机所选中的这些虚拟机吗？`}
-                            onConfirm={() => {
-                                Promise.all(selectedVmList.map(async (vm) => {
-                                    await cloudapiClient.deleteVmVmId(vm.vm.id)
-                                })).then(() => {
-                                    messageInfo('成功提交删除任务')
-                                }).then(() => {
-                                    vmListReq.run()
-                                })
-                            }}
-                            okText="是"
-                            cancelText="否"
-                        >
-                            <a>批量删除</a>
-                        </Popconfirm>
-                    </Space>
-                );
-            }}
-            toolBarRender={() => [
-                !props.isAdmin && !vmApply && <VmApplyForm key="apply" title="申请虚拟机" onOk={() => {
-                    vmListReq.run()
+        {showConsole ? (
+            <div>
+                <Button onClick={() => setShowConsole(false)}>返回列表</Button>
+                <WMKSPage 
+                    key={`${consoleProps?.host}-${consoleProps?.ticket}`}
+                    host={consoleProps?.host || ""}
+                    ticket={consoleProps?.ticket || ""}
+                />
+            </div>
+        ) : (
+            <ProTable<DataType>
+                options={{
+                    reload: () => { vmListReq.run() }
                 }}
-                    studentId={props.studentId}
-                    teacherId={props.teacherId}
-                    experimentId={props.experimentId}
-                />,
-
-                !props.isAdmin && props.experimentId && vmApply && <AddVmIntoApplyForm
-                    key="add"
-                    experimentId={props.experimentId}
-                    existingVmStudentIdList={vmList.map(vm => vm.vm.studentId)}
-                    vmApply={vmApply}
-                />,
-
-                props.experimentId && vmApply && <Popconfirm
-                    title="删除虚拟机"
-                    description={`确定要删除全部虚拟机吗？`}
-                    onConfirm={() => {
-                        Promise.all(vmList.map(async (vm) => {
-                            await cloudapiClient.deleteVmVmId(vm.vm.id)
-                        })).then(() => {
-                            messageInfo('成功提交删除任务')
-                        }).then(() => {
-                            vmListReq.run()
-                        })
+                rowSelection={{
+                    onChange: (_, selectedRows) => {
+                        setSelectedVmList(selectedRows)
+                    }
+                }}
+                tableAlertOptionRender={() => {
+                    return (
+                        <Space>
+                            <Popconfirm
+                                title="删除虚拟机"
+                                description={`确定要删除虚拟机所选中的这些虚拟机吗？`}
+                                onConfirm={() => {
+                                    Promise.all(selectedVmList.map(async (vm) => {
+                                        await cloudapiClient.deleteVmVmId(vm.vm.id)
+                                    })).then(() => {
+                                        messageInfo('成功提交删除任务')
+                                    }).then(() => {
+                                        vmListReq.run()
+                                    })
+                                }}
+                                okText="是"
+                                cancelText="否"
+                            >
+                                <a>批量删除</a>
+                            </Popconfirm>
+                        </Space>
+                    );
+                }}
+                toolBarRender={() => [
+                    !props.isAdmin && !vmApply && <VmApplyForm key="apply" title="申请虚拟机" onOk={() => {
+                        vmListReq.run()
                     }}
-                    okText="是"
-                    cancelText="否"
-                ><Button type="primary" danger={true}>删除全部虚拟机</Button>
-                </Popconfirm>
-            ]}
-            toolbar={{
-                search: {
-                    onSearch: (search: string) => {
-                        setVmShownList(vmList.filter(vm =>
-                            vm.name.toLowerCase().includes(search.toLowerCase()) ||
-                            vm.systemName?.toLowerCase().includes(search.toLowerCase()) ||
-                            vm.ip?.toLowerCase().includes(search.toLowerCase())))
-                    },
-                    onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                        setVmShownList(vmList.filter(vm =>
-                            vm.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-                            vm.systemName?.toLowerCase().includes(event.target.value.toLowerCase()) ||
-                            vm.ip?.toLowerCase().includes(event.target.value.toLowerCase())))
+                        studentId={props.studentId}
+                        teacherId={props.teacherId}
+                        experimentId={props.experimentId}
+                    />,
+
+                    !props.isAdmin && props.experimentId && vmApply && <AddVmIntoApplyForm
+                        key="add"
+                        experimentId={props.experimentId}
+                        existingVmStudentIdList={vmList.map(vm => vm.vm.studentId)}
+                        vmApply={vmApply}
+                    />,
+
+                    props.experimentId && vmApply && <Popconfirm
+                        title="删除虚拟机"
+                        description={`确定要删除全部虚拟机吗？`}
+                        onConfirm={() => {
+                            Promise.all(vmList.map(async (vm) => {
+                                await cloudapiClient.deleteVmVmId(vm.vm.id)
+                            })).then(() => {
+                                messageInfo('成功提交删除任务')
+                            }).then(() => {
+                                vmListReq.run()
+                            })
+                        }}
+                        okText="是"
+                        cancelText="否"
+                    ><Button type="primary" danger={true}>删除全部虚拟机</Button>
+                    </Popconfirm>
+                ]}
+                toolbar={{
+                    search: {
+                        onSearch: (search: string) => {
+                            setVmShownList(vmList.filter(vm =>
+                                vm.name.toLowerCase().includes(search.toLowerCase()) ||
+                                vm.systemName?.toLowerCase().includes(search.toLowerCase()) ||
+                                vm.ip?.toLowerCase().includes(search.toLowerCase())))
+                        },
+                        onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                            setVmShownList(vmList.filter(vm =>
+                                vm.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                                vm.systemName?.toLowerCase().includes(event.target.value.toLowerCase()) ||
+                                vm.ip?.toLowerCase().includes(event.target.value.toLowerCase())))
+                        }
                     }
                 }
-            }
-            }
-            columns={columns}
-            dataSource={vmShownList}
-            search={false}
-            loading={loading}
-            headerTitle="虚拟机列表"
-        />
+                }
+                columns={columns}
+                dataSource={vmShownList}
+                search={false}
+                loading={loading}
+                headerTitle="虚拟机列表"
+            />
+        )}
         <Modal title="虚拟机详情" open={isVmDetailModalOpen} onOk={() => setIsVmDetailModalOpen(false)} onCancel={() => setIsVmDetailModalOpen(false)}>
             <ProDescriptions column={1}>
                 <ProDescriptions.Item label="名称">{currentVm?.name}</ProDescriptions.Item>

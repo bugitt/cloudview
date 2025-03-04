@@ -1,6 +1,7 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next"
 import { VmApplyListTable } from "../lib/components/vm/VmApplyListTable"
 import { VmListTable } from "../lib/components/vm/VmListTable"
+import WMKSPage from "../lib/components/vm/VmWebConsole"
 import { cloudapiClient } from "../lib/utils/cloudapi"
 import { setUserInfo, staticUserInfoFromQueryParams } from "../lib/utils/token"
 
