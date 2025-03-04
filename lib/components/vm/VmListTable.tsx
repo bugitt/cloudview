@@ -1,7 +1,7 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Modal, Popconfirm, Space, Typography } from "antd";
+import { Button, Modal, Popconfirm, Space, Typography, Input } from "antd";
 import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
@@ -56,6 +56,7 @@ export function VmListTable(props: Props) {
     const [loading, setLoading] = useState(false)
     const [showConsole, setShowConsole] = useState(false);
     const [consoleProps, setConsoleProps] = useState<{host: string, ticket: string} | null>(null);
+    const [inputText, setInputText] = useState('');
     const wmksRef = useRef<WMKSPageRef>(null);
 
     const vmListReq = useRequest(() => {
@@ -252,6 +253,18 @@ export function VmListTable(props: Props) {
             <div>
                 <Space size={10}>
                     <Button onClick={() => setShowConsole(false)}>返回列表</Button>
+                    <Input 
+                        placeholder="要输入至虚拟机的文本" 
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        style={{ width: 200 }}
+                    />
+                    <Button onClick={() => {
+                        wmksRef.current?.sendText(inputText);
+                        setInputText(''); // 清空输入框
+                    }}>
+                        输入
+                    </Button>
                     <Button onClick={() => wmksRef.current?.sendCtrlAltDel()}>
                         发送 Ctrl+Alt+Del
                     </Button>

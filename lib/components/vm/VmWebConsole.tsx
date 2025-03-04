@@ -8,6 +8,7 @@ interface WMKSPageProps {
 // 新增类型定义
 export interface WMKSPageRef {
   sendCtrlAltDel: () => void;
+  sendText: (text: string) => void;
 }
 
 const WMKSPage = forwardRef<WMKSPageRef, WMKSPageProps>(({ host, ticket }, ref) => {
@@ -18,6 +19,10 @@ const WMKSPage = forwardRef<WMKSPageRef, WMKSPageProps>(({ host, ticket }, ref) 
     sendCtrlAltDel: () => {
       if (!wmksInstance.current) return;
       wmksInstance.current.sendCAD();
+    },
+    sendText: (text: string) => {
+      if (!wmksInstance.current) return;
+      wmksInstance.current.sendInputString(text);
     }
   }));
 
