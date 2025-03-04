@@ -28,16 +28,16 @@ const WMKSPage: React.FC<WMKSPageProps> = ({ host, ticket }) => {
   }, []);
 
   const connect = () => {
-    if (!window.WMKS) {
+    if (!(window as any).WMKS) {
       console.error("WMKS SDK not loaded");
       return;
     }
     const options = {
       rescale: true,
       changeResolution: true,
-      position: window.WMKS.CONST.Position.CENTER,
+      position: (window as any).WMKS.CONST.Position.CENTER,
     };
-    wmksInstance.current = window.WMKS.createWMKS("wmksContainer", options);
+    wmksInstance.current = (window as any).WMKS.createWMKS("wmksContainer", options);
     const canvas = document.getElementById("mainCanvas") as HTMLCanvasElement;
     if (canvas) {
       canvas.style.position = "relative";
