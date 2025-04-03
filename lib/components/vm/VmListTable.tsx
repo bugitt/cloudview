@@ -1,7 +1,7 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Modal, Popconfirm, Space, Typography, Input } from "antd";
+import { Button, Modal, Popconfirm, Space, Typography, Input, Tabs } from "antd";
 import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
@@ -36,7 +36,7 @@ function findValidIp(netInfos: VmNetInfo[]) {
     let validIp = '-'
     netInfos.forEach(netInfo => {
         netInfo.ipList.forEach(ip => {
-            if (ip.startsWith("10.251.")) {
+            if (ip.startsWith("172.28.")) {
                 validIp = ip
                 return
             }
@@ -369,10 +369,29 @@ export function VmListTable(props: Props) {
         <Modal title="虚拟机详情" open={isVmDetailModalOpen} onOk={() => setIsVmDetailModalOpen(false)} onCancel={() => setIsVmDetailModalOpen(false)}>
             <ProDescriptions column={1}>
                 <ProDescriptions.Item label="名称">{currentVm?.name}</ProDescriptions.Item>
-                <ProDescriptions.Item label="使用须知"><a href="https://scs.buaa.edu.cn/doc/01_common/virtual_machine_help/" target="_blank" rel="noreferrer">虚拟机使用说明</a></ProDescriptions.Item>
-                <ProDescriptions.Item label="登录用户名"> buaa  或  root </ProDescriptions.Item>
-                <ProDescriptions.Item label="默认登录密码"> &shieshuyuan21 </ProDescriptions.Item>
+                <ProDescriptions.Item label="使用须知"><a href="http://172.28.120.21/doc/03_student/vm/" target="_blank" rel="noreferrer">虚拟机使用说明</a></ProDescriptions.Item>
             </ProDescriptions>
+            <Tabs defaultActiveKey="1" items={[
+                {
+                    label: 'Linux 虚拟机',
+                    key: '1',
+                    children: (
+                    <ProDescriptions column={1}>
+                        <ProDescriptions.Item label="登录用户名"> root </ProDescriptions.Item>
+                        <ProDescriptions.Item label="默认登录密码"> @hebau123 </ProDescriptions.Item>
+                    </ProDescriptions>),
+                },
+                {
+                    label: 'Windows 虚拟机',
+                    key: '2',
+                    children: (
+                    <ProDescriptions column={1}>
+                        <ProDescriptions.Item label="登录用户名"> admin </ProDescriptions.Item>
+                        <ProDescriptions.Item label="默认登录密码"> @hebau123 </ProDescriptions.Item>
+                    </ProDescriptions>),
+                }
+            ]}
+            />
         </Modal>
     </>)
 }

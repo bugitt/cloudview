@@ -3133,6 +3133,19 @@ export interface UserModel {
 /**
  * 
  * @export
+ * @interface VNCConsole
+ */
+export interface VNCConsole {
+    /**
+     * 
+     * @type {string}
+     * @memberof VNCConsole
+     */
+    'url'?: string;
+}
+/**
+ * 
+ * @export
  * @interface VirtualMachine
  */
 export interface VirtualMachine {
@@ -3869,6 +3882,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 创建一个虚拟机 VNC 控制台
+         * @summary 创建一个 VNC 控制台
+         * @param {string} vmId vm uuid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createVncConsole: async (vmId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'vmId' is not null or undefined
+            assertParamExists('createVncConsole', 'vmId', vmId)
+            const localVarPath = `/vm/{vmId}/vnc`
+                .replace(`{${"vmId"}}`, encodeURIComponent(String(vmId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
 
     
@@ -7014,6 +7064,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 创建一个虚拟机 VNC 控制台
+         * @summary 创建一个 VNC 控制台
+         * @param {string} vmId vm uuid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createVncConsole(vmId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VNCConsole>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createVncConsole(vmId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
          * @param {number} [assignmentId] 
@@ -8053,6 +8114,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.approveVmsApply(applyId, approve, reply, options).then((request) => request(axios, basePath));
         },
         /**
+         * 创建一个虚拟机 VNC 控制台
+         * @summary 创建一个 VNC 控制台
+         * @param {string} vmId vm uuid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createVncConsole(vmId: string, options?: any): AxiosPromise<VNCConsole> {
+            return localVarFp.createVncConsole(vmId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 删除某个作业的所有评阅记录
          * @summary 删除某个作业的所有评阅记录
          * @param {number} [assignmentId] 
@@ -9002,6 +9073,18 @@ export class DefaultApi extends BaseAPI {
      */
     public approveVmsApply(applyId: string, approve: boolean, reply: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).approveVmsApply(applyId, approve, reply, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 创建一个虚拟机 VNC 控制台
+     * @summary 创建一个 VNC 控制台
+     * @param {string} vmId vm uuid
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createVncConsole(vmId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createVncConsole(vmId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

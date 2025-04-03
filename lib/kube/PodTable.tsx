@@ -5,7 +5,7 @@ import { useRequest } from 'ahooks';
 import { viewApiClient } from '../utils/cloudapi';
 import { notificationError } from '../utils/notification';
 import { GetColumnSearchProps } from '../utils/table';
-import { Space, Typography, Popconfirm } from 'antd';
+import { Space, Typography, Popconfirm, Tooltip } from 'antd';
 import { KubeObjectModal } from './KubeObjectModal';
 
 interface Props {
@@ -22,6 +22,7 @@ interface DataType {
     hostIP?: string,
     message?: string,
     createdTime?: Date,
+    isSystemPod?: boolean,
     pod: k8s.V1Pod,
 }
 
@@ -105,20 +106,27 @@ export function PodTable(props: Props) {
 
                             <KubeObjectModal obj={record.pod} hook={() => { podListReq.run() }} />
                         </>
-                        <Popconfirm
-                            title="删除Pod"
-                            description={`确定要删除Pod ${record.name} 吗？`}
-                            onConfirm={async () => {
-                                await viewApiClient.deleteKubeObject(record.pod)
-                                podListReq.run()
-                            }}
-                            okText="是"
-                            cancelText="否"
-                        >
-                            <Typography.Link type='danger'>
-                                删除
-                            </Typography.Link>
-                        </Popconfirm>
+                        {record.isSystemPod ?
+                            < Tooltip title="该Pod为系统组件，不可删除">
+                                <Typography.Link type='danger' disabled>
+                                    删除
+                                </Typography.Link>
+                            </Tooltip> :
+                            <Popconfirm
+                                title="删除Pod"
+                                description={`确定要删除Pod ${record.name} 吗？`}
+                                onConfirm={async () => {
+                                    await viewApiClient.deleteKubeObject(record.pod)
+                                    podListReq.run()
+                                }}
+                                okText="是"
+                                cancelText="否"
+                            >
+                                <Typography.Link type='danger'>
+                                    删除
+                                </Typography.Link>
+                            </Popconfirm>
+                        }
                     </Space>
                 </>
             }
@@ -144,6 +152,7 @@ export function PodTable(props: Props) {
                             hostIP: pod.status?.hostIP,
                             message: pod.status?.message,
                             createdTime: pod.metadata?.creationTimestamp,
+                            isSystemPod: isSystemPod(pod.metadata?.namespace),
                             pod: pod,
                         }
                     })
@@ -157,4 +166,8 @@ export function PodTable(props: Props) {
             />
         </>
     )
+}
+
+function isSystemPod(ns: String | undefined): boolean {
+    return !(ns?.startsWith("personal-") || ns?.startsWith("exp-"))
 }

@@ -13,7 +13,6 @@ import { BaseSSRType } from "../../lib/utils/type"
 
 interface ProjectProps extends BaseSSRType {
     project: Project
-    gitRepos: Repository[]
 }
 
 export default function SingleProjectPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -44,9 +43,9 @@ export default function SingleProjectPage(props: InferGetServerSidePropsType<typ
                 </Space>
             </PageHeader>
             <ProjectWorkflowListTable project={project} />
-            {/* <ProjectFlow project={project} title="工作区概览" /> */}
+            {/* <ProjectFlow project={project} title="工作区概览" />
             <ImageListTable project={project} />
-            <ResourceStatCardInProject title="项目中各项容器部署任务资源占比" project={project} />
+            <ResourceStatCardInProject title="项目中各项容器部署任务资源占比" project={project} /> */}
         </>
     )
 }
@@ -56,12 +55,10 @@ export const getServerSideProps: GetServerSideProps<ProjectProps> = async (ctx) 
     const client = serverSideCloudapiClient(userInfo.token)
     const projectId = Number(ctx.query.projectId)
     const project = (await client.getProjectProjectId(projectId)).data
-    const gitRepos = (await client.getProjectProjectIdRepos(String(projectId))).data
     return {
         props: {
             userInfo: userInfo,
             project: project,
-            gitRepos: gitRepos,
         },
     }
 }

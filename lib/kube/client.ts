@@ -4,12 +4,14 @@ import { businessK8s } from '../config/env';
 const cluster = {
     name: 'business-cluster',
     server: businessK8s.server,
-    // caData: businessK8s.caData,
+    caData: businessK8s.clusterCaData,
 };
 
 const user = {
     name: 'business-rke',
     token: businessK8s.userToken,
+    certData: businessK8s.userCertData,
+    keyData: businessK8s.userKeyData,
 };
 
 const context = {
