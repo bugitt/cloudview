@@ -56,7 +56,7 @@ export function ExperimentPaaSAdmin(props: Props) {
 
                 <Tabs
                     defaultActiveKey="1"
-                    items={expWfConfigList.map((wfConfig, index) => {
+                    items={expWfConfigList.map((wfConfig: any, index: number) => {
                         return {
                             key: String(index + 1),
                             label: wfConfig.name,

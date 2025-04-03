@@ -3271,6 +3271,26 @@ export interface VirtualMachine {
     'id': string;
 }
 /**
+ * Web 访问凭证响应
+ * @export
+ * @interface TicketResponse
+ */
+export interface TicketResponse {
+    /**
+     * 访问凭证
+     * @type {string}
+     * @memberof TicketResponse
+     */
+    'ticket': string;
+    
+    /**
+     * 服务器主机地址
+     * @type {string}
+     * @memberof TicketResponse
+     */
+    'host': string;
+}
+/**
  * 
  * @export
  * @interface VirtualMachineTemplate
@@ -5936,6 +5956,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 创建 Web 访问凭证
+         * @summary 创建虚拟机的 Web 访问凭证
+         * @param {string} vmId 虚拟机 UUID
+         * @param {*} [options] 可选的 HTTP 请求配置
+         * @throws {RequiredError}
+         */
+        postVmVmIdTicket: async (vmId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // 确保 vmId 存在
+            assertParamExists('postVmVmIdTicket', 'vmId', vmId);
+            const localVarPath = `/vm/{vmId}/ticket`
+                .replace(`{${"vmId"}}`, encodeURIComponent(String(vmId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 对虚拟机进行开关机操作
          * @summary 虚拟机开关机
          * @param {string} vmId vm uuid
@@ -7654,6 +7713,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 创建 Web 访问凭证
+         * @summary 创建虚拟机的 Web 访问凭证
+         * @param {string} vmId 虚拟机 UUID
+         * @param {*} [options] 可选的 HTTP 请求配置
+         * @throws {RequiredError}
+         */
+        async postVmVmIdTicket(vmId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TicketResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postVmVmIdTicket(vmId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 获取符合条件的所有虚拟机
          * @summary get Virtual Machine list
          * @param {string} [studentId] 
@@ -8633,6 +8703,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getVmVmId(vmId: string, options?: any): AxiosPromise<VirtualMachine> {
             return localVarFp.getVmVmId(vmId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 创建 Web 访问凭证
+         * @summary 创建虚拟机的 Web 访问凭证
+         * @param {string} vmId 虚拟机 UUID
+         * @param {*} [options] 可选的 HTTP 请求配置
+         * @throws {RequiredError}
+         */
+        postVmVmIdTicket(vmId: string, options?: any): AxiosPromise<TicketResponse> {
+            return localVarFp.postVmVmIdTicket(vmId, options).then((request) => request(axios, basePath));
         },
         /**
          * 获取符合条件的所有虚拟机

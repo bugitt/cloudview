@@ -232,7 +232,7 @@ export function WorkflowDescription(props: Props) {
                                             </ProDescriptions.Item>
                                             <ProDescriptions.Item label="端口号配置">
                                                 {
-                                                    workflow?.spec.deploy?.ports?.map((port, index) => {
+                                                    workflow?.spec.deploy?.ports?.map((port: any, index: number) => {
                                                         return (
                                                             <ProDescriptions key={index}>
                                                                 <ProDescriptions.Item label="端口号" valueType='text'>
