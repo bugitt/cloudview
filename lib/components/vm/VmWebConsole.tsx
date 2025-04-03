@@ -59,7 +59,7 @@ const WMKSPage = forwardRef<WMKSPageRef, WMKSPageProps>(({ host, ticket }, ref) 
     if (canvas) {
       canvas.style.position = "relative";
     }
-    const url = `wss://scs.buaa.edu.cn/esxi/${host}/${ticket}`;
+    const url = `ws://172.28.120.21:44086/${host}/${ticket}`;
     try {
       wmksInstance.current.connect(url);
       console.log("Connected to VM Console");
