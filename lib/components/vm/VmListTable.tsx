@@ -1,7 +1,8 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, DownOutlined } from "@ant-design/icons";
 import { ProColumns, ProDescriptions, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button, Modal, Popconfirm, Space, Typography, Input } from "antd";
+import type { MenuProps } from 'antd';
+import { Button, Modal, Popconfirm, Space, Typography, Input, Dropdown, Menu } from "antd";
 import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
@@ -202,46 +203,103 @@ export function VmListTable(props: Props) {
             title: '操作',
             key: 'option',
             valueType: 'option',
+            width: 120,
             render: (_, record) => {
+                const menuItems: MenuProps['items'] = [
+                    {
+                        key: 'poweron',
+                        disabled: record.state !== 'stopped',
+                        label: (
+                            <Typography.Link style={record.state !== 'stopped' ? {} : { color: '#1677ff' }}
+                                onClick={() => {
+                                    cloudapiClient.patchVmVmIdPower(record.vm.id, "poweron")
+                                    messageInfo('成功提交开机任务')
+                                    vmListReq.run()
+                                }}
+                            >开机</Typography.Link>
+                        )
+                    },
+                    {
+                        key: 'poweroff',
+                        disabled: record.state !== 'running',
+                        label: (
+                            <Typography.Link style={record.state !== 'running' ? {} : { color: '#1677ff' }}
+                                onClick={() => {
+                                    cloudapiClient.patchVmVmIdPower(record.vm.id, "poweroff")
+                                    messageInfo('成功提交关机任务')
+                                    vmListReq.run()
+                                }}
+                            >关机</Typography.Link>
+                        )
+                    },
+                    {
+                        key: 'console',
+                        disabled: record.state !== 'running',
+                        label: (
+                            <Typography.Link style={record.state !== 'running' ? {} : { color: '#1677ff' }}
+                                onClick={async () => {
+                                    cloudapiClient.postVmVmIdTicket(record.vm.uuid || "").then(res => {
+                                        setConsoleProps({
+                                            host: res.data.host,
+                                            ticket: res.data.ticket
+                                        });
+                                        setShowConsole(true);
+                                    })
+                                }}
+                            >打开控制台</Typography.Link>
+                        )
+                    },
+                    {
+                        key: 'template',
+                        disabled: record.state !== 'stopped',
+                        label: (
+                            <Popconfirm
+                                title="确认转换为模板？"
+                                description={`转换后该虚拟机会变为模板，请到“虚拟机模板”页查看`}
+                                onConfirm={() => {
+                                    cloudapiClient.postVmTemplate({uuid: record.vm.uuid, name: record.name})
+                                    messageInfo('转换虚拟机模板成功')
+                                    vmListReq.run()
+                                }}
+                                okText="确认"
+                                cancelText="取消"
+                            >
+                                <Typography.Link style={record.state !== 'stopped' ? {} : { color: '#1677ff' }}>
+                                    转换为模板
+                                </Typography.Link>
+                            </Popconfirm>
+                        )
+                    },
+                    {
+                        type: 'divider',
+                    },
+                    {
+                        key: 'delete',
+                        label: (
+                            <Popconfirm
+                                title="删除虚拟机"
+                                description={`确定要删除虚拟机 ${record.name} 吗？`}
+                                onConfirm={async () => {
+                                    await cloudapiClient.deleteVmVmId(record.vm.id)
+                                }}
+                                okText="是"
+                                cancelText="否"
+                            >
+                                <Typography.Link style={{ color: '#ff4d4f' }}>删除</Typography.Link>
+                            </Popconfirm>
+                        )
+                    }
+                ];
+
                 return <>
                     <Space>
                         <Typography.Link onClick={() => {
                             setCurrentVm(record)
                             setIsVmDetailModalOpen(true)
                         }}>详情</Typography.Link>
-                        <Typography.Link disabled={record.state !== 'stopped'}
-                            onClick={() => {
-                                cloudapiClient.patchVmVmIdPower(record.vm.id, "poweron")
-                                messageInfo('成功提交开机任务')
-                                vmListReq.run()
-                            }}
-                        >开机</Typography.Link>
-                        <Typography.Link disabled={record.state !== 'running'}
-                            onClick={() => {
-                                cloudapiClient.patchVmVmIdPower(record.vm.id, "poweroff")
-                                messageInfo('成功提交关机任务')
-                                vmListReq.run()
-                            }}>关机</Typography.Link>
-                        <Typography.Link disabled={record.state !== 'running'}
-                            onClick={async () => {
-                                cloudapiClient.postVmVmIdTicket(record.vm.uuid || "").then(res => {
-                                    setConsoleProps({
-                                        host: res.data.host,
-                                        ticket: res.data.ticket
-                                    });
-                                    setShowConsole(true);
-                                })
-                            }}>打开控制台</Typography.Link>
-                        <Popconfirm
-                            title="删除虚拟机"
-                            description={`确定要删除虚拟机 ${record.name} 吗？`}
-                            onConfirm={async () => {
-                                await cloudapiClient.deleteVmVmId(record.vm.id)
-                            }}
-                            okText="是"
-                            cancelText="否"
-                        ><Typography.Link >删除</Typography.Link>
-                        </Popconfirm>
+                        <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+                            <Typography.Link><Space>更多<DownOutlined /></Space></Typography.Link>
+                        </Dropdown>
                     </Space>
                 </>
             }
