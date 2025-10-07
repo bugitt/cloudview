@@ -11,7 +11,7 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          image: ${{ secrets.ALIYUN_DOCKER_NAMESPACE }}/cloudview
+          image: ${{ secrets.ALIYUN_DOCKER_REGISTRY }}/${{ secrets.ALIYUN_DOCKER_NAMESPACE }}/cloudview
           tags: ${{ github.sha }}
           registry: ${{ secrets.ALIYUN_DOCKER_REGISTRY }}
           username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
