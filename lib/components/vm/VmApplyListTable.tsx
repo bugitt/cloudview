@@ -188,6 +188,7 @@ export function VmApplyListTable(props: Props) {
                 <ProDescriptions.Item label="CPU数目">{currentVmApply?.cpu}</ProDescriptions.Item>
                 <ProDescriptions.Item label="内存（GB）">{currentVmApply?.memory ? currentVmApply.memory / 1024 : undefined}</ProDescriptions.Item>
                 <ProDescriptions.Item label="磁盘大小（GB）">{currentVmApply?.diskSize ? currentVmApply.diskSize / 1024 / 1024 / 1024 : undefined}</ProDescriptions.Item>
+                <ProDescriptions.Item label="接受调度调配">{currentVmApply?.acceptSchedule ? "是" : "否"}</ProDescriptions.Item>
                 <ProDescriptions.Item label="虚拟机数目"> {currentVmApply?.experimentId !== 0 ? currentVmApply?.studentIdList.length : 1} </ProDescriptions.Item>
                 <ProDescriptions.Item label="申请原因"> {currentVmApply?.description} </ProDescriptions.Item>
                 <ProDescriptions.Item label="审批意见">{currentVmApply?.replyMsg} </ProDescriptions.Item>

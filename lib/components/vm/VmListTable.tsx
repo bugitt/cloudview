@@ -6,10 +6,12 @@ import { Button, Modal, Popconfirm, Space, Typography, Input, Dropdown, Menu } f
 import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { CreateVmApplyResponse, ExperimentResponse, VirtualMachine, VmNetInfo } from "../../cloudapi-client";
 import { cloudapiClient } from "../../utils/cloudapi";
-import { messageInfo, notificationError } from "../../utils/notification";
+import { messageError, messageInfo, notificationError } from "../../utils/notification";
 import { AddVmIntoApplyForm } from "./AddVmIntoApplyForm";
 import { VmApplyForm } from "./VmApplyForm";
 import WMKSPage, { WMKSPageRef } from "./VmWebConsole";
+import axios from "axios";
+import { BASE_PATH } from "../../cloudapi-client/base";
 
 interface Props {
     fetchVmList: (experimentId?: number) => Promise<VirtualMachine[]>
@@ -73,8 +75,12 @@ export function VmListTable(props: Props) {
             })
             const expIdMap = new Map<number, ExperimentResponse>()
             await Promise.all(Array.from(expIdSet.values()).map(async (expId) => {
-                const experiment = await (await cloudapiClient.getExperimentExperimentId(expId)).data
-                expIdMap.set(expId, experiment)
+                try {
+                    const experiment = await (await cloudapiClient.getExperimentExperimentId(expId)).data
+                    expIdMap.set(expId, experiment)
+                } catch (e) {
+                    console.error(`failed in request experiment info with id ${expId}.`)
+                }
             }))
             const data: DataType[] = await Promise.all(vmList.filter(vm => !vm.isTemplate)
                 .map((vm, index) => {
@@ -238,6 +244,17 @@ export function VmListTable(props: Props) {
                         label: (
                             <Typography.Link style={record.state !== 'running' ? {} : { color: '#1677ff' }}
                                 onClick={async () => {
+                                    if (record.vm.platform == 'sangfor') {
+                                        // TODO: 硬编码axios，期望重生成 CloudApiClient
+                                        const response = await axios.get(`${BASE_PATH}/vm/sangfor/${record.vm.uuid}/console`)
+                                        if (response.status != 200) {
+                                            messageError('打开控制台失败：' + response.data)
+                                            return
+                                        }
+                                        console.log("成功获取深信服url: " + response.data)
+                                        window.open(response.data, "_blank")
+                                        return
+                                    }
                                     cloudapiClient.postVmVmIdTicket(record.vm.uuid || "").then(res => {
                                         setConsoleProps({
                                             host: res.data.host,

@@ -107,7 +107,7 @@ export function SubmitExperimentWorkflowForm(props: Props) {
                                     fileType: 'ExperimentWorkflowContext',
                                 }
                             }}
-                            action={`https://scs.buaa.edu.cn/api/v2/file?token=${getToken()}`}
+                            action={`http://10.251.0.37/api/v2/file?token=${getToken()}`}
                             required
                         />
                     </>

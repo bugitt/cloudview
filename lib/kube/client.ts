@@ -1,9 +1,10 @@
 import * as k8s from '@kubernetes/client-node';
 import { businessK8s } from '../config/env';
-
+// TODO: Kubernetes Client base path not configured
 const cluster = {
     name: 'business-cluster',
     server: businessK8s.server,
+    skipTLSVerify: true, // 临时禁用 TLS 证书验证（仅用于开发环境）
     // caData: businessK8s.caData,
 };
 

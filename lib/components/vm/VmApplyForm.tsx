@@ -1,6 +1,7 @@
 import { ModalForm, ProFormCheckbox, ProFormDatePicker, ProFormDigit, ProFormGroup, ProFormInstance, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, ProSchemaValueEnumObj } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useRef, useState } from "react";
 import { CreateVmApplyRequest, UserModel, VirtualMachineTemplate } from "../../cloudapi-client";
@@ -23,6 +24,7 @@ interface DataType {
     dueTime: string
     description: string
     studentIdList: string[]
+    acceptSchedule: boolean
 }
 
 export function VmApplyForm(props: Props) {
@@ -67,6 +69,7 @@ export function VmApplyForm(props: Props) {
             description: values.description,
             templateUuid: values.templateUuid,
             studentIdList: values.studentIdList,
+            acceptSchedule: values.acceptSchedule
         }
         try {
             await cloudapiClient.postVmsApply(req)
@@ -135,6 +138,19 @@ export function VmApplyForm(props: Props) {
                     label="虚拟机使用截止日期"
                     name="dueTime"
                     rules={[{ required: true, message: '请输入虚拟机使用截止时间' }]}
+                />
+
+                <ProFormCheckbox
+                    label={
+                        <span>
+                            接受调度调配
+                            <Tooltip title="您创建的虚拟机可能根据实际情况调配到不同云平台上并使用不同但等价的虚拟机模板。">
+                                <QuestionCircleOutlined style={{ marginLeft: 8 }} />
+                            </Tooltip>
+                        </span>
+                    }
+                    name="acceptSchedule"
+                    initialValue={true}
                 />
 
                 <ProFormTextArea

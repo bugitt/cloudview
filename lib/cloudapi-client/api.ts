@@ -856,6 +856,12 @@ export interface CreateVmApplyRequest {
      * @memberof CreateVmApplyRequest
      */
     'dueTime': number;
+    /**
+     * 是否接受虚拟机调度
+     * @type {boolean}
+     * @memberof CreateVmApplyRequest
+     */
+    'acceptSchedule': boolean
 }
 /**
  * 
@@ -977,6 +983,14 @@ export interface CreateVmApplyResponse {
      * @memberof CreateVmApplyResponse
      */
     'replyMsg'?: string;
+
+    /**
+     * 是否接受虚拟机调度
+     * @type {boolean}
+     * @memberof CreateVmApplyResponse
+     */
+    'acceptSchedule': boolean;
+
     /**
      * 
      * @type {VmApplyProcess}
