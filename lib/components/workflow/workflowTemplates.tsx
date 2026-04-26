@@ -164,4 +164,70 @@ export const workflowTemplates: WorkflowTemplate[] = [
             }
         }
     },
+    {
+        key: 'simpleRedis',
+        name: 'Redis',
+        baseImage: '10.251.0.36:5432/library/redis:latest',
+        resource: {
+            cpu: 100,
+            memory: 128,
+        },
+        deploySpec: {
+            changeEnv: false,
+            ports: [{ port: 6379, protocol: 'tcp' }],
+            command: 'sh -c \'redis-server --requirepass "$REDIS_PASSWORD"\'',
+        },
+        extraFormItems: (
+            <>
+                <ProFormText
+                    name="redisPassword"
+                    label="Redis 密码"
+                    required
+                />
+            </>
+        ),
+        decorateConfiguration: function (wfConfig: ExperimentWorkflowConfiguration, values: any) {
+            const redisPassword = values.redisPassword as string
+            let env: { [k: string]: string } = wfConfig.deploySpec.env ?? {}
+            env['REDIS_PASSWORD'] = redisPassword
+            wfConfig.deploySpec.env = env
+            return wfConfig
+        },
+        decorateCreateWorkflowRequest: function (req: CreateWorkflowRequest, values: any) {
+            const redisPassword = values.redisPassword as string
+            let env: { [k: string]: string } = req.env ?? {}
+            env['REDIS_PASSWORD'] = redisPassword
+            req.env = env
+            return req
+        },
+        setFormFields: function (wfConfig: ExperimentWorkflowConfiguration, formRef?: MutableRefObject<ProFormInstance<any> | undefined>) {
+            formRef?.current?.setFieldsValue({
+                redisPassword: wfConfig.deploySpec.env?.['REDIS_PASSWORD'] ?? '',
+            })
+        },
+        getServiceStatusListItemByPort: function (port: ServicePort, wf: Workflow) {
+            switch (port.port) {
+                case 6379:
+                    return {
+                        disableAutoConnect: true,
+                        title: 'Redis端口',
+                        description: <>
+                            <Typography>
+                                Redis IP <Typography.Text code>
+                                    {port.ip}
+                                </Typography.Text>，
+                                端口 <Typography.Text code>
+                                    {port.nodePort}
+                                </Typography.Text>，
+                                密码 <Typography.Text code>
+                                    {wf.spec.deploy.env?.['REDIS_PASSWORD']}
+                                </Typography.Text>
+                            </Typography>
+                        </>,
+                    }
+                default:
+                    return undefined
+            }
+        }
+    },
 ]
