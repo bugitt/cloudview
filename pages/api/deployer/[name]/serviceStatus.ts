@@ -6,6 +6,7 @@ import { Deployer, ServicePort, ServiceStatus } from "../../../../lib/models/dep
 import { serverSideCloudapiClient } from "../../../../lib/utils/cloudapi";
 import { getCheckpointID } from "../../../../lib/models/workflow";
 import { folonetPorts } from "../../../../lib/utils/folonet";
+import { V1Pod } from "@kubernetes/client-node";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ServiceStatus>) {
     const {
@@ -39,12 +40,24 @@ export async function getServiceStatus(deployer: Deployer) {
 
     const selector = `owner.name=${deployer.metadata?.name},round=${deployer.status?.base?.currentRound}`
     const pods = await listPods(deployer.metadata?.namespace!!, selector)
-    let healthy = false
-    pods.forEach(p => {
-        if (p.status?.phase === 'Running' && p.status?.containerStatuses?.[0]?.ready) {
-            healthy = (healthy || true)
+
+    function tryGetMainPod(pods: V1Pod[]): V1Pod | null {
+        for (const p of pods) {
+            if (p.status?.phase === 'Running' && p.status?.containerStatuses?.[0]?.ready) {
+                return p;
+            }
         }
-    })
+
+        return null;
+    }
+
+    const mainPod = tryGetMainPod(pods);
+    const healthy = mainPod != null
+    if (healthy) {
+        console.log(
+            `Found main pod ${mainPod.metadata?.name} for deployer ${deployer.metadata?.name}, running on node ${mainPod.status?.hostIP}`)
+    }
+
     const ports: ServicePort[] = []
     const services = await listServices(deployer.metadata?.namespace!!, selector)
     const service = services[0]
@@ -53,7 +66,10 @@ export async function getServiceStatus(deployer: Deployer) {
             name: p.name!!,
             port: p.targetPort as number,
             nodePort: p.nodePort!!,
-            ip: deployerConfig.externalIp!!,
+            // patch 2026/4/6:
+            // The original one use deployerConfig.externalIp, which is hardcoded through ENV variable
+            // and may not work when the pod is scheduled to different worker nodes
+            ip: mainPod?.status?.hostIP ?? deployerConfig.externalIp,
             protocol: p.protocol!!
         }
         ports.push(port)

@@ -297,7 +297,27 @@ export function VmListTable(props: Props) {
                                 title="删除虚拟机"
                                 description={`确定要删除虚拟机 ${record.name} 吗？`}
                                 onConfirm={async () => {
+                                    const templates = (await cloudapiClient.getVmTemplates()).data
+                                    if (templates.some(template => template.uuid === record.vm.uuid)) {
+                                        // pop up another confirmation if the vm is also a template
+                                        Modal.confirm({
+                                            title: `虚拟机 ${record.name} 同时也是一个模板`,
+                                            content: `该虚拟机同时也是一个模板，是否真的要删除此虚拟机？如果删除，相关模板也会被删除。`,
+                                            okText: '删除模板',
+                                            cancelText: '保留模板',
+                                            onOk: async () => {
+                                                await cloudapiClient.deleteVmVmId(record.vm.id)
+                                                messageInfo('成功提交删除任务')
+                                            },
+                                            onCancel: () => {
+                                                // do nothing, just close the confirmation
+                                            }
+                                        });
+                                        return;
+                                    }
+
                                     await cloudapiClient.deleteVmVmId(record.vm.id)
+                                    messageInfo('成功提交删除任务')
                                 }}
                                 okText="是"
                                 cancelText="否"
@@ -367,14 +387,41 @@ export function VmListTable(props: Props) {
                             <Popconfirm
                                 title="删除虚拟机"
                                 description={`确定要删除虚拟机所选中的这些虚拟机吗？`}
-                                onConfirm={() => {
-                                    Promise.all(selectedVmList.map(async (vm) => {
-                                        await cloudapiClient.deleteVmVmId(vm.vm.id)
-                                    })).then(() => {
-                                        messageInfo('成功提交删除任务')
-                                    }).then(() => {
-                                        vmListReq.run()
-                                    })
+                                onConfirm={async () => {
+                                    const templates = (await cloudapiClient.getVmTemplates()).data
+                                    const templateArray = templates.filter(
+                                        t => selectedVmList.some(record => record.vm.uuid === t.uuid)
+                                    )
+
+                                    const deleteVmsAsync = async () => {
+                                        await Promise.all(selectedVmList.map((vm) => {
+                                            return cloudapiClient.deleteVmVmId(vm.vm.id);
+                                        }));
+                                        messageInfo('成功提交删除任务');
+                                        vmListReq.run();
+                                    }
+
+                                    if (templateArray.length === 0) {
+                                        // no template involved, directly delete
+                                        await deleteVmsAsync();
+                                        return;
+                                    }
+                                    
+                                    const listMessage = templateArray.map(t => t.name).join(', ');
+                                    // pop up another confirmation if some vms are also templates
+                                    Modal.confirm({
+                                        title: "虚拟机同时是模板",
+                                        content: `所选中的虚拟机中有 ${templateArray.length} 个同时也是模板（它们是：${listMessage}），是否真的要删除这些虚拟机？如果删除，相关模板也会被删除。`,
+                                        okText: '删除',
+                                        cancelText: '取消',
+                                        onOk: async () => {
+                                            await deleteVmsAsync();
+                                        },
+                                        onCancel: () => {
+                                            // do nothing, just close the confirmation
+                                        }
+                                    });
+
                                 }}
                                 okText="是"
                                 cancelText="否"
