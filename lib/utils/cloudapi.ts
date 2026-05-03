@@ -62,7 +62,7 @@ const viewApiClientConfig = (data?: any) => {
             Authorization: token,
         },
         data: data,
-        baseURL: "/view/v2/api",
+        baseURL: "/new/view/v2/api",
     }
 }
 

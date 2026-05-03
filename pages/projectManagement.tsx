@@ -20,28 +20,11 @@ export default function Projects(props: InferGetServerSidePropsType<typeof getSe
     }
     const { projectList, userInfo } = props
     setUserInfo(userInfo)
+
+    // NOTE: Delete PaaS reset token in 2026 since no one's using it.
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size='large'>
-                <ProDescriptions>
-                    <ProDescriptions.Item label='PaaS平台通用密码' span={3}>
-                        <Button onClick={() => {
-                            copyToClipboard(props.paasToken, 'PaaS平台通用密码')
-                        }}>点击复制</Button>
-                    </ProDescriptions.Item>
-                    <ProDescriptions.Item label='重置PaaS平台通用密码' span={3}>
-                        <ResetPaaSTokenButton />
-                    </ProDescriptions.Item>
-                </ProDescriptions>
-                <Alert
-                    message={
-                        <Typography>
-                            请访问 <Typography.Link href='https://scs.buaa.edu.cn/doc/01_common/paas/' target='_blank'>文档</Typography.Link> 来了解我们新推出的PaaS工作流功能！
-                        </Typography>
-                    }
-                    type='info'
-                    closable
-                />
                 <ProjectTable projectList={projectList} />
             </Space>
         </>

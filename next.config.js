@@ -25,7 +25,7 @@ const nextConfig = {
     "rc-tree",
     "rc-tooltip",
   ],
-  basePath: '/view/v2',
+  basePath: '/new/view/v2',
   async headers() {
     return [
       {

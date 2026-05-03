@@ -196,7 +196,7 @@ export function PersonalCreateWorkflowForm(props: Props) {
                 accept=".zip,.tar.gz,.rar"
                 max={1}
                 extra={fileUploadInfo}
-                action={`http://10.251.0.37/api/v2/scsos?overrideName=true&token=${getToken()}`}
+                action={`https://scs.buaa.edu.cn/new/api/v2/scsos?overrideName=true&token=${getToken()}`}
                 required
             />}
 

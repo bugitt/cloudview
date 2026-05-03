@@ -28,7 +28,7 @@ const WMKSPage = forwardRef<WMKSPageRef, WMKSPageProps>(({ host, ticket }, ref) 
 
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "/view/v2/wmks.min.js";
+    script.src = "/new/view/v2/wmks.min.js";
     script.async = true;
     script.onload = () => {
       console.log("WMKS SDK loaded");

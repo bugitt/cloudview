@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const loginUser = (await client.getWhoami()).data
     const experimentId = Number(ctx.query.id)
     const experiment = (await client.getExperimentExperimentId(experimentId, true)).data
-    if (loginUser.adminCourses.findIndex((course) => course.id === experiment.course.id) === -1) {
+    if (loginUser.adminCourses.findIndex((course) => course.id === experiment.course.id) === -1 && loginUser.userId !== 'admin') {
         ctx.res.statusCode = 403
         throw new Error("You are not allowed to access this page")
     }
