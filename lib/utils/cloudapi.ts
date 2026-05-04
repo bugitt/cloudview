@@ -107,8 +107,16 @@ export const viewApiClient = {
         return (await cloudviewAxios.get(`/deployer/${name}/serviceStatus?projectName=${projectName}`, viewApiClientConfig())).data as ServiceStatus
     },
 
+    getAllResourcePools: async () => {
+        return (await cloudviewAxios.get('/resourcePools', viewApiClientConfig())).data as ResourcePool[]
+    },
+
     getProjectResourcePools: async (projectId: number) => {
         return (await cloudviewAxios.get(`/resourcePools?projectId=${projectId}`, viewApiClientConfig())).data as ResourcePool[]
+    },
+
+    updateResourcePool: async (resourcePool: ResourcePool) => {
+        return (await cloudviewAxios.put('/resourcePools', resourcePool, viewApiClientConfig())).data as ResourcePool
     },
 
     getWorkflowTemplates: async () => {

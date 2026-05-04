@@ -2,24 +2,48 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { resourcePoolsClient } from "../../lib/kube/cloudrun"
 import { ResourcePool } from "../../lib/models/resource"
 import { serverSideCloudapiClient } from "../../lib/utils/cloudapi"
+import { whoami } from "../../lib/utils/server"
 import { getTokenFromReq } from "../../lib/utils/token"
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<ResourcePool[]>
+    res: NextApiResponse<ResourcePool[] | ResourcePool>
 ) {
     const { query: { projectId } } = req
+    const { method } = req
 
-    const { method } = req;
     switch (method) {
         case 'GET':
-            const resourceNames = (await serverSideCloudapiClient(getTokenFromReq(req)).getProjectProjectIdResourcePools(projectId as string)).data
-            const resourcePoolList = await getResourcePools(resourceNames)
-            res.status(200).json(resourcePoolList)
+            if (projectId) {
+                const resourceNames = (await serverSideCloudapiClient(getTokenFromReq(req)).getProjectProjectIdResourcePools(projectId as string)).data
+                const resourcePoolList = await getResourcePools(resourceNames)
+                res.status(200).json(resourcePoolList)
+            } else {
+                const user = await whoami(req)
+                if (user.role !== 'superadmin') {
+                    res.status(403).end('Forbidden')
+                    return
+                }
+                const pools = await resourcePoolsClient.list()
+                res.status(200).json(pools)
+            }
+            break
+
+        case 'PUT':
+            {
+                const user = await whoami(req)
+                if (user.role !== 'superAdmin') {
+                    res.status(403).end('Forbidden')
+                    return
+                }
+                const pool = req.body as ResourcePool
+                await resourcePoolsClient.createOrUpdate(pool)
+                res.status(200).json(pool)
+            }
             break
 
         default:
-            res.setHeader('Allow', ['GET'])
+            res.setHeader('Allow', ['GET', 'PUT'])
             res.status(405).end(`Method ${method} Not Allowed`)
             break
     }
