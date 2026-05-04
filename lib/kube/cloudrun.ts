@@ -94,7 +94,8 @@ export const resourcePoolsClient = {
     },
 
     list: async () => {
-        return ((await k8sCustomObjectsApi.listClusterCustomObject(group, apiVersion, resourcePoolPlural)).body) as ResourcePool[]
+        const resourcePoolList = ((await k8sCustomObjectsApi.listClusterCustomObject(group, apiVersion, resourcePoolPlural)).body)
+        return resourcePoolList['items'] as ResourcePool[]
     },
 
     createOrUpdate: async (resourcePool: ResourcePool) => {

@@ -20,6 +20,7 @@ export default async function handler(
                 res.status(200).json(resourcePoolList)
             } else {
                 const user = await whoami(req)
+                console.log(`Getter: ${user.username} (id=${user.userId}, role=${user.role})`)
                 if (user.role !== 'superadmin') {
                     res.status(403).end('Forbidden')
                     return
