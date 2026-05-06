@@ -100,6 +100,10 @@ export const resourcePoolsClient = {
 
     createOrUpdate: async (resourcePool: ResourcePool) => {
         return await createOrUpdate(resourcePool, undefined, undefined, undefined, undefined, true)
+    },
+
+    delete: async (name: string) => {
+        await k8sCustomObjectsApi.deleteClusterCustomObject(group, apiVersion, resourcePoolPlural, name)
     }
 }
 
