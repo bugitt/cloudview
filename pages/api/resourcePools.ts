@@ -7,7 +7,7 @@ import { getTokenFromReq } from "../../lib/utils/token"
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<ResourcePool[] | ResourcePool | Record<string, never>>
+    res: NextApiResponse<ResourcePool[] | ResourcePool>
 ) {
     const { query: { projectId } } = req
     const { method } = req
@@ -43,25 +43,8 @@ export default async function handler(
             }
             break
 
-        case 'DELETE':
-            {
-                const user = await whoami(req)
-                if (user.role !== 'superAdmin') {
-                    res.status(403).end('Forbidden')
-                    return
-                }
-                const { name } = req.query
-                if (!name || typeof name !== 'string') {
-                    res.status(400).end('name is required')
-                    return
-                }
-                await resourcePoolsClient.delete(name)
-                res.status(200).json({})
-            }
-            break
-
         default:
-            res.setHeader('Allow', ['GET', 'PUT', 'DELETE'])
+            res.setHeader('Allow', ['GET', 'PUT'])
             res.status(405).end(`Method ${method} Not Allowed`)
             break
     }

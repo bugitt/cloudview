@@ -9,7 +9,6 @@ import { CreateWorkflowRequest, UpdateWorkflowRequest, Workflow, WorkflowDisplay
 import { notificationError } from './notification'
 import { getToken, getTokenFromReq } from './token'
 import * as k8s from '@kubernetes/client-node';
-import { BASE_PATH } from '../cloudapi-client/base'
 
 const cloudviewAxios = globalAxios
 
@@ -116,26 +115,8 @@ export const viewApiClient = {
         return (await cloudviewAxios.get(`/resourcePools?projectId=${projectId}`, viewApiClientConfig())).data as ResourcePool[]
     },
 
-    createResourcePool: async (resourcePool: ResourcePool) => {
-        return (await cloudviewAxios.put('/resourcePools', resourcePool, viewApiClientConfig())).data as ResourcePool
-    },
-
     updateResourcePool: async (resourcePool: ResourcePool) => {
         return (await cloudviewAxios.put('/resourcePools', resourcePool, viewApiClientConfig())).data as ResourcePool
-    },
-
-    deleteResourcePool: async (name: string) => {
-        return (await cloudviewAxios.delete(`/resourcePools?name=${name}`, viewApiClientConfig())).data
-    },
-
-    // FIXME: this calls cloudapi directly instead of via an API route — inconsistent with the rest of viewApiClient
-    searchUser: async (type: 'ById' | 'ByName', keyword: string) => {
-        const token = getToken()
-        return (await cloudviewAxios.get('/search/user', {
-            params: { type, keyword },
-            headers: { Authorization: token },
-            baseURL: BASE_PATH,
-        })).data as { id: string, name: string }[]
     },
 
     getWorkflowTemplates: async () => {
