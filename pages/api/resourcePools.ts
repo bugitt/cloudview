@@ -21,7 +21,7 @@ export default async function handler(
             } else {
                 const user = await whoami(req)
                 console.log(`Getter: ${user.username} (id=${user.userId}, role=${user.role})`)
-                if (user.role !== 'superadmin') {
+                if (user.role !== 'superAdmin') {
                     res.status(403).end('Forbidden')
                     return
                 }
