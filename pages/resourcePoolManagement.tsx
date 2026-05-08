@@ -48,7 +48,7 @@ export default function ResourcePools(props: InferGetServerSidePropsType<typeof 
                     resourcePoolList={resourcePools}
                     onRefresh={handleRefresh}
                     onEnsurePersonalProjects={handleEnsurePersonalProjects}
-                    loading={listReq.loading}
+                    loading={listReq.loading || ensurePersonalProjectsReq.loading}
                 />
             </Space>
         </>
