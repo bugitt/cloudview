@@ -156,6 +156,9 @@ export const ResourcePoolTable = (props: ResourcePoolTableProps) => {
             search={false}
             headerTitle="资源池列表"
             toolBarRender={() => [
+                <Tooltip key="sync-tip" title="这将为所有没有个人项目的用户创建个人项目与资源池，用于解决系统迁移问题">
+                    <QuestionCircleOutlined style={{ marginRight: 8, fontSize: 16, color: '#1677ff', cursor: 'pointer', verticalAlign: 'middle' }} />
+                </Tooltip>,
                 <Button
                     key="forceSync"
                     type="primary"
@@ -163,9 +166,6 @@ export const ResourcePoolTable = (props: ResourcePoolTableProps) => {
                     onClick={onEnsurePersonalProjects}
                 >
                     强制同步个人项目
-                    <Tooltip title="TODO">
-                        <QuestionCircleOutlined style={{ marginLeft: 6, fontSize: 14 }} />
-                    </Tooltip>
                 </Button>,
             ]}
             options={{
