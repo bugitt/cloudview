@@ -34,12 +34,20 @@ export default function ResourcePools(props: InferGetServerSidePropsType<typeof 
 
     const handleRefresh = () => listReq.run()
 
+    const ensurePersonalProjectsReq = useRequest(viewApiClient.ensurePersonalProjects, {
+        manual: true,
+        onSuccess: () => handleRefresh()
+    })
+
+    const handleEnsurePersonalProjects = () => ensurePersonalProjectsReq.run()
+
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size='large'>
                 <ResourcePoolTable
                     resourcePoolList={resourcePools}
                     onRefresh={handleRefresh}
+                    onEnsurePersonalProjects={handleEnsurePersonalProjects}
                     loading={listReq.loading}
                 />
             </Space>

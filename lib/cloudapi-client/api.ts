@@ -7004,6 +7004,35 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+
+        ensurePersonalProjects: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/projects/ensure`
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
+
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Authorization required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        }
     }
 };
 
@@ -8044,6 +8073,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.putPaasToken(putPaasTokenRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+
+        async ensurePersonalProjects(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ success: number, failed: number }>>{
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ensurePersonalProjects(options)
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        }
     }
 };
 
@@ -8994,6 +9028,10 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         putPaasToken(putPaasTokenRequest?: PutPaasTokenRequest, options?: any): AxiosPromise<void> {
             return localVarFp.putPaasToken(putPaasTokenRequest, options).then((request) => request(axios, basePath));
         },
+
+        ensurePersonalProjects(options?: any): AxiosPromise<{ success: number, failed: number }> {
+            return localVarFp.ensurePersonalProjects(options).then((request) => request(axios, basePath))
+        }
     };
 };
 

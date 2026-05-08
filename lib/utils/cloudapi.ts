@@ -213,4 +213,11 @@ export const viewApiClient = {
     getKubeNodeList: async () => {
         return (await cloudviewAxios.get(`/kube/nodeList`, viewApiClientConfig())).data as k8s.V1NodeList
     },
+
+    ensurePersonalProjects: async () => {
+        return (await cloudviewAxios.post(`/projects/ensure`, viewApiClientConfig())).data as {
+            success: number,
+            failed: number
+        }
+    },
 }

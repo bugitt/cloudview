@@ -1,5 +1,6 @@
 import { ModalForm, ProColumns, ProFormDigit, ProFormText, ProTable } from '@ant-design/pro-components'
-import { Space, Typography } from 'antd'
+import { Button, Space, Tooltip, Typography } from 'antd'
+import { QuestionCircleOutlined, SyncOutlined } from '@ant-design/icons'
 import React from 'react'
 import { ResourcePool } from '../../../models/resource'
 import { viewApiClient } from '../../../utils/cloudapi'
@@ -9,6 +10,7 @@ import { GetColumnSearchProps } from '../../../utils/table'
 interface ResourcePoolTableProps {
     resourcePoolList: ResourcePool[]
     onRefresh: () => void
+    onEnsurePersonalProjects: () => void
     loading?: boolean
 }
 
@@ -85,7 +87,7 @@ const EditResourcePoolModal = (props: {
 }
 
 export const ResourcePoolTable = (props: ResourcePoolTableProps) => {
-    const { resourcePoolList, onRefresh, loading } = props
+    const { resourcePoolList, onRefresh, onEnsurePersonalProjects, loading } = props
 
     const columns: ProColumns<ResourcePoolTableType>[] = [
         {
@@ -153,6 +155,19 @@ export const ResourcePoolTable = (props: ResourcePoolTableProps) => {
             loading={loading}
             search={false}
             headerTitle="资源池列表"
+            toolBarRender={() => [
+                <Button
+                    key="forceSync"
+                    type="primary"
+                    icon={<SyncOutlined />}
+                    onClick={onEnsurePersonalProjects}
+                >
+                    强制同步个人项目
+                    <Tooltip title="TODO">
+                        <QuestionCircleOutlined style={{ marginLeft: 6, fontSize: 14 }} />
+                    </Tooltip>
+                </Button>,
+            ]}
             options={{
                 reload: onRefresh,
             }}
