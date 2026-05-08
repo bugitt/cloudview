@@ -215,7 +215,7 @@ export const viewApiClient = {
     },
 
     ensurePersonalProjects: async () => {
-        return (await cloudviewAxios.post(`/projects/ensure`, viewApiClientConfig())).data as {
+        return (await cloudviewAxios.post(`/projects/ensure`, undefined, viewApiClientConfig())).data as {
             success: number,
             failed: number
         }
